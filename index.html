@@ -33,6 +33,13 @@
             padding: 40px;
         }
 
+        .heading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5em;
+        }
+
         h1 {
             margin-bottom: 10px;
             font-size: 28px;
@@ -216,6 +223,15 @@
             button {
                 width: 100%;
             }
+
+            .heading-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                row-gap: .5em;
+                margin-bottom: 0em;
+            }
         }
 
         @media (max-width: 400px) {
@@ -259,7 +275,10 @@
 
 <body>
     <div class="container">
-        <h1>🏠 Home Insurance Premium Calculator</h1>
+        <div class="heading-container">
+            <img src="/mindhomeco_logo.jpg" alt="Mindhome logo" />
+            <h1> Home Insurance Premium Calculator</h1>
+        </div>
 
         <form id="premiumForm">
             <div class="form-group">
