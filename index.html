@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Address Form + Home Insurance Premium Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address Form with Autocomplete</title>
     <style>
         * {
             margin: 0;
@@ -13,360 +13,202 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0b132b;
-            min-height: 100vh;
-            color: #e0e6f1;
-        }
-
-        /* ========================================== */
-        /* ADDRESS FORM SECTION - TOP */
-        /* ========================================== */
-        .address-section {
-            width: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2rem 1rem;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        .address-container {
+        .container {
             max-width: 600px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .address-title {
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-
-        .address-subtitle {
-            font-size: clamp(0.875rem, 3vw, 1rem);
-            color: #666;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-
-        /* Address Form Styles */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
+        /* Back Button Styles */
+        .back-button {
+            padding: 12px 24px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: max(16px, 1rem);
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             transition: all 0.3s ease;
-            background-color: #f9f9f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .form-input:focus {
+        .back-button:hover {
+            background-color: white;
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .back-button:active {
+            transform: translateX(-1px);
+        }
+
+        /* Form Container */
+        .address-form {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
             outline: none;
             border-color: #667eea;
-            background-color: white;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .pac-container {
-            border-radius: 10px;
-            margin-top: 4px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            border: none;
-            z-index: 9999 !important;
-        }
-
-        .form-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-divider {
-            margin: 2rem 0;
-            border: none;
-            border-top: 2px solid #f0f0f0;
-            position: relative;
-        }
-
-        .form-divider::after {
-            content: 'OR ENTER MANUALLY';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 0 1rem;
-            font-size: 0.75rem;
-            font-weight: 600;
+        input[type="text"]::placeholder {
             color: #999;
         }
 
-        .message {
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-            display: none;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
-        .message.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        .error-message {
-            background-color: #fee;
-            border: 2px solid #fcc;
-        }
-
-        .error-message ul {
-            margin-left: 1.25rem;
-            color: #c33;
-        }
-
-        .success-message {
-            background-color: #efe;
-            border: 2px solid #cfc;
-        }
-
-        .success-message p {
-            color: #3c3;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .success-message .address-preview {
+        .hint {
+            font-size: 13px;
             color: #666;
-            font-size: 0.875rem;
+            margin-top: 6px;
+            font-style: italic;
         }
 
-        .btn-group {
+        /* Button Styles */
+        .button-group {
             display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         .btn {
-            flex: 1;
-            padding: 14px 24px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            user-select: none;
+            flex: 1;
         }
 
         .btn-verify {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-verify:hover {
+            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-submit {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
-        .btn-verify:hover:not(:disabled) {
+        .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-continue {
-            background: #5bc0be;
-            color: #062c43;
-        }
-
-        .btn-continue:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(91, 192, 190, 0.4);
-        }
-
         .btn:disabled {
-            opacity: 0.5;
+            background-color: #ccc;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .hint {
-            font-size: 0.75rem;
-            color: #999;
-            margin-top: 0.25rem;
-        }
-
-        /* ========================================== */
-        /* PREMIUM CALCULATOR SECTION - BOTTOM */
-        /* ========================================== */
-        .calculator-section {
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .calculator-container {
-            background: #1c2541;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
-        }
-
-        .heading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 1.5em;
-        }
-
-        .calculator-title {
-            margin-bottom: 10px;
-            font-size: 28px;
-            text-align: center;
-            color: #e0e6f1;
-        }
-
-        .subtitle {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 14px;
-            color: #e0e6f1;
-        }
-
-        /* Address info display */
-        .address-info {
-            background: rgba(91, 192, 190, 0.1);
-            border: 2px solid #5bc0be;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            display: none;
-        }
-
-        .address-info.show {
-            display: block;
-        }
-
-        .address-info-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #5bc0be;
-            margin-bottom: 0.5rem;
-        }
-
-        .address-info-text {
-            font-size: 0.8125rem;
-            color: #e0e6f1;
-            line-height: 1.5;
-        }
-
-        /* Calculator form styles */
-        .calc-form-group {
-            margin-bottom: 24px;
-        }
-
-        .calc-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #e0e6f1;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-            color: #333;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
-            border-color: #5bc0be;
-        }
-
-        input[type="number"]:hover {
-            border-color: #c0c0c0;
-        }
-
-        .calc-button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 30px;
-        }
-
-        .btn-calculate {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #5bc0be;
-            color: #062c43;
-        }
-
-        .btn-calculate:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(91, 192, 190, 0.3);
-        }
-
-        .btn-calculate:active {
+        .btn:active:not(:disabled) {
             transform: translateY(0);
         }
 
-        .btn-back {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f0f0f0;
-            color: #666;
-            text-decoration: none;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-back:hover {
-            background: #e0e0e0;
-        }
-
-        .result {
-            margin-top: 30px;
-            padding: 24px;
-            background: rgba(91, 192, 190, 0.1);
-            border: 2px solid #5bc0be;
-            border-radius: 12px;
+        /* Loading Indicator */
+        .loading {
             display: none;
-            animation: slideIn 0.3s ease;
+            text-align: center;
+            padding: 15px;
+            color: #667eea;
+            font-weight: 500;
         }
 
-        @keyframes slideIn {
+        .loading.active {
+            display: block;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Verification Result Styles */
+        .verification-result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
@@ -378,610 +220,428 @@
             }
         }
 
-        .result.show {
+        .verification-result.success {
+            background-color: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .verification-result.error {
+            background-color: #f8d7da;
+            border: 2px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .verification-result.warning {
+            background-color: #fff3cd;
+            border: 2px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .verification-result strong {
             display: block;
-        }
-
-        .result-label {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #e0e6f1;
-        }
-
-        .result-value {
-            font-size: 36px;
-            font-weight: bold;
-            color: #5bc0be;
-        }
-
-        .result-currency {
-            font-size: 24px;
-        }
-
-        .error {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-            font-size: 14px;
-        }
-
-        .error.show {
-            display: block;
-        }
-
-        /* Loading state */
-        .btn-calculate.loading {
-            position: relative;
-            color: transparent;
-        }
-
-        .btn-calculate.loading::after {
-            content: "";
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            top: 50%;
-            left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
-            border: 3px solid rgba(6, 44, 67, 0.3);
-            border-radius: 50%;
-            border-top-color: #062c43;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            margin-bottom: 5px;
         }
 
         /* Responsive Design */
-        @media (max-width: 640px) {
-            .address-section {
-                padding: 1rem 0.5rem;
-            }
-
-            .address-container {
-                padding: 24px;
-                border-radius: 16px;
-            }
-
-            .form-grid-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .calculator-container {
-                padding: 24px;
-            }
-
-            .calculator-title {
-                font-size: 24px;
-            }
-
-            .result-value {
-                font-size: 28px;
-            }
-
-            .calc-button-group {
-                flex-direction: column;
-            }
-
-            .heading-container {
-                flex-direction: column;
-                row-gap: 0.5em;
-                margin-bottom: 0;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .calculator-section {
+        @media (max-width: 768px) {
+            body {
                 padding: 10px;
             }
 
-            .calculator-container {
-                padding: 20px;
+            .address-form {
+                padding: 25px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
             }
         }
 
-        @media (max-width: 374px) {
-            .address-title {
-                font-size: 1.25rem;
-            }
+        /* Pac Container (Google Autocomplete Dropdown) Styling */
+        .pac-container {
+            border-radius: 8px;
+            margin-top: 5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-family: inherit;
+        }
+
+        .pac-item {
+            padding: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 
 <body>
+    <div class="container">
+        <!-- BACK BUTTON -->
+        <button onclick="goBack()" class="back-button" type="button">
+            ← Go Back
+        </button>
 
-    <!-- ========================================== -->
-    <!-- ADDRESS FORM SECTION (TOP) -->
-    <!-- ========================================== -->
-    <section class="address-section" id="addressSection">
-        <div class="address-container">
-            <h1 class="address-title">Property Address</h1>
-            <p class="address-subtitle">Enter the address for insurance quote</p>
+        <!-- ADDRESS FORM -->
+        <div class="address-form">
+            <h2>Enter Your Address</h2>
+            <p class="subtitle">Use autocomplete or fill in manually</p>
 
+            <!-- Google Places Autocomplete -->
+            <div class="form-group">
+                <label for="autocomplete">🔍 Search Address</label>
+                <input id="autocomplete" type="text" placeholder="Start typing your address..." />
+                <p class="hint">Select from dropdown or fill fields below</p>
+            </div>
+
+            <!-- Manual Entry Form -->
             <form id="addressForm">
                 <div class="form-group">
-                    <label class="form-label" for="autocomplete">Search Address</label>
-                    <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address..."
-                        autocomplete="off">
-                    <p class="hint">Start typing and select from suggestions</p>
-                </div>
-
-                <div class="form-divider"></div>
-
-                <div class="form-group">
-                    <label class="form-label" for="street">Street Address</label>
-                    <input type="text" id="street" class="form-input" placeholder="123 Main St">
+                    <label for="street">Street Address *</label>
+                    <input type="text" id="street" name="street" placeholder="123 Main Street" required />
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="city">City</label>
-                    <input type="text" id="city" class="form-input" placeholder="San Francisco">
+                    <label for="city">City *</label>
+                    <input type="text" id="city" name="city" placeholder="Springfield" required />
                 </div>
 
-                <div class="form-grid-2">
+                <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="state">State</label>
-                        <input type="text" id="state" class="form-input" placeholder="CA">
+                        <label for="state">State *</label>
+                        <input type="text" id="state" name="state" placeholder="CA" maxlength="2"
+                            style="text-transform: uppercase;" required />
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label" for="zipCode">ZIP Code</label>
-                        <input type="text" id="zipCode" class="form-input" placeholder="94102">
+                        <label for="zip">ZIP Code *</label>
+                        <input type="text" id="zip" name="zip" placeholder="12345" pattern="[0-9]{5}(-[0-9]{4})?"
+                            required />
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="country">Country</label>
-                    <input type="text" id="country" class="form-input" value="United States">
+                <!-- Hidden Country Field -->
+                <input type="hidden" id="country" name="country" value="US">
+
+                <!-- Loading Indicator -->
+                <div id="loading" class="loading">
+                    Verifying address
                 </div>
 
-                <div id="errorMessage" class="message error-message">
-                    <ul id="errorList"></ul>
-                </div>
+                <!-- Verification Result -->
+                <div id="verificationResult"></div>
 
-                <div id="successMessage" class="message success-message">
-                    <p>✓ Address verified successfully</p>
-                    <div class="address-preview" id="addressPreview"></div>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-verify" id="verifyBtn">
+                <!-- Button Group -->
+                <div class="button-group">
+                    <button type="button" onclick="verifyAddress()" class="btn btn-verify">
                         Verify Address
                     </button>
-                    <button type="button" class="btn btn-continue" id="continueBtn" disabled>
-                        Continue to Calculator
+                    <button type="submit" class="btn btn-submit" id="submitBtn">
+                        Continue →
                     </button>
                 </div>
             </form>
         </div>
-    </section>
+    </div>
 
-    <!-- ========================================== -->
-    <!-- PREMIUM CALCULATOR SECTION (BOTTOM) -->
-    <!-- ========================================== -->
-    <section class="calculator-section" id="calculatorSection">
-        <div class="calculator-container">
-            <div class="heading-container">
-                <img src="/mindhomeco_logo.jpg" alt="Mindhome logo" />
-                <h1 class="calculator-title">Home Insurance Premium Calculator</h1>
-            </div>
+    <!-- Google Maps JavaScript API -->
+    <!-- IMPORTANT: Replace YOUR_API_KEY_HERE with your actual Google Maps API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places"></script>
 
-            <!-- Address Info Display -->
-            <div class="address-info" id="addressInfo">
-                <div class="address-info-title">📍 Property Address:</div>
-                <div class="address-info-text" id="addressInfoText"></div>
-            </div>
-
-            <form id="premiumForm">
-                <div class="calc-form-group">
-                    <label class="calc-label" for="bedrooms">Number of Bedrooms</label>
-                    <input type="number" id="bedrooms" name="bedrooms" min="1" max="10" step="1" required>
-                </div>
-
-                <div class="calc-form-group">
-                    <label class="calc-label" for="sqft">Square Footage</label>
-                    <input type="number" id="sqft" name="sqft" min="500" max="10000" step="100" required>
-                </div>
-
-                <div class="calc-form-group">
-                    <label class="calc-label" for="coverage">Coverage A (Property Value)</label>
-                    <input type="number" id="coverage" name="coverage" min="50000" max="2000000" step="10000" required>
-                </div>
-
-                <div class="calc-form-group">
-                    <label class="calc-label" for="age">Age of Home (years)</label>
-                    <input type="number" id="age" name="age" min="0" max="150" step="1" required>
-                </div>
-
-                <div class="calc-button-group">
-                    <button type="submit" class="btn-calculate">Calculate Premium</button>
-                    <a href="#addressSection" class="btn-back">Back to Address</a>
-                </div>
-            </form>
-
-            <div id="error" class="error"></div>
-
-            <div id="result" class="result">
-                <div class="result-label">Estimated Annual Premium</div>
-                <div class="result-value">
-                    <span class="result-currency">$</span><span id="premiumValue">0.00</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================================== -->
     <script>
-        // ==========================================
-        // ADDRESS FORM LOGIC
-        // ==========================================
-        const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
-
-        let isVerified = false;
-        let autocomplete = null;
-        let userAddress = null;
-
-        // DOM elements - Address Form
-        const form = document.getElementById('addressForm');
-        const autocompleteInput = document.getElementById('autocomplete');
-        const streetInput = document.getElementById('street');
-        const cityInput = document.getElementById('city');
-        const stateInput = document.getElementById('state');
-        const zipCodeInput = document.getElementById('zipCode');
-        const countryInput = document.getElementById('country');
-        const verifyBtn = document.getElementById('verifyBtn');
-        const continueBtn = document.getElementById('continueBtn');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorList = document.getElementById('errorList');
-        const successMessage = document.getElementById('successMessage');
-        const addressPreview = document.getElementById('addressPreview');
-        const addressInfo = document.getElementById('addressInfo');
-        const addressInfoText = document.getElementById('addressInfoText');
-
-        // Load Google Maps
-        function loadGoogleMapsScript() {
-            if (window.google && window.google.maps) {
-                initAutocomplete();
-                return;
+        // ==============================================
+        // BACK BUTTON FUNCTION
+        // ==============================================
+        function goBack() {
+            // Check if there are unsaved changes
+            if (hasUnsavedChanges) {
+                const confirmLeave = confirm('You have unsaved changes. Are you sure you want to go back?');
+                if (confirmLeave) {
+                    window.history.back();
+                }
+            } else {
+                window.history.back();
             }
-
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => initAutocomplete();
-            script.onerror = () => console.error('Error loading Google Maps');
-            document.head.appendChild(script);
         }
+
+        // ==============================================
+        // GOOGLE PLACES AUTOCOMPLETE
+        // ==============================================
+        let autocomplete;
 
         function initAutocomplete() {
-            autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
+            const input = document.getElementById('autocomplete');
+
+            // Initialize Google Places Autocomplete
+            autocomplete = new google.maps.places.Autocomplete(input, {
                 types: ['address'],
-                componentRestrictions: { country: 'us' }
+                componentRestrictions: { country: 'us' } // Change to your country code if needed
             });
 
-            autocomplete.addListener('place_changed', handlePlaceSelect);
+            // Listen for place selection
+            autocomplete.addListener('place_changed', onPlaceChanged);
         }
 
-        function handlePlaceSelect() {
+        function onPlaceChanged() {
             const place = autocomplete.getPlace();
 
             if (!place.address_components) {
-                showError(['Could not parse address. Please try again.']);
+                console.log('No address details available');
+                showVerificationResult('warning', 'Please select an address from the dropdown');
                 return;
             }
 
-            const address = parseAddressComponents(place.address_components);
-            fillAddressFields(address);
-            clearMessages();
-            isVerified = false;
-            continueBtn.disabled = true;
-        }
+            // Parse address components
+            let street = '';
+            let city = '';
+            let state = '';
+            let zip = '';
+            let country = '';
 
-        function parseAddressComponents(components) {
-            const address = {
-                street: '',
-                city: '',
-                state: '',
-                zipCode: '',
-                country: ''
-            };
-
-            components.forEach(component => {
+            place.address_components.forEach(component => {
                 const types = component.types;
 
                 if (types.includes('street_number')) {
-                    address.street = component.long_name + ' ';
+                    street = component.long_name + ' ';
                 }
                 if (types.includes('route')) {
-                    address.street += component.long_name;
+                    street += component.long_name;
                 }
                 if (types.includes('locality')) {
-                    address.city = component.long_name;
+                    city = component.long_name;
                 }
                 if (types.includes('administrative_area_level_1')) {
-                    address.state = component.short_name;
+                    state = component.short_name;
                 }
                 if (types.includes('postal_code')) {
-                    address.zipCode = component.long_name;
+                    zip = component.long_name;
                 }
                 if (types.includes('country')) {
-                    address.country = component.long_name;
+                    country = component.long_name;
                 }
             });
 
-            return address;
+            // Fill in the form fields
+            document.getElementById('street').value = street;
+            document.getElementById('city').value = city;
+            document.getElementById('state').value = state;
+            document.getElementById('zip').value = zip;
+            document.getElementById('country').value = country;
+
+            // Show success message
+            showVerificationResult('success', '✓ Address verified successfully via Google Places!');
+
+            // Mark as having changes
+            hasUnsavedChanges = true;
         }
 
-        function fillAddressFields(address) {
-            streetInput.value = address.street || '';
-            cityInput.value = address.city || '';
-            stateInput.value = address.state || '';
-            zipCodeInput.value = address.zipCode || '';
-            countryInput.value = address.country || '';
-        }
+        // ==============================================
+        // ADDRESS VERIFICATION
+        // ==============================================
+        function verifyAddress() {
+            const street = document.getElementById('street').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim().toUpperCase();
+            const zip = document.getElementById('zip').value.trim();
 
-        function getCurrentAddress() {
-            return {
-                street: streetInput.value.trim(),
-                city: cityInput.value.trim(),
-                state: stateInput.value.trim(),
-                zipCode: zipCodeInput.value.trim(),
-                country: countryInput.value.trim()
-            };
-        }
+            // Clear previous results
+            document.getElementById('verificationResult').innerHTML = '';
 
-        function validateAddress(address) {
+            // Basic validation
             const errors = [];
+            const warnings = [];
 
-            if (!address.street) errors.push('Street address is required');
-            if (!address.city) errors.push('City is required');
-            if (!address.state) errors.push('State is required');
-            if (!address.zipCode) {
-                errors.push('ZIP code is required');
-            } else if (!/^\d{5}(-\d{4})?$/.test(address.zipCode)) {
-                errors.push('Invalid ZIP code format');
+            if (!street) errors.push('Street address is required');
+            if (!city) errors.push('City is required');
+            if (!state) errors.push('State is required');
+            if (!zip) errors.push('ZIP code is required');
+
+            // Format validation
+            const zipRegex = /^\d{5}(-\d{4})?$/;
+            if (zip && !zipRegex.test(zip)) {
+                warnings.push('ZIP code format may be invalid. Expected: 12345 or 12345-6789');
             }
-            if (!address.country) errors.push('Country is required');
 
-            return { isValid: errors.length === 0, errors: errors };
+            const stateRegex = /^[A-Z]{2}$/;
+            if (state && !stateRegex.test(state)) {
+                warnings.push('State should be a two-letter code (e.g., CA, NY, TX)');
+            }
+
+            if (street && street.length < 5) {
+                warnings.push('Street address seems too short');
+            }
+
+            // Show errors if any
+            if (errors.length > 0) {
+                showVerificationResult('error', '✗ Please fix the following:<br>' + errors.join('<br>'));
+                return;
+            }
+
+            // Show warnings if any (but continue to API verification)
+            if (warnings.length > 0) {
+                showVerificationResult('warning', '⚠ Warning:<br>' + warnings.join('<br>'));
+            }
+
+            // If basic validation passes, verify with Google API
+            verifyAddressWithAPI(street, city, state, zip);
         }
 
-        async function verifyAddressWithGoogle(address) {
-            const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
+        async function verifyAddressWithAPI(street, city, state, zip) {
+            const apiKey = 'YOUR_API_KEY_HERE'; // Replace with your actual API key
+            const address = `${street}, ${city}, ${state} ${zip}`;
+
+            // Show loading
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('verificationResult').innerHTML = '';
 
             try {
                 const response = await fetch(
-                    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressString)}&key=${GOOGLE_MAPS_API_KEY}`
+                    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
                 );
 
                 const data = await response.json();
 
+                // Hide loading
+                document.getElementById('loading').classList.remove('active');
+
                 if (data.status === 'OK' && data.results.length > 0) {
                     const result = data.results[0];
+                    const locationType = result.geometry.location_type;
 
-                    if (result.partial_match) {
-                        return {
-                            isValid: false,
-                            errors: ['Address appears to be incomplete or ambiguous']
-                        };
+                    let confidence = 'High';
+                    if (locationType === 'RANGE_INTERPOLATED') {
+                        confidence = 'Medium';
+                    } else if (locationType === 'GEOMETRIC_CENTER' || locationType === 'APPROXIMATE') {
+                        confidence = 'Low';
                     }
 
-                    return { isValid: true, errors: [] };
+                    showVerificationResult(
+                        'success',
+                        `<strong>✓ Address Verified!</strong><br>` +
+                        `Formatted: ${result.formatted_address}<br>` +
+                        `Confidence: ${confidence}<br>` +
+                        `Coordinates: ${result.geometry.location.lat.toFixed(6)}, ${result.geometry.location.lng.toFixed(6)}`
+                    );
+                } else if (data.status === 'ZERO_RESULTS') {
+                    showVerificationResult(
+                        'error',
+                        '<strong>✗ Address Not Found</strong><br>Please check for typos and try again.'
+                    );
+                } else if (data.status === 'REQUEST_DENIED') {
+                    showVerificationResult(
+                        'error',
+                        '<strong>✗ API Error</strong><br>Please check your API key configuration.'
+                    );
+                } else {
+                    showVerificationResult(
+                        'error',
+                        `<strong>✗ Verification Failed</strong><br>Status: ${data.status}`
+                    );
                 }
-
-                return { isValid: false, errors: ['Address could not be verified'] };
             } catch (error) {
-                console.error('Error:', error);
-                return {
-                    isValid: false,
-                    errors: ['Failed to verify. Please check your connection.']
-                };
+                document.getElementById('loading').classList.remove('active');
+                showVerificationResult(
+                    'error',
+                    '<strong>✗ Connection Error</strong><br>Unable to connect to verification service. Please check your internet connection.'
+                );
+                console.error('Verification error:', error);
             }
         }
 
-        function showError(errors) {
-            errorList.innerHTML = '';
-            errors.forEach(error => {
-                const li = document.createElement('li');
-                li.textContent = error;
-                errorList.appendChild(li);
-            });
-            errorMessage.classList.add('show');
-            successMessage.classList.remove('show');
+        function showVerificationResult(type, message) {
+            const resultDiv = document.getElementById('verificationResult');
+            resultDiv.className = `verification-result ${type}`;
+            resultDiv.innerHTML = message;
         }
 
-        function showSuccess(address) {
-            const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
-            addressPreview.textContent = addressString;
-            successMessage.classList.add('show');
-            errorMessage.classList.remove('show');
-        }
-
-        function clearMessages() {
-            errorMessage.classList.remove('show');
-            successMessage.classList.remove('show');
-        }
-
-        async function handleVerify() {
-            clearMessages();
-
-            const address = getCurrentAddress();
-            const validation = validateAddress(address);
-
-            if (!validation.isValid) {
-                showError(validation.errors);
-                return;
-            }
-
-            verifyBtn.disabled = true;
-            verifyBtn.textContent = 'Verifying...';
-
-            const googleValidation = await verifyAddressWithGoogle(address);
-
-            verifyBtn.disabled = false;
-            verifyBtn.textContent = 'Verify Address';
-
-            if (googleValidation.isValid) {
-                isVerified = true;
-                userAddress = address;
-                continueBtn.disabled = false;
-                showSuccess(address);
-            } else {
-                isVerified = false;
-                continueBtn.disabled = true;
-                showError(googleValidation.errors);
-            }
-        }
-
-        function handleContinue() {
-            if (!isVerified) {
-                showError(['Please verify the address before continuing']);
-                return;
-            }
-
-            // Show address in calculator section
-            const addressString = `${userAddress.street}<br>${userAddress.city}, ${userAddress.state} ${userAddress.zipCode}`;
-            addressInfoText.innerHTML = addressString;
-            addressInfo.classList.add('show');
-
-            // Scroll to calculator
-            document.getElementById('calculatorSection').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-
-        function handleInputChange() {
-            if (isVerified) {
-                isVerified = false;
-                continueBtn.disabled = true;
-                clearMessages();
-            }
-        }
-
-        // Event listeners
-        verifyBtn.addEventListener('click', handleVerify);
-        continueBtn.addEventListener('click', handleContinue);
-
-        [streetInput, cityInput, stateInput, zipCodeInput, countryInput].forEach(input => {
-            input.addEventListener('input', handleInputChange);
-        });
-
-        // ==========================================
-        // PREMIUM CALCULATOR LOGIC
-        // ==========================================
-
-        // Model parameters extracted from trained Python model
-        const MODEL = {
-            coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
-            intercept: 1750.1500895522388,
-            scaler: {
-                mean: [3.5164179104477613, 2470.3014925373136, 442130.93919402984, 39.25970149253731],
-                scale: [1.1416925135517493, 851.6019470776408, 160375.7009750736, 20.13887648751911]
-            },
-            calibration: {
-                a: 2.2688583723656337,
-                b: -1806.3973226313328
-            }
-        };
-
-        function scaleFeatures(features) {
-            return features.map((value, i) => {
-                return (value - MODEL.scaler.mean[i]) / MODEL.scaler.scale[i];
-            });
-        }
-
-        function predict(features) {
-            const scaledFeatures = scaleFeatures(features);
-            let prediction = MODEL.intercept;
-            for (let i = 0; i < scaledFeatures.length; i++) {
-                prediction += MODEL.coefficients[i] * scaledFeatures[i];
-            }
-            const calibrated = MODEL.calibration.a * prediction + MODEL.calibration.b;
-            return Math.max(0, calibrated);
-        }
-
-        // Form submission handler
-        document.getElementById('premiumForm').addEventListener('submit', function (e) {
+        // ==============================================
+        // FORM SUBMISSION
+        // ==============================================
+        document.getElementById('addressForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            document.getElementById('result').classList.remove('show');
-            document.getElementById('error').classList.remove('show');
+            const address = {
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value.toUpperCase(),
+                zip: document.getElementById('zip').value,
+                country: document.getElementById('country').value
+            };
 
-            const bedrooms = parseFloat(document.getElementById('bedrooms').value);
-            const sqft = parseFloat(document.getElementById('sqft').value);
-            const coverage = parseFloat(document.getElementById('coverage').value);
-            const age = parseFloat(document.getElementById('age').value);
+            console.log('Address submitted:', address);
 
-            if (isNaN(bedrooms) || isNaN(sqft) || isNaN(coverage) || isNaN(age)) {
-                showCalcError('Please fill in all fields with valid numbers.');
-                return;
-            }
+            // Reset unsaved changes flag
+            hasUnsavedChanges = false;
 
-            if (bedrooms < 1 || bedrooms > 10) {
-                showCalcError('Number of bedrooms must be between 1 and 10.');
-                return;
-            }
+            // Here you can:
+            // 1. Send to your server via fetch/AJAX
+            // 2. Store in localStorage
+            // 3. Navigate to next page
 
-            if (sqft < 500 || sqft > 10000) {
-                showCalcError('Square footage must be between 500 and 10,000.');
-                return;
-            }
+            // Example: Send to server
+            /*
+            fetch('/api/save-address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(address)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                window.location.href = '/next-page.html';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Failed to save address. Please try again.');
+            });
+            */
 
-            if (coverage < 50000 || coverage > 2000000) {
-                showCalcError('Coverage A must be between $50,000 and $2,000,000.');
-                return;
-            }
+            // For demo purposes, just show alert
+            alert('Address submitted successfully!\n\n' + JSON.stringify(address, null, 2));
 
-            if (age < 0 || age > 150) {
-                showCalcError('Age of home must be between 0 and 150 years.');
-                return;
-            }
-
-            const submitBtn = document.querySelector('.btn-calculate');
-            submitBtn.classList.add('loading');
-
-            setTimeout(() => {
-                try {
-                    const features = [bedrooms, sqft, coverage, age];
-                    const premium = predict(features);
-
-                    document.getElementById('premiumValue').textContent = premium.toFixed(2);
-                    document.getElementById('result').classList.add('show');
-
-                    if (window.innerWidth < 640) {
-                        document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
-                } catch (error) {
-                    showCalcError('An error occurred while calculating the premium. Please try again.');
-                    console.error('Calculation error:', error);
-                } finally {
-                    submitBtn.classList.remove('loading');
-                }
-            }, 300);
+            // Uncomment to navigate to another page:
+            // window.location.href = '/next-page.html';
         });
 
-        function showCalcError(message) {
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-        }
+        // ==============================================
+        // TRACK UNSAVED CHANGES
+        // ==============================================
+        let hasUnsavedChanges = false;
 
-        // Initialize
-        window.addEventListener('load', loadGoogleMapsScript);
+        document.getElementById('addressForm').addEventListener('input', function () {
+            hasUnsavedChanges = true;
+        });
+
+        // Warn before leaving if there are unsaved changes
+        window.addEventListener('beforeunload', function (e) {
+            if (hasUnsavedChanges) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+            }
+        });
+
+        // ==============================================
+        // AUTO-UPPERCASE STATE FIELD
+        // ==============================================
+        document.getElementById('state').addEventListener('input', function (e) {
+            e.target.value = e.target.value.toUpperCase();
+        });
+
+        // ==============================================
+        // INITIALIZE ON PAGE LOAD
+        // ==============================================
+        window.addEventListener('load', function () {
+            initAutocomplete();
+            console.log('Address form initialized successfully!');
+        });
     </script>
 </body>
 
