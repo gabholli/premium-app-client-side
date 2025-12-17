@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -370,6 +371,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -496,6 +498,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ========================================== -->
@@ -505,17 +508,12 @@
         <div class="address-container">
             <h1 class="address-title">Property Address</h1>
             <p class="address-subtitle">Enter the address for insurance quote</p>
-            
+
             <form id="addressForm">
                 <div class="form-group">
                     <label class="form-label" for="autocomplete">Search Address</label>
-                    <input 
-                        type="text" 
-                        id="autocomplete" 
-                        class="form-input"
-                        placeholder="Start typing your address..."
-                        autocomplete="off"
-                    >
+                    <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address..."
+                        autocomplete="off">
                     <p class="hint">Start typing and select from suggestions</p>
                 </div>
 
@@ -630,7 +628,7 @@
         // ADDRESS FORM LOGIC
         // ==========================================
         const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
-        
+
         let isVerified = false;
         let autocomplete = null;
         let userAddress = null;
@@ -819,10 +817,10 @@
 
         async function handleVerify() {
             clearMessages();
-            
+
             const address = getCurrentAddress();
             const validation = validateAddress(address);
-            
+
             if (!validation.isValid) {
                 showError(validation.errors);
                 return;
@@ -860,7 +858,7 @@
             addressInfo.classList.add('show');
 
             // Scroll to calculator
-            document.getElementById('calculatorSection').scrollIntoView({ 
+            document.getElementById('calculatorSection').scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
             });
@@ -877,7 +875,7 @@
         // Event listeners
         verifyBtn.addEventListener('click', handleVerify);
         continueBtn.addEventListener('click', handleContinue);
-        
+
         [streetInput, cityInput, stateInput, zipCodeInput, countryInput].forEach(input => {
             input.addEventListener('input', handleInputChange);
         });
@@ -885,7 +883,7 @@
         // ==========================================
         // PREMIUM CALCULATOR LOGIC
         // ==========================================
-        
+
         // Model parameters extracted from trained Python model
         const MODEL = {
             coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
@@ -986,4 +984,5 @@
         window.addEventListener('load', loadGoogleMapsScript);
     </script>
 </body>
+
 </html>
