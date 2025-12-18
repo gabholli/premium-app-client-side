@@ -87,19 +87,6 @@
             text-align: center;
         }
 
-        .security-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
         /* Address Form Styles */
         .form-group {
             margin-bottom: 1.25rem;
@@ -567,12 +554,6 @@
     <!-- ========================================== -->
     <section class="address-section" id="addressSection">
         <div class="address-container">
-            <div style="text-align: center;">
-                <span class="security-badge">
-                    🔒 Secure - API Key Protected
-                </span>
-            </div>
-
             <h1 class="address-title">Property Address</h1>
             <p class="address-subtitle">Enter the address for insurance quote</p>
 
@@ -690,7 +671,7 @@
     <!-- ========================================== -->
     <!-- JAVASCRIPT -->
     <!-- ========================================== -->
-
+    
     <!-- 
         IMPORTANT: For Places Autocomplete, you need a PUBLIC API key
         This key should be restricted to:
@@ -699,7 +680,7 @@
         Replace YOUR_PLACES_API_KEY_HERE with your actual Places-only key
     -->
     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_PLACES_API_KEY_HERE&libraries=places"></script>
-
+    
     <script>
         // ==========================================
         // GO BACK BUTTON FUNCTION
@@ -711,7 +692,7 @@
         // ==========================================
         // ADDRESS FORM LOGIC - SECURE VERSION
         // ==========================================
-
+        
         let isVerified = false;
         let autocomplete = null;
         let userAddress = null;
