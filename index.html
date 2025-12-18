@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Address Form + Home Insurance Premium Calculator</title>
+    <title>Address Form + Home Insurance Premium Calculator (SECURE)</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
         }
 
         /* ========================================== */
-        /* GO BACK BUTTON - NEW */
+        /* GO BACK BUTTON */
         /* ========================================== */
         .back-button-wrapper {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -85,6 +85,19 @@
             color: #666;
             margin-bottom: 2rem;
             text-align: center;
+        }
+
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
         /* Address Form Styles */
@@ -541,7 +554,7 @@
 <body>
 
     <!-- ========================================== -->
-    <!-- GO BACK BUTTON (NEW) -->
+    <!-- GO BACK BUTTON -->
     <!-- ========================================== -->
     <div class="back-button-wrapper">
         <button onclick="goBack()" class="btn-go-back" type="button">
@@ -554,6 +567,12 @@
     <!-- ========================================== -->
     <section class="address-section" id="addressSection">
         <div class="address-container">
+            <div style="text-align: center;">
+                <span class="security-badge">
+                    🔒 Secure - API Key Protected
+                </span>
+            </div>
+
             <h1 class="address-title">Property Address</h1>
             <p class="address-subtitle">Enter the address for insurance quote</p>
 
@@ -671,18 +690,27 @@
     <!-- ========================================== -->
     <!-- JAVASCRIPT -->
     <!-- ========================================== -->
+
+    <!-- 
+        IMPORTANT: For Places Autocomplete, you need a PUBLIC API key
+        This key should be restricted to:
+        - Places API ONLY (not Geocoding)
+        - Your domain only
+        Replace YOUR_PLACES_API_KEY_HERE with your actual Places-only key
+    -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_PLACES_API_KEY_HERE&libraries=places"></script>
+
     <script>
         // ==========================================
-        // GO BACK BUTTON FUNCTION (NEW)
+        // GO BACK BUTTON FUNCTION
         // ==========================================
         function goBack() {
             window.history.back();
         }
 
         // ==========================================
-        // ADDRESS FORM LOGIC
+        // ADDRESS FORM LOGIC - SECURE VERSION
         // ==========================================
-        const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
 
         let isVerified = false;
         let autocomplete = null;
@@ -705,23 +733,13 @@
         const addressInfo = document.getElementById('addressInfo');
         const addressInfoText = document.getElementById('addressInfoText');
 
-        // Load Google Maps
-        function loadGoogleMapsScript() {
-            if (window.google && window.google.maps) {
-                initAutocomplete();
+        // Initialize Google Places Autocomplete
+        function initAutocomplete() {
+            if (!window.google || !window.google.maps) {
+                console.error('Google Maps not loaded');
                 return;
             }
 
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            script.onload = () => initAutocomplete();
-            script.onerror = () => console.error('Error loading Google Maps');
-            document.head.appendChild(script);
-        }
-
-        function initAutocomplete() {
             autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
                 types: ['address'],
                 componentRestrictions: { country: 'us' }
@@ -814,17 +832,36 @@
             return { isValid: errors.length === 0, errors: errors };
         }
 
+        // SECURE: Verify address through YOUR Netlify function (NO API KEY EXPOSED!)
         async function verifyAddressWithGoogle(address) {
             const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
 
             try {
-                const response = await fetch(
-                    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressString)}&key=${GOOGLE_MAPS_API_KEY}`
-                );
+                // Call YOUR serverless function - NO API KEY in this request!
+                const response = await fetch('/.netlify/functions/geocode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ address: addressString })
+                });
+
+                // Handle rate limiting
+                if (response.status === 429) {
+                    const data = await response.json();
+                    return {
+                        isValid: false,
+                        errors: [data.error || 'Too many requests. Please wait and try again.']
+                    };
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const data = await response.json();
 
-                if (data.status === 'OK' && data.results.length > 0) {
+                if (data.status === 'OK' && data.results && data.results.length > 0) {
                     const result = data.results[0];
 
                     if (result.partial_match) {
@@ -1035,8 +1072,8 @@
             errorDiv.classList.add('show');
         }
 
-        // Initialize
-        window.addEventListener('load', loadGoogleMapsScript);
+        // Initialize when page loads
+        window.addEventListener('load', initAutocomplete);
     </script>
 </body>
 
