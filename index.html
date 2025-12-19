@@ -453,7 +453,37 @@
         - Your domain only
         Replace YOUR_PLACES_API_KEY_HERE with your actual Places-only key
     -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_PLACES_API_KEY_HERE&libraries=places"></script>
+    <script>
+        // Check if API key is set before loading Google Maps
+        const GOOGLE_API_KEY = 'YOUR_PLACES_API_KEY_HERE';
+        
+        if (GOOGLE_API_KEY && GOOGLE_API_KEY !== 'YOUR_PLACES_API_KEY_HERE') {
+            // API key is set, load Google Maps
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            // No API key set, show user-friendly message
+            window.addEventListener('load', function() {
+                const autocompleteInput = document.getElementById('autocomplete');
+                if (autocompleteInput) {
+                    autocompleteInput.disabled = true;
+                    autocompleteInput.placeholder = 'Address search temporarily unavailable';
+                    autocompleteInput.style.backgroundColor = '#ffe0e0';
+                    autocompleteInput.style.cursor = 'not-allowed';
+                }
+                
+                const errorMessage = document.getElementById('errorMessage');
+                const errorList = document.getElementById('errorList');
+                if (errorMessage && errorList) {
+                    errorList.innerHTML = '<li>Address search is temporarily unavailable. Please contact support for assistance.</li>';
+                    errorMessage.classList.add('show');
+                }
+            });
+        }
+    </script>
     
     <script>
         // ==========================================
