@@ -14,10 +14,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0b132b;
             min-height: 100vh;
-            padding: 1rem;
-            color: #333;
+            color: #e0e6f1;
+            padding: 20px;
         }
 
         /* ========================================== */
@@ -58,92 +58,79 @@
         /* MAIN CONTAINER */
         /* ========================================== */
         .main-container {
+            background: #1c2541;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             max-width: 700px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .logo-container {
-            margin-bottom: 1rem;
+        .heading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5em;
         }
 
         .main-title {
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 0.5rem;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+            color: #e0e6f1;
         }
 
         .subtitle {
-            font-size: clamp(0.875rem, 3vw, 1rem);
-            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #e0e6f1;
         }
 
         /* ========================================== */
         /* ADDRESS SECTION */
         /* ========================================== */
-        .section {
-            margin-bottom: 2rem;
+        .address-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(91, 192, 190, 0.2);
         }
 
         .section-title {
-            font-size: 1.25rem;
+            font-size: 18px;
             font-weight: 600;
-            color: #667eea;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .section-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50%;
-            font-size: 0.875rem;
-            font-weight: 700;
+            color: #5bc0be;
+            margin-bottom: 20px;
         }
 
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 20px;
         }
 
         .form-label {
             display: block;
-            font-size: 0.875rem;
+            margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 0.5rem;
+            font-size: 14px;
+            color: #e0e6f1;
         }
 
         .form-input {
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 12px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: max(16px, 1rem);
             transition: all 0.3s ease;
-            background-color: #f9f9f9;
+            background: #f9f9f9;
+            color: #333;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: #667eea;
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
+            border-color: #5bc0be;
         }
 
         .pac-container {
@@ -154,38 +141,16 @@
             z-index: 9999 !important;
         }
 
-        input[type="number"] {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: max(16px, 1rem);
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-            color: #333;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            border-color: #667eea;
-        }
-
-        input[type="number"]:hover {
-            border-color: #c0c0c0;
-        }
-
         .hint {
-            font-size: 0.75rem;
-            color: #999;
-            margin-top: 0.25rem;
+            font-size: 12px;
+            color: #a0a6b1;
+            margin-top: 4px;
         }
 
         .message {
-            padding: 1rem;
-            border-radius: 10px;
-            margin-top: 1rem;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
             display: none;
         }
 
@@ -195,53 +160,61 @@
         }
 
         .error-message {
-            background-color: #fee;
-            border: 2px solid #fcc;
+            background-color: rgba(255, 100, 100, 0.1);
+            border: 2px solid rgba(255, 100, 100, 0.3);
         }
 
         .error-message ul {
             margin-left: 1.25rem;
-            color: #c33;
+            color: #ff6464;
         }
 
         .success-message {
-            background-color: #efe;
-            border: 2px solid #cfc;
+            background-color: rgba(91, 192, 190, 0.1);
+            border: 2px solid rgba(91, 192, 190, 0.3);
         }
 
         .success-message p {
-            color: #3c3;
+            color: #5bc0be;
             font-weight: 600;
             margin-bottom: 0.5rem;
         }
 
         .success-message .address-preview {
-            color: #666;
+            color: #e0e6f1;
             font-size: 0.875rem;
         }
 
         /* ========================================== */
         /* CALCULATOR SECTION */
         /* ========================================== */
-        .calculator-fields {
-            display: none;
+        .calculator-section {
+            /* Always visible */
         }
 
-        .calculator-fields.show {
-            display: block;
-            animation: slideIn 0.3s ease;
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+            color: #333;
         }
 
-        .divider {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
-            margin: 2rem 0;
+        input[type="number"]:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
+            border-color: #5bc0be;
         }
 
-        /* ========================================== */
-        /* BUTTONS */
-        /* ========================================== */
-        .btn-primary {
+        input[type="number"]:hover {
+            border-color: #c0c0c0;
+        }
+
+        .btn-calculate {
             width: 100%;
             padding: 14px 24px;
             border: none;
@@ -250,32 +223,31 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            margin-top: 1.5rem;
+            background: #5bc0be;
+            color: #062c43;
+            margin-top: 30px;
         }
 
-        .btn-primary:hover:not(:disabled) {
+        .btn-calculate:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 20px rgba(91, 192, 190, 0.3);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .btn-calculate:active {
+            transform: translateY(0);
         }
 
         /* ========================================== */
         /* RESULT */
         /* ========================================== */
         .result {
-            margin-top: 2rem;
+            margin-top: 30px;
             padding: 24px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border: 2px solid #667eea;
+            background: rgba(91, 192, 190, 0.1);
+            border: 2px solid #5bc0be;
             border-radius: 12px;
             display: none;
-            text-align: center;
+            animation: slideIn 0.3s ease;
         }
 
         @keyframes slideIn {
@@ -292,33 +264,33 @@
 
         .result.show {
             display: block;
-            animation: slideIn 0.3s ease;
         }
 
         .result-label {
             font-size: 14px;
             margin-bottom: 8px;
-            color: #666;
+            color: #e0e6f1;
         }
 
         .result-value {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: bold;
-            color: #667eea;
+            color: #5bc0be;
         }
 
         .result-currency {
-            font-size: 28px;
+            font-size: 24px;
         }
 
         .error {
-            background: #fee;
-            color: #c33;
+            background: rgba(255, 100, 100, 0.1);
+            color: #ff6464;
             padding: 12px;
             border-radius: 8px;
             margin-top: 20px;
             display: none;
             font-size: 14px;
+            border: 2px solid rgba(255, 100, 100, 0.3);
         }
 
         .error.show {
@@ -326,12 +298,12 @@
         }
 
         /* Loading state */
-        .btn-primary.loading {
+        .btn-calculate.loading {
             position: relative;
             color: transparent;
         }
 
-        .btn-primary.loading::after {
+        .btn-calculate.loading::after {
             content: "";
             position: absolute;
             width: 20px;
@@ -340,9 +312,9 @@
             left: 50%;
             margin-left: -10px;
             margin-top: -10px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(6, 44, 67, 0.3);
             border-radius: 50%;
-            border-top-color: white;
+            border-top-color: #062c43;
             animation: spin 0.6s linear infinite;
         }
 
@@ -357,20 +329,25 @@
         /* ========================================== */
         @media (max-width: 640px) {
             body {
-                padding: 0.5rem;
+                padding: 10px;
             }
 
             .main-container {
                 padding: 24px;
-                border-radius: 16px;
             }
 
             .main-title {
-                font-size: 1.25rem;
+                font-size: 24px;
             }
 
             .result-value {
-                font-size: 32px;
+                font-size: 28px;
+            }
+
+            .heading-container {
+                flex-direction: column;
+                row-gap: 0.5em;
+                margin-bottom: 0;
             }
         }
 
@@ -398,20 +375,14 @@
     <!-- ========================================== -->
     <div class="main-container">
         <!-- Header -->
-        <div class="header">
-            <div class="logo-container">
-                <img src="/mindhomeco_logo.jpg" alt="Mindhome logo" style="max-width: 150px;" />
-            </div>
+        <div class="heading-container">
+            <img src="/mindhomeco_logo.jpg" alt="Mindhome logo" />
             <h1 class="main-title">Home Insurance Premium Calculator</h1>
-            <p class="subtitle">Get an instant quote in two simple steps</p>
         </div>
 
-        <!-- Step 1: Address -->
-        <div class="section">
-            <h2 class="section-title">
-                <span class="section-number">1</span>
-                Property Address
-            </h2>
+        <!-- Address Section -->
+        <div class="address-section">
+            <h2 class="section-title">Property Address</h2>
 
             <div class="form-group">
                 <label class="form-label" for="autocomplete">Search Address</label>
@@ -431,47 +402,40 @@
             </div>
         </div>
 
-        <!-- Step 2: Property Details (Hidden until address selected) -->
-        <div class="calculator-fields" id="calculatorFields">
-            <div class="divider"></div>
+        <!-- Calculator Section -->
+        <div class="calculator-section">
+            <h2 class="section-title">Property Details</h2>
 
-            <div class="section">
-                <h2 class="section-title">
-                    <span class="section-number">2</span>
-                    Property Details
-                </h2>
+            <form id="premiumForm">
+                <div class="form-group">
+                    <label class="form-label" for="bedrooms">Number of Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" min="1" max="10" step="1" required>
+                </div>
 
-                <form id="premiumForm">
-                    <div class="form-group">
-                        <label class="form-label" for="bedrooms">Number of Bedrooms</label>
-                        <input type="number" id="bedrooms" name="bedrooms" min="1" max="10" step="1" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label" for="sqft">Square Footage</label>
+                    <input type="number" id="sqft" name="sqft" min="500" max="10000" step="100" required>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="sqft">Square Footage</label>
-                        <input type="number" id="sqft" name="sqft" min="500" max="10000" step="100" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label" for="coverage">Coverage A (Property Value)</label>
+                    <input type="number" id="coverage" name="coverage" min="50000" max="2000000" step="10000" required>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="coverage">Coverage A (Property Value)</label>
-                        <input type="number" id="coverage" name="coverage" min="50000" max="2000000" step="10000" required>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label" for="age">Age of Home (years)</label>
+                    <input type="number" id="age" name="age" min="0" max="150" step="1" required>
+                </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="age">Age of Home (years)</label>
-                        <input type="number" id="age" name="age" min="0" max="150" step="1" required>
-                    </div>
+                <button type="submit" class="btn-calculate">Calculate Premium</button>
+            </form>
 
-                    <button type="submit" class="btn-primary">Calculate Premium</button>
-                </form>
+            <div id="error" class="error"></div>
 
-                <div id="error" class="error"></div>
-
-                <div id="result" class="result">
-                    <div class="result-label">Estimated Annual Premium</div>
-                    <div class="result-value">
-                        <span class="result-currency">$</span><span id="premiumValue">0.00</span>
-                    </div>
+            <div id="result" class="result">
+                <div class="result-label">Estimated Annual Premium</div>
+                <div class="result-value">
+                    <span class="result-currency">$</span><span id="premiumValue">0.00</span>
                 </div>
             </div>
         </div>
@@ -511,7 +475,6 @@
         const errorList = document.getElementById('errorList');
         const successMessage = document.getElementById('successMessage');
         const addressPreview = document.getElementById('addressPreview');
-        const calculatorFields = document.getElementById('calculatorFields');
 
         // Initialize Google Places Autocomplete
         function initAutocomplete() {
@@ -641,15 +604,9 @@
                         return;
                     }
 
-                    // Success! Show message and reveal calculator
+                    // Success! Show message
                     selectedAddress = address;
                     showSuccess(address);
-                    
-                    // Show calculator fields after small delay
-                    setTimeout(() => {
-                        calculatorFields.classList.add('show');
-                        calculatorFields.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }, 500);
                 } else {
                     showError(['Address could not be verified. Please try a different address.']);
                 }
@@ -669,7 +626,6 @@
             });
             errorMessage.classList.add('show');
             successMessage.classList.remove('show');
-            calculatorFields.classList.remove('show');
         }
 
         // Show success message
@@ -690,7 +646,6 @@
         autocompleteInput.addEventListener('input', function() {
             if (selectedAddress) {
                 selectedAddress = null;
-                calculatorFields.classList.remove('show');
                 clearMessages();
             }
         });
@@ -766,7 +721,7 @@
                 return;
             }
 
-            const submitBtn = document.querySelector('.btn-primary');
+            const submitBtn = document.querySelector('.btn-calculate');
             submitBtn.classList.add('loading');
 
             setTimeout(() => {
