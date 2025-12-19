@@ -125,36 +125,10 @@
             z-index: 9999 !important;
         }
 
-        .form-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-divider {
-            margin: 2rem 0;
-            border: none;
-            border-top: 2px solid #f0f0f0;
-            position: relative;
-        }
-
-        .form-divider::after {
-            content: 'OR ENTER MANUALLY';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 0 1rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #999;
-        }
-
         .message {
             padding: 1rem;
             border-radius: 10px;
-            margin-bottom: 1rem;
+            margin-top: 1rem;
             display: none;
         }
 
@@ -187,49 +161,13 @@
         .success-message .address-preview {
             color: #666;
             font-size: 0.875rem;
+            margin-bottom: 0.5rem;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-
-        .btn-verify {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-verify:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-continue {
-            background: #5bc0be;
-            color: #062c43;
-        }
-
-        .btn-continue:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(91, 192, 190, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .success-message .redirect-notice {
+            color: #666;
+            font-size: 0.75rem;
+            font-style: italic;
         }
 
         .hint {
@@ -489,14 +427,6 @@
                 border-radius: 16px;
             }
 
-            .form-grid-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
             .calculator-container {
                 padding: 24px;
             }
@@ -555,42 +485,15 @@
     <section class="address-section" id="addressSection">
         <div class="address-container">
             <h1 class="address-title">Property Address</h1>
-            <p class="address-subtitle">Enter the address for insurance quote</p>
+            <p class="address-subtitle">Search and select your property address</p>
 
             <form id="addressForm">
                 <div class="form-group">
                     <label class="form-label" for="autocomplete">Search Address</label>
-                    <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address..."
-                        autocomplete="off">
-                    <p class="hint">Start typing and select from suggestions</p>
-                </div>
-
-                <div class="form-divider"></div>
-
-                <div class="form-group">
-                    <label class="form-label" for="street">Street Address</label>
-                    <input type="text" id="street" class="form-input" placeholder="123 Main St">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="city">City</label>
-                    <input type="text" id="city" class="form-input" placeholder="San Francisco">
-                </div>
-
-                <div class="form-grid-2">
-                    <div class="form-group">
-                        <label class="form-label" for="state">State</label>
-                        <input type="text" id="state" class="form-input" placeholder="CA">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="zipCode">ZIP Code</label>
-                        <input type="text" id="zipCode" class="form-input" placeholder="94102">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="country">Country</label>
-                    <input type="text" id="country" class="form-input" value="United States">
+                    <input type="text" id="autocomplete" class="form-input" 
+                           placeholder="Start typing your address..."
+                           autocomplete="off">
+                    <p class="hint">Type your address and select from the dropdown</p>
                 </div>
 
                 <div id="errorMessage" class="message error-message">
@@ -598,17 +501,9 @@
                 </div>
 
                 <div id="successMessage" class="message success-message">
-                    <p>✓ Address verified successfully</p>
+                    <p>✓ Address selected successfully</p>
                     <div class="address-preview" id="addressPreview"></div>
-                </div>
-
-                <div class="btn-group">
-                    <button type="button" class="btn btn-verify" id="verifyBtn">
-                        Verify Address
-                    </button>
-                    <button type="button" class="btn btn-continue" id="continueBtn" disabled>
-                        Continue to Calculator
-                    </button>
+                    <div class="redirect-notice">Redirecting to calculator...</div>
                 </div>
             </form>
         </div>
@@ -690,23 +585,14 @@
         }
 
         // ==========================================
-        // ADDRESS FORM LOGIC - SECURE VERSION
+        // ADDRESS FORM LOGIC - AUTOCOMPLETE ONLY
         // ==========================================
         
-        let isVerified = false;
         let autocomplete = null;
-        let userAddress = null;
+        let selectedAddress = null;
 
-        // DOM elements - Address Form
-        const form = document.getElementById('addressForm');
+        // DOM elements
         const autocompleteInput = document.getElementById('autocomplete');
-        const streetInput = document.getElementById('street');
-        const cityInput = document.getElementById('city');
-        const stateInput = document.getElementById('state');
-        const zipCodeInput = document.getElementById('zipCode');
-        const countryInput = document.getElementById('country');
-        const verifyBtn = document.getElementById('verifyBtn');
-        const continueBtn = document.getElementById('continueBtn');
         const errorMessage = document.getElementById('errorMessage');
         const errorList = document.getElementById('errorList');
         const successMessage = document.getElementById('successMessage');
@@ -718,6 +604,7 @@
         function initAutocomplete() {
             if (!window.google || !window.google.maps) {
                 console.error('Google Maps not loaded');
+                showError(['Failed to load address search. Please refresh the page.']);
                 return;
             }
 
@@ -729,21 +616,31 @@
             autocomplete.addListener('place_changed', handlePlaceSelect);
         }
 
-        function handlePlaceSelect() {
+        // Handle address selection from autocomplete
+        async function handlePlaceSelect() {
+            clearMessages();
             const place = autocomplete.getPlace();
 
             if (!place.address_components) {
-                showError(['Could not parse address. Please try again.']);
+                showError(['Please select a valid address from the dropdown']);
                 return;
             }
 
+            // Parse address components
             const address = parseAddressComponents(place.address_components);
-            fillAddressFields(address);
-            clearMessages();
-            isVerified = false;
-            continueBtn.disabled = true;
+
+            // Validate address has required fields
+            const validation = validateAddress(address);
+            if (!validation.isValid) {
+                showError(validation.errors);
+                return;
+            }
+
+            // Auto-verify the selected address
+            await verifyAddress(address);
         }
 
+        // Parse Google Places address components
         function parseAddressComponents(components) {
             const address = {
                 street: '',
@@ -779,24 +676,7 @@
             return address;
         }
 
-        function fillAddressFields(address) {
-            streetInput.value = address.street || '';
-            cityInput.value = address.city || '';
-            stateInput.value = address.state || '';
-            zipCodeInput.value = address.zipCode || '';
-            countryInput.value = address.country || '';
-        }
-
-        function getCurrentAddress() {
-            return {
-                street: streetInput.value.trim(),
-                city: cityInput.value.trim(),
-                state: stateInput.value.trim(),
-                zipCode: zipCodeInput.value.trim(),
-                country: countryInput.value.trim()
-            };
-        }
-
+        // Validate address has all required fields
         function validateAddress(address) {
             const errors = [];
 
@@ -813,12 +693,12 @@
             return { isValid: errors.length === 0, errors: errors };
         }
 
-        // SECURE: Verify address through YOUR Netlify function (NO API KEY EXPOSED!)
-        async function verifyAddressWithGoogle(address) {
+        // Verify address through backend (secure)
+        async function verifyAddress(address) {
             const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
 
             try {
-                // Call YOUR serverless function - NO API KEY in this request!
+                // Call secure Netlify function
                 const response = await fetch('/.netlify/functions/geocode', {
                     method: 'POST',
                     headers: {
@@ -830,10 +710,8 @@
                 // Handle rate limiting
                 if (response.status === 429) {
                     const data = await response.json();
-                    return {
-                        isValid: false,
-                        errors: [data.error || 'Too many requests. Please wait and try again.']
-                    };
+                    showError([data.error || 'Too many requests. Please wait and try again.']);
+                    return;
                 }
 
                 if (!response.ok) {
@@ -846,25 +724,28 @@
                     const result = data.results[0];
 
                     if (result.partial_match) {
-                        return {
-                            isValid: false,
-                            errors: ['Address appears to be incomplete or ambiguous']
-                        };
+                        showError(['Address appears to be incomplete. Please select a more specific address.']);
+                        return;
                     }
 
-                    return { isValid: true, errors: [] };
+                    // Success! Show message and auto-redirect
+                    selectedAddress = address;
+                    showSuccess(address);
+                    
+                    // Automatically scroll to calculator after 1.5 seconds
+                    setTimeout(() => {
+                        scrollToCalculator();
+                    }, 1500);
+                } else {
+                    showError(['Address could not be verified. Please try a different address.']);
                 }
-
-                return { isValid: false, errors: ['Address could not be verified'] };
             } catch (error) {
-                console.error('Error:', error);
-                return {
-                    isValid: false,
-                    errors: ['Failed to verify. Please check your connection.']
-                };
+                console.error('Verification error:', error);
+                showError(['Failed to verify address. Please check your connection and try again.']);
             }
         }
 
+        // Show error messages
         function showError(errors) {
             errorList.innerHTML = '';
             errors.forEach(error => {
@@ -876,6 +757,7 @@
             successMessage.classList.remove('show');
         }
 
+        // Show success message
         function showSuccess(address) {
             const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
             addressPreview.textContent = addressString;
@@ -883,50 +765,20 @@
             errorMessage.classList.remove('show');
         }
 
+        // Clear all messages
         function clearMessages() {
             errorMessage.classList.remove('show');
             successMessage.classList.remove('show');
         }
 
-        async function handleVerify() {
-            clearMessages();
-
-            const address = getCurrentAddress();
-            const validation = validateAddress(address);
-
-            if (!validation.isValid) {
-                showError(validation.errors);
-                return;
-            }
-
-            verifyBtn.disabled = true;
-            verifyBtn.textContent = 'Verifying...';
-
-            const googleValidation = await verifyAddressWithGoogle(address);
-
-            verifyBtn.disabled = false;
-            verifyBtn.textContent = 'Verify Address';
-
-            if (googleValidation.isValid) {
-                isVerified = true;
-                userAddress = address;
-                continueBtn.disabled = false;
-                showSuccess(address);
-            } else {
-                isVerified = false;
-                continueBtn.disabled = true;
-                showError(googleValidation.errors);
-            }
-        }
-
-        function handleContinue() {
-            if (!isVerified) {
-                showError(['Please verify the address before continuing']);
+        // Scroll to calculator section
+        function scrollToCalculator() {
+            if (!selectedAddress) {
                 return;
             }
 
             // Show address in calculator section
-            const addressString = `${userAddress.street}<br>${userAddress.city}, ${userAddress.state} ${userAddress.zipCode}`;
+            const addressString = `${selectedAddress.street}<br>${selectedAddress.city}, ${selectedAddress.state} ${selectedAddress.zipCode}`;
             addressInfoText.innerHTML = addressString;
             addressInfo.classList.add('show');
 
@@ -937,20 +789,12 @@
             });
         }
 
-        function handleInputChange() {
-            if (isVerified) {
-                isVerified = false;
-                continueBtn.disabled = true;
+        // Reset on autocomplete input change
+        autocompleteInput.addEventListener('input', function() {
+            if (selectedAddress) {
+                selectedAddress = null;
                 clearMessages();
             }
-        }
-
-        // Event listeners
-        verifyBtn.addEventListener('click', handleVerify);
-        continueBtn.addEventListener('click', handleContinue);
-
-        [streetInput, cityInput, stateInput, zipCodeInput, countryInput].forEach(input => {
-            input.addEventListener('input', handleInputChange);
         });
 
         // ==========================================
