@@ -387,9 +387,8 @@
 
             <div class="form-group">
                 <label class="form-label" for="autocomplete">Search Address</label>
-                <input type="text" id="autocomplete" class="form-input" 
-                       placeholder="Start typing your address..."
-                       autocomplete="off">
+                <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address..."
+                    autocomplete="off">
                 <p class="hint">Type your address and select from the dropdown</p>
             </div>
 
@@ -445,7 +444,7 @@
     <!-- ========================================== -->
     <!-- JAVASCRIPT -->
     <!-- ========================================== -->
-    
+
     <!-- 
         IMPORTANT: For Places Autocomplete, you need a PUBLIC API key
         This key should be restricted to:
@@ -455,8 +454,8 @@
     -->
     <script>
         // Check if API key is set before loading Google Maps
-        const GOOGLE_API_KEY = 'YOUR_PLACES_API_KEY_HERE';
-        
+        const GOOGLE_API_KEY = 'AIzaSyBBZsTb7dsg3EQLMIFvS4Pt6xLk66J-5MQ';
+
         if (GOOGLE_API_KEY && GOOGLE_API_KEY !== 'YOUR_PLACES_API_KEY_HERE') {
             // API key is set, load Google Maps
             const script = document.createElement('script');
@@ -466,7 +465,7 @@
             document.head.appendChild(script);
         } else {
             // No API key set, show user-friendly message
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 const autocompleteInput = document.getElementById('autocomplete');
                 if (autocompleteInput) {
                     autocompleteInput.disabled = true;
@@ -474,7 +473,7 @@
                     autocompleteInput.style.backgroundColor = '#ffe0e0';
                     autocompleteInput.style.cursor = 'not-allowed';
                 }
-                
+
                 const errorMessage = document.getElementById('errorMessage');
                 const errorList = document.getElementById('errorList');
                 if (errorMessage && errorList) {
@@ -484,7 +483,7 @@
             });
         }
     </script>
-    
+
     <script>
         // ==========================================
         // GO BACK BUTTON FUNCTION
@@ -496,7 +495,7 @@
         // ==========================================
         // ADDRESS FORM LOGIC
         // ==========================================
-        
+
         let autocomplete = null;
         let selectedAddress = null;
 
@@ -674,7 +673,7 @@
         }
 
         // Reset on autocomplete input change
-        autocompleteInput.addEventListener('input', function() {
+        autocompleteInput.addEventListener('input', function () {
             if (selectedAddress) {
                 selectedAddress = null;
                 clearMessages();
