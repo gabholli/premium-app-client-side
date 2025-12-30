@@ -134,14 +134,6 @@
             border-color: #5bc0be;
         }
 
-        .pac-container {
-            border-radius: 10px;
-            margin-top: 4px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            border: none;
-            z-index: 9999 !important;
-        }
-
         .hint {
             font-size: 12px;
             color: #a0a6b1;
@@ -326,6 +318,86 @@
         }
 
         /* ========================================== */
+        /* GOOGLE PLACES AUTOCOMPLETE DROPDOWN */
+        /* ========================================== */
+        .pac-container {
+            background-color: #ffffff !important;
+            z-index: 10000 !important;
+            position: absolute !important;
+            display: block !important;
+            border-radius: 0 0 10px 10px !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+            border: 2px solid #5bc0be !important;
+            border-top: 2px solid #5bc0be !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            margin-top: 2px !important;
+            overflow: visible !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .pac-container:after {
+            content: none !important;
+        }
+
+        .pac-item {
+            cursor: pointer !important;
+            padding: 14px 16px !important;
+            line-height: 1.5 !important;
+            color: #333333 !important;
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e5e5e5 !important;
+            font-size: 15px !important;
+            transition: background-color 0.2s ease !important;
+        }
+
+        .pac-item:last-child {
+            border-bottom: none !important;
+            border-radius: 0 0 8px 8px !important;
+        }
+
+        .pac-item:hover,
+        .pac-item.pac-item-selected {
+            background-color: #f0f9f9 !important;
+        }
+
+        .pac-matched {
+            font-weight: 600 !important;
+            color: #5bc0be !important;
+        }
+
+        .pac-icon {
+            width: 20px !important;
+            height: 20px !important;
+            margin-right: 12px !important;
+            margin-top: 2px !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235bc0be' stroke-width='2'%3E%3Cpath d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z'%3E%3C/path%3E%3Ccircle cx='12' cy='10' r='3'%3E%3C/circle%3E%3C/svg%3E") !important;
+            background-size: contain !important;
+            background-repeat: no-repeat !important;
+        }
+
+        .pac-item-query {
+            font-size: 15px !important;
+            color: #333333 !important;
+            padding-right: 8px !important;
+        }
+
+        .pac-logo:after {
+            padding: 8px !important;
+            margin: 8px 0 0 0 !important;
+            display: block !important;
+        }
+
+        /* Force visibility overrides */
+        .pac-container[style*="display: none"] {
+            display: block !important;
+        }
+
+        .pac-container[style*="visibility: hidden"] {
+            visibility: visible !important;
+        }
+
+        /* ========================================== */
         /* RESPONSIVE DESIGN */
         /* ========================================== */
         @media (max-width: 640px) {
@@ -442,48 +514,15 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- GOOGLE MAPS API -->
+    <!-- ========================================== -->
+    <!-- REPLACE YOUR_PLACES_API_KEY_HERE with your actual API key -->
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBZsTb7dsg3EQLMIFvS4Pt6xLk66J-5MQ&libraries=places"></script>
+
+    <!-- ========================================== -->
     <!-- JAVASCRIPT -->
     <!-- ========================================== -->
-
-    <!-- 
-        IMPORTANT: For Places Autocomplete, you need a PUBLIC API key
-        This key should be restricted to:
-        - Places API ONLY (not Geocoding)
-        - Your domain only
-        Replace YOUR_PLACES_API_KEY_HERE with your actual Places-only key
-    -->
-    <script>
-        // Check if API key is set before loading Google Maps
-        const GOOGLE_API_KEY = 'AIzaSyBBZsTb7dsg3EQLMIFvS4Pt6xLk66J-5MQ';
-
-        if (GOOGLE_API_KEY && GOOGLE_API_KEY !== 'YOUR_PLACES_API_KEY_HERE') {
-            // API key is set, load Google Maps
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places`;
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        } else {
-            // No API key set, show user-friendly message
-            window.addEventListener('load', function () {
-                const autocompleteInput = document.getElementById('autocomplete');
-                if (autocompleteInput) {
-                    autocompleteInput.disabled = true;
-                    autocompleteInput.placeholder = 'Address search temporarily unavailable';
-                    autocompleteInput.style.backgroundColor = '#ffe0e0';
-                    autocompleteInput.style.cursor = 'not-allowed';
-                }
-
-                const errorMessage = document.getElementById('errorMessage');
-                const errorList = document.getElementById('errorList');
-                if (errorMessage && errorList) {
-                    errorList.innerHTML = '<li>Address search is temporarily unavailable. Please contact support for assistance.</li>';
-                    errorMessage.classList.add('show');
-                }
-            });
-        }
-    </script>
-
     <script>
         // ==========================================
         // GO BACK BUTTON FUNCTION
@@ -493,7 +532,7 @@
         }
 
         // ==========================================
-        // ADDRESS FORM LOGIC
+        // ADDRESS FORM LOGIC - FIXED VERSION
         // ==========================================
 
         let autocomplete = null;
@@ -508,24 +547,93 @@
 
         // Initialize Google Places Autocomplete
         function initAutocomplete() {
-            if (!window.google || !window.google.maps) {
-                console.error('Google Maps not loaded');
+            console.log('🚀 initAutocomplete starting...');
+
+            // Check if Google Maps is loaded
+            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+                console.error('❌ Google Maps not loaded');
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
                 showError(['Failed to load address search. Please refresh the page.']);
                 return;
             }
 
-            autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
-                types: ['address'],
-                componentRestrictions: { country: 'us' }
-            });
+            console.log('✅ Google Maps loaded');
 
-            autocomplete.addListener('place_changed', handlePlaceSelect);
+            // Check if Places library is loaded
+            if (typeof google.maps.places === 'undefined') {
+                console.error('❌ Places library not loaded');
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
+                showError(['Failed to load Places library. Please refresh the page.']);
+                return;
+            }
+
+            console.log('✅ Places library loaded');
+
+            // Check if input element exists
+            if (!autocompleteInput) {
+                console.error('❌ Input element not found');
+                return;
+            }
+
+            console.log('✅ Input element found:', autocompleteInput);
+
+            // Create autocomplete instance
+            try {
+                autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' }
+                });
+
+                console.log('✅ Autocomplete created successfully:', autocomplete);
+
+                // Add listener
+                autocomplete.addListener('place_changed', handlePlaceSelect);
+                console.log('✅ Listener added');
+
+                // Enable input
+                autocompleteInput.disabled = false;
+                autocompleteInput.placeholder = 'Start typing your address...';
+
+                // Force pac-container to be visible when it appears
+                setTimeout(() => {
+                    forcePacContainerVisible();
+                }, 1000);
+
+            } catch (error) {
+                console.error('❌ Error creating autocomplete:', error);
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search error - please refresh';
+                showError(['Error initializing address search: ' + error.message]);
+            }
+        }
+
+        // Force pac-container to be visible
+        function forcePacContainerVisible() {
+            const checkInterval = setInterval(() => {
+                const pacContainers = document.querySelectorAll('.pac-container');
+                if (pacContainers.length > 0) {
+                    pacContainers.forEach(container => {
+                        container.style.display = 'block';
+                        container.style.visibility = 'visible';
+                        container.style.opacity = '1';
+                        container.style.zIndex = '10000';
+                    });
+                }
+            }, 100);
+
+            // Stop checking after 30 seconds
+            setTimeout(() => clearInterval(checkInterval), 30000);
         }
 
         // Handle address selection from autocomplete
         async function handlePlaceSelect() {
+            console.log('🔍 Place selected');
             clearMessages();
+
             const place = autocomplete.getPlace();
+            console.log('Place data:', place);
 
             if (!place.address_components) {
                 showError(['Please select a valid address from the dropdown']);
@@ -534,6 +642,7 @@
 
             // Parse address components
             const address = parseAddressComponents(place.address_components);
+            console.log('Parsed address:', address);
 
             // Validate address has required fields
             const validation = validateAddress(address);
@@ -634,7 +743,7 @@
                         return;
                     }
 
-                    // Success! Show message
+                    // Success!
                     selectedAddress = address;
                     showSuccess(address);
                 } else {
@@ -677,6 +786,36 @@
             if (selectedAddress) {
                 selectedAddress = null;
                 clearMessages();
+            }
+        });
+
+        // Initialize when Google Maps is ready
+        function waitForGoogleMaps() {
+            if (typeof google !== 'undefined' &&
+                typeof google.maps !== 'undefined' &&
+                typeof google.maps.places !== 'undefined') {
+                console.log('✅ Google Maps fully ready, initializing...');
+                initAutocomplete();
+            } else {
+                console.log('⏳ Waiting for Google Maps...');
+                setTimeout(waitForGoogleMaps, 100);
+            }
+        }
+
+        // Start initialization when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForGoogleMaps);
+        } else {
+            // Document already loaded
+            waitForGoogleMaps();
+        }
+
+        // Also try on window load as backup
+        window.addEventListener('load', function () {
+            console.log('🔄 Window load event fired');
+            if (autocomplete === null) {
+                console.log('⚠️ Autocomplete still null, retrying...');
+                waitForGoogleMaps();
             }
         });
 
@@ -779,9 +918,6 @@
             errorDiv.textContent = message;
             errorDiv.classList.add('show');
         }
-
-        // Initialize when page loads
-        window.addEventListener('load', initAutocomplete);
     </script>
 </body>
 
