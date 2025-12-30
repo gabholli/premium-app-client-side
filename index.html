@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Home Insurance Premium Calculator</title>
-
     <style>
         * {
             margin: 0;
@@ -21,23 +20,43 @@
             padding: 20px;
         }
 
+        /* ========================================== */
+        /* GO BACK BUTTON */
+        /* ========================================== */
         .back-button-wrapper {
             max-width: 700px;
-            margin: 0 auto 1rem;
+            margin: 0 auto 1rem auto;
         }
 
         .btn-go-back {
             padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.95);
             border: none;
             border-radius: 10px;
             cursor: pointer;
             font-size: 15px;
             font-weight: 600;
             color: #333;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .btn-go-back:hover {
+            background-color: white;
+            transform: translateX(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-go-back:active {
+            transform: translateX(-1px);
+        }
+
+        /* ========================================== */
+        /* MAIN CONTAINER */
+        /* ========================================== */
         .main-container {
             background: #1c2541;
             border-radius: 20px;
@@ -56,8 +75,26 @@
         }
 
         .main-title {
+            margin-bottom: 10px;
             font-size: 28px;
             text-align: center;
+            color: #e0e6f1;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #e0e6f1;
+        }
+
+        /* ========================================== */
+        /* ADDRESS SECTION */
+        /* ========================================== */
+        .address-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(91, 192, 190, 0.2);
         }
 
         .section-title {
@@ -76,185 +113,741 @@
             margin-bottom: 8px;
             font-weight: 600;
             font-size: 14px;
+            color: #e0e6f1;
         }
 
-        .form-input,
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: max(16px, 1rem);
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+            color: #333;
+        }
+
+        .form-input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
+            border-color: #5bc0be;
+        }
+
+        .pac-container {
+            border-radius: 10px;
+            margin-top: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border: none;
+            z-index: 9999 !important;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #a0a6b1;
+            margin-top: 4px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .error-message {
+            background-color: rgba(255, 100, 100, 0.1);
+            border: 2px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .error-message ul {
+            margin-left: 1.25rem;
+            color: #ff6464;
+        }
+
+        .success-message {
+            background-color: rgba(91, 192, 190, 0.1);
+            border: 2px solid rgba(91, 192, 190, 0.3);
+        }
+
+        .success-message p {
+            color: #5bc0be;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message .address-preview {
+            color: #e0e6f1;
+            font-size: 0.875rem;
+        }
+
+        /* ========================================== */
+        /* CALCULATOR SECTION */
+        /* ========================================== */
+        .calculator-section {
+            /* Always visible */
+        }
+
         input[type="number"] {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: 16px;
+            transition: all 0.3s ease;
             background: #f9f9f9;
+            color: #333;
         }
 
-        .pac-container {
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-            z-index: 9999;
+        input[type="number"]:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
+            border-color: #5bc0be;
+        }
+
+        input[type="number"]:hover {
+            border-color: #c0c0c0;
         }
 
         .btn-calculate {
             width: 100%;
-            padding: 14px;
+            padding: 14px 24px;
             border: none;
             border-radius: 10px;
-            background: #5bc0be;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 20px;
+            transition: all 0.3s ease;
+            background: #5bc0be;
+            color: #062c43;
+            margin-top: 30px;
         }
 
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(91, 192, 190, 0.3);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        /* ========================================== */
+        /* RESULT */
+        /* ========================================== */
         .result {
             margin-top: 30px;
-            padding: 20px;
+            padding: 24px;
             background: rgba(91, 192, 190, 0.1);
             border: 2px solid #5bc0be;
             border-radius: 12px;
             display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .result.show {
             display: block;
         }
 
+        .result-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #e0e6f1;
+        }
+
         .result-value {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: bold;
             color: #5bc0be;
         }
 
-        .message {
-            margin-top: 12px;
-            padding: 12px;
-            border-radius: 8px;
-            display: none;
+        .result-currency {
+            font-size: 24px;
         }
 
-        .message.show {
+        .error {
+            background: rgba(255, 100, 100, 0.1);
+            color: #ff6464;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            font-size: 14px;
+            border: 2px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .error.show {
             display: block;
         }
 
-        .error-message {
-            border: 2px solid rgba(255, 100, 100, 0.4);
-            background: rgba(255, 100, 100, 0.1);
+        /* Loading state */
+        .btn-calculate.loading {
+            position: relative;
+            color: transparent;
         }
 
-        .success-message {
-            border: 2px solid rgba(91, 192, 190, 0.4);
-            background: rgba(91, 192, 190, 0.1);
+        .btn-calculate.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(6, 44, 67, 0.3);
+            border-radius: 50%;
+            border-top-color: #062c43;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ========================================== */
+        /* RESPONSIVE DESIGN */
+        /* ========================================== */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .main-container {
+                padding: 24px;
+            }
+
+            .main-title {
+                font-size: 24px;
+            }
+
+            .result-value {
+                font-size: 28px;
+            }
+
+            .heading-container {
+                flex-direction: column;
+                row-gap: 0.5em;
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .main-container {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- ========================================== -->
+    <!-- GO BACK BUTTON -->
+    <!-- ========================================== -->
     <div class="back-button-wrapper">
-        <button class="btn-go-back" onclick="history.back()">← Go Back</button>
+        <button onclick="goBack()" class="btn-go-back" type="button">
+            ← Go Back
+        </button>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MAIN CONTAINER -->
+    <!-- ========================================== -->
     <div class="main-container">
-
+        <!-- Header -->
         <div class="heading-container">
+            <img src="/mindhomeco_logo.jpg" alt="Mindhome logo" />
             <h1 class="main-title">Home Insurance Premium Calculator</h1>
         </div>
 
-        <!-- ADDRESS -->
+        <!-- Address Section -->
         <div class="address-section">
             <h2 class="section-title">Property Address</h2>
 
             <div class="form-group">
                 <label class="form-label" for="autocomplete">Search Address</label>
-                <input id="autocomplete" class="form-input" placeholder="Start typing your address…" />
+                <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address..."
+                    autocomplete="off">
+                <p class="hint">Type your address and select from the dropdown</p>
             </div>
 
-            <div id="errorMessage" class="message error-message"></div>
-            <div id="successMessage" class="message success-message"></div>
+            <div id="errorMessage" class="message error-message">
+                <ul id="errorList"></ul>
+            </div>
+
+            <div id="successMessage" class="message success-message">
+                <p>✓ Address verified successfully</p>
+                <div class="address-preview" id="addressPreview"></div>
+            </div>
         </div>
 
-        <!-- CALCULATOR -->
-        <form id="premiumForm">
+        <!-- Calculator Section -->
+        <div class="calculator-section">
             <h2 class="section-title">Property Details</h2>
 
-            <div class="form-group">
-                <label class="form-label">Bedrooms</label>
-                <input type="number" id="bedrooms" required>
+            <form id="premiumForm">
+                <div class="form-group">
+                    <label class="form-label" for="bedrooms">Number of Bedrooms</label>
+                    <input type="number" id="bedrooms" name="bedrooms" min="1" max="10" step="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="sqft">Square Footage</label>
+                    <input type="number" id="sqft" name="sqft" min="500" max="10000" step="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="coverage">Coverage A (Property Value)</label>
+                    <input type="number" id="coverage" name="coverage" min="50000" max="2000000" step="10000" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="age">Age of Home (years)</label>
+                    <input type="number" id="age" name="age" min="0" max="150" step="1" required>
+                </div>
+
+                <button type="submit" class="btn-calculate">Calculate Premium</button>
+            </form>
+
+            <div id="error" class="error"></div>
+
+            <div id="result" class="result">
+                <div class="result-label">Estimated Annual Premium</div>
+                <div class="result-value">
+                    <span class="result-currency">$</span><span id="premiumValue">0.00</span>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">Square Feet</label>
-                <input type="number" id="sqft" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Coverage A</label>
-                <input type="number" id="coverage" required>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Age of Home</label>
-                <input type="number" id="age" required>
-            </div>
-
-            <button class="btn-calculate">Calculate Premium</button>
-        </form>
-
-        <div id="result" class="result">
-            <div class="result-value">$<span id="premiumValue">0.00</span></div>
         </div>
-
     </div>
 
-    <!-- GOOGLE PLACES (CORRECT CALLBACK USAGE) -->
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBZsTb7dsg3EQLMIFvS4Pt6xLk66J-5MQ&libraries=places&callback=initAutocomplete"
-        async defer>
-        </script>
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================================== -->
+
+    <!-- 
+        IMPORTANT: For Places Autocomplete, you need a PUBLIC API key
+        This key should be restricted to:
+        - Places API ONLY (not Geocoding)
+        - Your domain only
+        Replace YOUR_PLACES_API_KEY_HERE with your actual Places-only key
+    -->
+    <script>
+        // Check if API key is set before loading Google Maps
+        const GOOGLE_API_KEY = 'AIzaSyBBZsTb7dsg3EQLMIFvS4Pt6xLk66J-5MQ';
+
+        if (GOOGLE_API_KEY && GOOGLE_API_KEY !== 'YOUR_PLACES_API_KEY_HERE') {
+            // API key is set, load Google Maps
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=places`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        } else {
+            // No API key set, show user-friendly message
+            window.addEventListener('load', function () {
+                const autocompleteInput = document.getElementById('autocomplete');
+                if (autocompleteInput) {
+                    autocompleteInput.disabled = true;
+                    autocompleteInput.placeholder = 'Address search temporarily unavailable';
+                    autocompleteInput.style.backgroundColor = '#ffe0e0';
+                    autocompleteInput.style.cursor = 'not-allowed';
+                }
+
+                const errorMessage = document.getElementById('errorMessage');
+                const errorList = document.getElementById('errorList');
+                if (errorMessage && errorList) {
+                    errorList.innerHTML = '<li>Address search is temporarily unavailable. Please contact support for assistance.</li>';
+                    errorMessage.classList.add('show');
+                }
+            });
+        }
+    </script>
 
     <script>
-        let autocomplete;
+        // ==========================================
+        // GO BACK BUTTON FUNCTION
+        // ==========================================
+        function goBack() {
+            window.history.back();
+        }
 
+        // ==========================================
+        // ADDRESS FORM LOGIC
+        // ==========================================
+
+        // ==========================================
+        // ADDRESS FORM LOGIC - FIXED VERSION
+        // ==========================================
+
+        let autocomplete = null;
+        let selectedAddress = null;
+
+        // DOM elements
+        const autocompleteInput = document.getElementById('autocomplete');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorList = document.getElementById('errorList');
+        const successMessage = document.getElementById('successMessage');
+        const addressPreview = document.getElementById('addressPreview');
+
+        // Initialize Google Places Autocomplete
         function initAutocomplete() {
-            const input = document.getElementById('autocomplete');
+            console.log('🚀 initAutocomplete starting...');
 
-            autocomplete = new google.maps.places.Autocomplete(input, {
-                types: ['address'],
-                componentRestrictions: { country: 'us' }
+            // Check if Google Maps is loaded
+            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+                console.error('❌ Google Maps not loaded');
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
+                showError(['Failed to load address search. Please refresh the page.']);
+                return;
+            }
+
+            console.log('✅ Google Maps loaded');
+
+            // Check if Places library is loaded
+            if (typeof google.maps.places === 'undefined') {
+                console.error('❌ Places library not loaded');
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
+                showError(['Failed to load Places library. Please refresh the page.']);
+                return;
+            }
+
+            console.log('✅ Places library loaded');
+
+            // Check if input element exists
+            if (!autocompleteInput) {
+                console.error('❌ Input element not found');
+                return;
+            }
+
+            console.log('✅ Input element found:', autocompleteInput);
+
+            // Create autocomplete instance
+            try {
+                autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' }
+                });
+
+                console.log('✅ Autocomplete created successfully:', autocomplete);
+
+                // Add listener
+                autocomplete.addListener('place_changed', handlePlaceSelect);
+                console.log('✅ Listener added');
+
+                // Enable input
+                autocompleteInput.disabled = false;
+                autocompleteInput.placeholder = 'Start typing your address...';
+
+            } catch (error) {
+                console.error('❌ Error creating autocomplete:', error);
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search error - please refresh';
+                showError(['Error initializing address search: ' + error.message]);
+            }
+        }
+
+        // Handle address selection from autocomplete
+        async function handlePlaceSelect() {
+            console.log('🔍 Place selected');
+            clearMessages();
+
+            const place = autocomplete.getPlace();
+            console.log('Place data:', place);
+
+            if (!place.address_components) {
+                showError(['Please select a valid address from the dropdown']);
+                return;
+            }
+
+            // Parse address components
+            const address = parseAddressComponents(place.address_components);
+            console.log('Parsed address:', address);
+
+            // Validate address has required fields
+            const validation = validateAddress(address);
+            if (!validation.isValid) {
+                showError(validation.errors);
+                return;
+            }
+
+            // Auto-verify the selected address
+            await verifyAddress(address);
+        }
+
+        // Parse Google Places address components
+        function parseAddressComponents(components) {
+            const address = {
+                street: '',
+                city: '',
+                state: '',
+                zipCode: '',
+                country: ''
+            };
+
+            components.forEach(component => {
+                const types = component.types;
+
+                if (types.includes('street_number')) {
+                    address.street = component.long_name + ' ';
+                }
+                if (types.includes('route')) {
+                    address.street += component.long_name;
+                }
+                if (types.includes('locality')) {
+                    address.city = component.long_name;
+                }
+                if (types.includes('administrative_area_level_1')) {
+                    address.state = component.short_name;
+                }
+                if (types.includes('postal_code')) {
+                    address.zipCode = component.long_name;
+                }
+                if (types.includes('country')) {
+                    address.country = component.long_name;
+                }
             });
 
-            autocomplete.setFields(['address_components', 'formatted_address']);
+            return address;
+        }
 
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-                if (!place.address_components) return;
+        // Validate address has all required fields
+        function validateAddress(address) {
+            const errors = [];
 
-                document.getElementById('successMessage').textContent =
-                    `✓ Address selected: ${place.formatted_address}`;
-                document.getElementById('successMessage').classList.add('show');
-                document.getElementById('errorMessage').classList.remove('show');
+            if (!address.street) errors.push('Street address is required');
+            if (!address.city) errors.push('City is required');
+            if (!address.state) errors.push('State is required');
+            if (!address.zipCode) {
+                errors.push('ZIP code is required');
+            } else if (!/^\d{5}(-\d{4})?$/.test(address.zipCode)) {
+                errors.push('Invalid ZIP code format');
+            }
+            if (!address.country) errors.push('Country is required');
+
+            return { isValid: errors.length === 0, errors: errors };
+        }
+
+        // Verify address through backend (secure)
+        async function verifyAddress(address) {
+            const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
+
+            try {
+                // Call secure Netlify function
+                const response = await fetch('/.netlify/functions/geocode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ address: addressString })
+                });
+
+                // Handle rate limiting
+                if (response.status === 429) {
+                    const data = await response.json();
+                    showError([data.error || 'Too many requests. Please wait and try again.']);
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'OK' && data.results && data.results.length > 0) {
+                    const result = data.results[0];
+
+                    if (result.partial_match) {
+                        showError(['Address appears to be incomplete. Please select a more specific address.']);
+                        return;
+                    }
+
+                    // Success!
+                    selectedAddress = address;
+                    showSuccess(address);
+                } else {
+                    showError(['Address could not be verified. Please try a different address.']);
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError(['Failed to verify address. Please check your connection and try again.']);
+            }
+        }
+
+        // Show error messages
+        function showError(errors) {
+            errorList.innerHTML = '';
+            errors.forEach(error => {
+                const li = document.createElement('li');
+                li.textContent = error;
+                errorList.appendChild(li);
+            });
+            errorMessage.classList.add('show');
+            successMessage.classList.remove('show');
+        }
+
+        // Show success message
+        function showSuccess(address) {
+            const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
+            addressPreview.textContent = addressString;
+            successMessage.classList.add('show');
+            errorMessage.classList.remove('show');
+        }
+
+        // Clear all messages
+        function clearMessages() {
+            errorMessage.classList.remove('show');
+            successMessage.classList.remove('show');
+        }
+
+        // Reset on autocomplete input change
+        autocompleteInput.addEventListener('input', function () {
+            if (selectedAddress) {
+                selectedAddress = null;
+                clearMessages();
+            }
+        });
+
+        // Initialize when Google Maps is ready
+        function waitForGoogleMaps() {
+            if (typeof google !== 'undefined' &&
+                typeof google.maps !== 'undefined' &&
+                typeof google.maps.places !== 'undefined') {
+                console.log('✅ Google Maps fully ready, initializing...');
+                initAutocomplete();
+            } else {
+                console.log('⏳ Waiting for Google Maps...');
+                setTimeout(waitForGoogleMaps, 100);
+            }
+        }
+
+        // Start initialization when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForGoogleMaps);
+        } else {
+            // Document already loaded
+            waitForGoogleMaps();
+        }
+
+        // Also try on window load as backup
+        window.addEventListener('load', function () {
+            console.log('🔄 Window load event fired');
+            if (autocomplete === null) {
+                console.log('⚠️ Autocomplete still null, retrying...');
+                waitForGoogleMaps();
+            }
+        });
+
+        // ==========================================
+        // PREMIUM CALCULATOR LOGIC
+        // ==========================================
+
+        // Model parameters extracted from trained Python model
+        const MODEL = {
+            coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
+            intercept: 1750.1500895522388,
+            scaler: {
+                mean: [3.5164179104477613, 2470.3014925373136, 442130.93919402984, 39.25970149253731],
+                scale: [1.1416925135517493, 851.6019470776408, 160375.7009750736, 20.13887648751911]
+            },
+            calibration: {
+                a: 2.2688583723656337,
+                b: -1806.3973226313328
+            }
+        };
+
+        function scaleFeatures(features) {
+            return features.map((value, i) => {
+                return (value - MODEL.scaler.mean[i]) / MODEL.scaler.scale[i];
             });
         }
 
-        // Calculator
-        document.getElementById('premiumForm').addEventListener('submit', e => {
-            e.preventDefault();
+        function predict(features) {
+            const scaledFeatures = scaleFeatures(features);
+            let prediction = MODEL.intercept;
+            for (let i = 0; i < scaledFeatures.length; i++) { prediction += MODEL.coefficients[i] * scaledFeatures[i]; } const
+                calibrated = MODEL.calibration.a * prediction + MODEL.calibration.b; return Math.max(0, calibrated);
+        } // Form
+        submission handler document.getElementById('premiumForm').addEventListener('submit', function (e) {
+            e.preventDefault(); document.getElementById('result').classList.remove('show');
+            document.getElementById('error').classList.remove('show'); const
+                bedrooms = parseFloat(document.getElementById('bedrooms').value); const
+                    sqft = parseFloat(document.getElementById('sqft').value); const
+                        coverage = parseFloat(document.getElementById('coverage').value); const
+                            age = parseFloat(document.getElementById('age').value); if (isNaN(bedrooms) || isNaN(sqft) || isNaN(coverage) ||
+                                isNaN(age)) { showCalcError('Please fill in all fields with valid numbers.'); return; } if (bedrooms < 1 ||
+                                    bedrooms > 10) {
+                showCalcError('Number of bedrooms must be between 1 and 10.');
+                return;
+            }
 
-            const bedrooms = +bedrooms.value;
-            const sqft = +sqft.value;
-            const coverage = +coverage.value;
-            const age = +age.value;
+            if (sqft < 500 || sqft > 10000) {
+                showCalcError('Square footage must be between 500 and 10,000.');
+                return;
+            }
 
-            const premium = Math.max(
-                0,
-                1750 + bedrooms * 60 + sqft * 0.1 + coverage * 0.0004 - age * 10
-            );
+            if (coverage < 50000 || coverage > 2000000) {
+                showCalcError('Coverage A must be between $50,000 and $2,000,000.');
+                return;
+            }
 
-            document.getElementById('premiumValue').textContent = premium.toFixed(2);
-            document.getElementById('result').classList.add('show');
-        });
-    </script>
+            if (age < 0 || age > 150) {
+                showCalcError('Age of home must be between 0 and 150 years.');
+                return;
+            }
 
+            const submitBtn = document.querySelector('.btn-calculate');
+            submitBtn.classList.add('loading');
+
+            setTimeout(() => {
+                try {
+                    const features = [bedrooms, sqft, coverage, age];
+                    const premium = predict(features);
+
+                    document.getElementById('premiumValue').textContent = premium.toFixed(2);
+                    document.getElementById('result').classList.add('show');
+
+                    if (window.innerWidth < 640) {
+                        document.getElementById('result').scrollIntoView({
+                            behavior: 'smooth'
+                            , block: 'nearest'
+                        });
+                    }
+                } catch (error) {
+                    showCalcError('An error occurred while calculating
+                        the premium.Please try again.'); console.error('Calculation error: ', error); } finally {
+                    submitBtn.classList.remove('loading');
+                }
+            }, 300);
+        }); function showCalcError(message) {
+            const
+            errorDiv = document.getElementById('error'); errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        } // Initialize when page loads window.addEventListener('load',
+                        initAutocomplete); </script>
 </body>
 
 </html>
