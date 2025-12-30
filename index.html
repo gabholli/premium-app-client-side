@@ -496,10 +496,6 @@
         // ADDRESS FORM LOGIC
         // ==========================================
 
-        // ==========================================
-        // ADDRESS FORM LOGIC - FIXED VERSION
-        // ==========================================
-
         let autocomplete = null;
         let selectedAddress = null;
 
@@ -512,70 +508,24 @@
 
         // Initialize Google Places Autocomplete
         function initAutocomplete() {
-            console.log('🚀 initAutocomplete starting...');
-
-            // Check if Google Maps is loaded
-            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
-                console.error('❌ Google Maps not loaded');
-                autocompleteInput.disabled = true;
-                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
+            if (!window.google || !window.google.maps) {
+                console.error('Google Maps not loaded');
                 showError(['Failed to load address search. Please refresh the page.']);
                 return;
             }
 
-            console.log('✅ Google Maps loaded');
+            autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
+                types: ['address'],
+                componentRestrictions: { country: 'us' }
+            });
 
-            // Check if Places library is loaded
-            if (typeof google.maps.places === 'undefined') {
-                console.error('❌ Places library not loaded');
-                autocompleteInput.disabled = true;
-                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
-                showError(['Failed to load Places library. Please refresh the page.']);
-                return;
-            }
-
-            console.log('✅ Places library loaded');
-
-            // Check if input element exists
-            if (!autocompleteInput) {
-                console.error('❌ Input element not found');
-                return;
-            }
-
-            console.log('✅ Input element found:', autocompleteInput);
-
-            // Create autocomplete instance
-            try {
-                autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
-                    types: ['address'],
-                    componentRestrictions: { country: 'us' }
-                });
-
-                console.log('✅ Autocomplete created successfully:', autocomplete);
-
-                // Add listener
-                autocomplete.addListener('place_changed', handlePlaceSelect);
-                console.log('✅ Listener added');
-
-                // Enable input
-                autocompleteInput.disabled = false;
-                autocompleteInput.placeholder = 'Start typing your address...';
-
-            } catch (error) {
-                console.error('❌ Error creating autocomplete:', error);
-                autocompleteInput.disabled = true;
-                autocompleteInput.placeholder = 'Address search error - please refresh';
-                showError(['Error initializing address search: ' + error.message]);
-            }
+            autocomplete.addListener('place_changed', handlePlaceSelect);
         }
 
         // Handle address selection from autocomplete
         async function handlePlaceSelect() {
-            console.log('🔍 Place selected');
             clearMessages();
-
             const place = autocomplete.getPlace();
-            console.log('Place data:', place);
 
             if (!place.address_components) {
                 showError(['Please select a valid address from the dropdown']);
@@ -584,7 +534,6 @@
 
             // Parse address components
             const address = parseAddressComponents(place.address_components);
-            console.log('Parsed address:', address);
 
             // Validate address has required fields
             const validation = validateAddress(address);
@@ -651,25 +600,20 @@
         }
 
         // Verify address through backend (secure)
+        // Replace the geocode verification section (around line 500-550) with this:
+
+        // Verify address directly using Google Geocoding API (frontend)
         async function verifyAddress(address) {
             const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}, ${address.country}`;
 
-            try {
-                // Call secure Netlify function
-                const response = await fetch('/.netlify/functions/geocode', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ address: addressString })
-                });
+            // Use the same API key that's already loaded for Places
+            const apiKey = 'AIzaSyBBZsTb7dsg3EQLMIFvS4Pt6xLk66J-5MQ'; // Replace with your single key
 
-                // Handle rate limiting
-                if (response.status === 429) {
-                    const data = await response.json();
-                    showError([data.error || 'Too many requests. Please wait and try again.']);
-                    return;
-                }
+            try {
+                // Call Google Geocoding API directly from frontend
+                const response = await fetch(
+                    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(addressString)}&key=${apiKey}`
+                );
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -688,6 +632,8 @@
                     // Success!
                     selectedAddress = address;
                     showSuccess(address);
+                } else if (data.status === 'OVER_QUERY_LIMIT') {
+                    showError(['Too many requests. Please wait a moment and try again.']);
                 } else {
                     showError(['Address could not be verified. Please try a different address.']);
                 }
@@ -697,72 +643,42 @@
             }
         }
 
-        // Show error messages
-        function showError(errors) {
-            errorList.innerHTML = '';
-            errors.forEach(error => {
-                const li = document.createElement('li');
-                li.textContent = error;
-                errorList.appendChild(li);
-            });
-            errorMessage.classList.add('show');
-            successMessage.classList.remove('show');
-        }
-
-        // Show success message
-        function showSuccess(address) {
-            const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
-            addressPreview.textContent = addressString;
-            successMessage.classList.add('show');
-            errorMessage.classList.remove('show');
-        }
-
-        // Clear all messages
-        function clearMessages() {
-            errorMessage.classList.remove('show');
-            successMessage.classList.remove('show');
-        }
-
-        // Reset on autocomplete input change
-        autocompleteInput.addEventListener('input', function () {
-            if (selectedAddress) {
-                selectedAddress = null;
-                clearMessages();
-            }
-        });
-
-        // Initialize when Google Maps is ready
-        function waitForGoogleMaps() {
-            if (typeof google !== 'undefined' &&
-                typeof google.maps !== 'undefined' &&
-                typeof google.maps.places !== 'undefined') {
-                console.log('✅ Google Maps fully ready, initializing...');
-                initAutocomplete();
-            } else {
-                console.log('⏳ Waiting for Google Maps...');
-                setTimeout(waitForGoogleMaps, 100);
-            }
-        }
-
-        // Start initialization when page loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', waitForGoogleMaps);
-        } else {
-            // Document already loaded
-            waitForGoogleMaps();
-        }
-
-        // Also try on window load as backup
-        window.addEventListener('load', function () {
-            console.log('🔄 Window load event fired');
-            if (autocomplete === null) {
-                console.log('⚠️ Autocomplete still null, retrying...');
-                waitForGoogleMaps();
-            }
-        });
-
         // Update the API key in the script tag (around line 722):
         // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_SINGLE_API_KEY_HERE&libraries=places"></script>
+
+    // Show error messages
+    function showError(errors) {
+    errorList.innerHTML = '';
+    errors.forEach(error => {
+    const li = document.createElement('li');
+    li.textContent = error;
+    errorList.appendChild(li);
+    });
+    errorMessage.classList.add('show');
+    successMessage.classList.remove('show');
+    }
+
+    // Show success message
+    function showSuccess(address) {
+    const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
+    addressPreview.textContent = addressString;
+    successMessage.classList.add('show');
+    errorMessage.classList.remove('show');
+    }
+
+    // Clear all messages
+    function clearMessages() {
+    errorMessage.classList.remove('show');
+    successMessage.classList.remove('show');
+    }
+
+    // Reset on autocomplete input change
+    autocompleteInput.addEventListener('input', function () {
+    if (selectedAddress) {
+    selectedAddress = null;
+    clearMessages();
+    }
+    });
 
     // ==========================================
     // PREMIUM CALCULATOR LOGIC
