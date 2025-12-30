@@ -462,6 +462,10 @@
         // ADDRESS FORM LOGIC
         // ==========================================
 
+        // ==========================================
+        // ADDRESS FORM LOGIC - FIXED VERSION
+        // ==========================================
+
         let autocomplete = null;
         let selectedAddress = null;
 
@@ -474,24 +478,70 @@
 
         // Initialize Google Places Autocomplete
         function initAutocomplete() {
-            if (!window.google || !window.google.maps) {
-                console.error('Google Maps not loaded');
+            console.log('🚀 initAutocomplete starting...');
+
+            // Check if Google Maps is loaded
+            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
+                console.error('❌ Google Maps not loaded');
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
                 showError(['Failed to load address search. Please refresh the page.']);
                 return;
             }
 
-            autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
-                types: ['address'],
-                componentRestrictions: { country: 'us' }
-            });
+            console.log('✅ Google Maps loaded');
 
-            autocomplete.addListener('place_changed', handlePlaceSelect);
+            // Check if Places library is loaded
+            if (typeof google.maps.places === 'undefined') {
+                console.error('❌ Places library not loaded');
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search unavailable - please refresh';
+                showError(['Failed to load Places library. Please refresh the page.']);
+                return;
+            }
+
+            console.log('✅ Places library loaded');
+
+            // Check if input element exists
+            if (!autocompleteInput) {
+                console.error('❌ Input element not found');
+                return;
+            }
+
+            console.log('✅ Input element found:', autocompleteInput);
+
+            // Create autocomplete instance
+            try {
+                autocomplete = new google.maps.places.Autocomplete(autocompleteInput, {
+                    types: ['address'],
+                    componentRestrictions: { country: 'us' }
+                });
+
+                console.log('✅ Autocomplete created successfully:', autocomplete);
+
+                // Add listener
+                autocomplete.addListener('place_changed', handlePlaceSelect);
+                console.log('✅ Listener added');
+
+                // Enable input
+                autocompleteInput.disabled = false;
+                autocompleteInput.placeholder = 'Start typing your address...';
+
+            } catch (error) {
+                console.error('❌ Error creating autocomplete:', error);
+                autocompleteInput.disabled = true;
+                autocompleteInput.placeholder = 'Address search error - please refresh';
+                showError(['Error initializing address search: ' + error.message]);
+            }
         }
 
         // Handle address selection from autocomplete
         async function handlePlaceSelect() {
+            console.log('🔍 Place selected');
             clearMessages();
+
             const place = autocomplete.getPlace();
+            console.log('Place data:', place);
 
             if (!place.address_components) {
                 showError(['Please select a valid address from the dropdown']);
@@ -500,6 +550,7 @@
 
             // Parse address components
             const address = parseAddressComponents(place.address_components);
+            console.log('Parsed address:', address);
 
             // Validate address has required fields
             const validation = validateAddress(address);
@@ -600,7 +651,7 @@
                         return;
                     }
 
-                    // Success! Show message
+                    // Success!
                     selectedAddress = address;
                     showSuccess(address);
                 } else {
@@ -646,6 +697,35 @@
             }
         });
 
+        // Initialize when Google Maps is ready
+        function waitForGoogleMaps() {
+            if (typeof google !== 'undefined' &&
+                typeof google.maps !== 'undefined' &&
+                typeof google.maps.places !== 'undefined') {
+                console.log('✅ Google Maps fully ready, initializing...');
+                initAutocomplete();
+            } else {
+                console.log('⏳ Waiting for Google Maps...');
+                setTimeout(waitForGoogleMaps, 100);
+            }
+        }
+
+        // Start initialization when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', waitForGoogleMaps);
+        } else {
+            // Document already loaded
+            waitForGoogleMaps();
+        }
+
+        // Also try on window load as backup
+        window.addEventListener('load', function () {
+            console.log('🔄 Window load event fired');
+            if (autocomplete === null) {
+                console.log('⚠️ Autocomplete still null, retrying...');
+                waitForGoogleMaps();
+            }
+        });
         // ==========================================
         // PREMIUM CALCULATOR LOGIC
         // ==========================================
