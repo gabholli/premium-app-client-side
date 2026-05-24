@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Home Insurance Premium Calculator</title>
+    <title>Get My Quote — MindHome</title>
     <style>
         * {
             margin: 0;
@@ -20,65 +20,7 @@
             padding: 20px;
         }
 
-        /* ========================================== */
-        /* GO BACK BUTTON */
-        /* ========================================== */
-        .back-button-wrapper {
-            max-width: 700px;
-            margin: 0 auto 1rem auto;
-        }
-
-        .btn-go-back {
-            padding: 12px 24px;
-            background-color: rgba(255, 255, 255, 0.95);
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-go-back:hover {
-            background-color: white;
-            transform: translateX(-3px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-go-back:active {
-            transform: translateX(-1px);
-        }
-
-        .btn-wizard {
-            padding: 12px 24px;
-            background-color: #5bc0be;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            color: #062c43;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(91, 192, 190, 0.3);
-        }
-        .btn-wizard:hover {
-            background-color: #4aa9a7;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(91, 192, 190, 0.4);
-        }
-
-        /* ========================================== */
-        /* MAIN CONTAINER */
-        /* ========================================== */
+        /* ── Main container ── */
         .main-container {
             background: #1c2541;
             border-radius: 20px;
@@ -92,42 +34,187 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 2rem;
+            gap: 1.5rem;
             margin-bottom: 1.5em;
         }
 
         .main-title {
-            margin-bottom: 10px;
             font-size: 28px;
             text-align: center;
             color: #e0e6f1;
+            font-weight: 700;
         }
 
-        .subtitle {
-            text-align: center;
+        /* ── Step progress bar ── */
+        .step-bar {
+            display: flex;
+            align-items: center;
             margin-bottom: 30px;
-            font-size: 14px;
-            color: #e0e6f1;
         }
 
-        /* ========================================== */
-        /* ADDRESS SECTION */
-        /* ========================================== */
-        .address-section {
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid rgba(91, 192, 190, 0.2);
+        .step-dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid rgba(91, 192, 190, 0.25);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: rgba(224, 230, 241, 0.35);
+            flex-shrink: 0;
+            transition: all 0.3s;
         }
 
+        .step-dot.active {
+            border-color: #5bc0be;
+            background: #5bc0be;
+            color: #062c43;
+        }
+
+        .step-dot.done {
+            border-color: #5bc0be;
+            background: rgba(91, 192, 190, 0.18);
+            color: #5bc0be;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(91, 192, 190, 0.18);
+            transition: background 0.3s;
+        }
+
+        .step-line.done {
+            background: #5bc0be;
+        }
+
+        /* ── Section headings ── */
         .section-title {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
             color: #5bc0be;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .section-sub {
+            font-size: 14px;
+            color: #a0a6b1;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* ── Wizard page visibility ── */
+        .q-page {
+            display: none;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .q-page.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Option cards (list layout) ── */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 20px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
+        .opt-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(224, 230, 241, 0.1);
+            border-radius: 10px;
+            padding: 15px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .opt-card:hover {
+            border-color: rgba(91, 192, 190, 0.45);
+            background: rgba(91, 192, 190, 0.05);
+        }
+
+        .opt-card.selected {
+            border-color: #5bc0be;
+            background: rgba(91, 192, 190, 0.1);
+        }
+
+        .opt-emoji {
+            font-size: 22px;
+            width: 32px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .opt-text {
+            flex: 1;
+        }
+
+        .opt-text h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #e0e6f1;
+            margin-bottom: 2px;
+        }
+
+        .opt-text p {
+            font-size: 12px;
+            color: #a0a6b1;
+            line-height: 1.4;
+        }
+
+        .opt-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid rgba(91, 192, 190, 0.3);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .opt-card.selected .opt-radio {
+            border-color: #5bc0be;
+            background: #5bc0be;
+        }
+
+        .opt-card.selected .opt-radio::after {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #062c43;
+            display: block;
+        }
+
+        /* ── Address autocomplete ── */
+        .addr-wrap {
+            position: relative;
+            margin-bottom: 6px;
         }
 
         .form-label {
@@ -138,22 +225,45 @@
             color: #e0e6f1;
         }
 
-        .form-input {
+        .form-label .optional {
+            font-weight: 400;
+            color: #a0a6b1;
+            font-size: 13px;
+        }
+
+        .form-input,
+        .form-select {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             font-size: max(16px, 1rem);
+            font-family: inherit;
             transition: all 0.3s ease;
             background: #f9f9f9;
             color: #333;
+            outline: none;
         }
 
-        .form-input:focus {
-            outline: none;
+        .form-input:focus,
+        .form-select:focus {
             background: white;
             box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
             border-color: #5bc0be;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-color: #f9f9f9;
+            padding-right: 38px;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            background-color: white;
         }
 
         .hint {
@@ -162,52 +272,13 @@
             margin-top: 4px;
         }
 
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
-            display: none;
-        }
-
-        .message.show {
-            display: block;
-            animation: slideIn 0.3s ease;
-        }
-
-        .error-message {
-            background-color: rgba(255, 100, 100, 0.1);
-            border: 2px solid rgba(255, 100, 100, 0.3);
-        }
-
-        .error-message ul {
-            margin-left: 1.25rem;
-            color: #ff6464;
-        }
-
-        .success-message {
-            background-color: rgba(91, 192, 190, 0.1);
-            border: 2px solid rgba(91, 192, 190, 0.3);
-        }
-
-        .success-message p {
-            color: #5bc0be;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .success-message .address-preview {
-            color: #e0e6f1;
-            font-size: 0.875rem;
-        }
-
-        /* Suggestions dropdown */
         .suggestions-dropdown {
             position: absolute;
             background: white;
             border-radius: 10px;
             margin-top: 4px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            max-height: 300px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+            max-height: 280px;
             overflow-y: auto;
             display: none;
             z-index: 9999;
@@ -220,7 +291,7 @@
             border-bottom: 1px solid #f0f0f0;
             color: #333;
             font-size: 14px;
-            transition: background-color 0.2s ease;
+            transition: background-color 0.2s;
         }
 
         .suggestion-item:last-child {
@@ -228,136 +299,245 @@
         }
 
         .suggestion-item:hover {
-            background-color: #f5f5f5;
+            background: #f5f5f5;
         }
 
-        /* ========================================== */
-        /* CALCULATOR SECTION */
-        /* ========================================== */
-        .calculator-section {
-            /* Always visible */
+        .msg {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
         }
 
-        input[type="number"] {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
+        .msg.show {
+            display: block;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .msg-error {
+            background: rgba(255, 100, 100, 0.1);
+            border: 2px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .msg-error ul {
+            margin-left: 1.25rem;
+            color: #ff6464;
+            font-size: 14px;
+        }
+
+        .msg-success {
+            background: rgba(91, 192, 190, 0.1);
+            border: 2px solid rgba(91, 192, 190, 0.3);
+        }
+
+        .msg-success p {
+            color: #5bc0be;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .msg-success .addr-preview {
+            color: #e0e6f1;
+            font-size: 13px;
+        }
+
+        /* ── Icon grid (visual tile selections) ── */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .icon-tile {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(224, 230, 241, 0.1);
             border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-            color: #333;
+            padding: 14px 8px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            user-select: none;
         }
 
-        input[type="number"]:focus {
-            outline: none;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
+        .icon-tile:hover {
+            border-color: rgba(91, 192, 190, 0.45);
+            background: rgba(91, 192, 190, 0.05);
+        }
+
+        .icon-tile.selected {
             border-color: #5bc0be;
+            background: rgba(91, 192, 190, 0.1);
         }
 
-        input[type="number"]:hover {
-            border-color: #c0c0c0;
+        .icon-tile-emoji {
+            font-size: 26px;
+            line-height: 1;
         }
 
-        .btn-calculate {
-            width: 100%;
+        .icon-tile-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #a0a6b1;
+            line-height: 1.25;
+        }
+
+        .icon-tile.selected .icon-tile-label {
+            color: #5bc0be;
+        }
+
+        /* ── Toggle pill buttons ── */
+        .sub-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #a0a6b1;
+            margin-bottom: 8px;
+            margin-top: 2px;
+        }
+
+        .tog-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .tog {
+            padding: 9px 18px;
+            border-radius: 8px;
+            border: 2px solid rgba(224, 230, 241, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+            font-size: 14px;
+            font-weight: 600;
+            color: #a0a6b1;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-family: inherit;
+            user-select: none;
+        }
+
+        .tog:hover {
+            border-color: rgba(91, 192, 190, 0.4);
+            color: #e0e6f1;
+        }
+
+        .tog.selected {
+            border-color: #5bc0be;
+            background: rgba(91, 192, 190, 0.12);
+            color: #5bc0be;
+        }
+
+        /* ── Field helpers ── */
+        .field-group {
+            margin-bottom: 16px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .field-error {
+            font-size: 12px;
+            color: #ff6464;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+        /* ── Dividers ── */
+        .divider {
+            height: 1px;
+            background: rgba(91, 192, 190, 0.15);
+            margin: 22px 0;
+        }
+
+        .sub-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #5bc0be;
+            margin-bottom: 12px;
+        }
+
+        /* ── Nav buttons ── */
+        .nav-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-back {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(224, 230, 241, 0.15);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #e0e6f1;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-back:hover {
+            border-color: rgba(91, 192, 190, 0.5);
+            color: #5bc0be;
+        }
+
+        .btn-next {
+            flex: 1;
             padding: 14px 24px;
             border: none;
             border-radius: 10px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-family: inherit;
             background: #5bc0be;
             color: #062c43;
-            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(91, 192, 190, 0.25);
         }
 
-        .btn-calculate:hover {
+        .btn-next:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(91, 192, 190, 0.3);
+            box-shadow: 0 8px 20px rgba(91, 192, 190, 0.35);
         }
 
-        .btn-calculate:active {
-            transform: translateY(0);
+        .btn-next:disabled {
+            background: rgba(91, 192, 190, 0.22);
+            color: rgba(6, 44, 67, 0.45);
+            box-shadow: none;
+            cursor: default;
+            transform: none;
         }
 
-        /* ========================================== */
-        /* RESULT */
-        /* ========================================== */
-        .result {
-            margin-top: 30px;
-            padding: 24px;
-            background: rgba(91, 192, 190, 0.1);
-            border: 2px solid #5bc0be;
-            border-radius: 12px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .result.show {
-            display: block;
-        }
-
-        .result-label {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #e0e6f1;
-        }
-
-        .result-value {
-            font-size: 36px;
-            font-weight: bold;
-            color: #5bc0be;
-        }
-
-        .result-currency {
-            font-size: 24px;
-        }
-
-        .error {
-            background: rgba(255, 100, 100, 0.1);
-            color: #ff6464;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-            font-size: 14px;
-            border: 2px solid rgba(255, 100, 100, 0.3);
-        }
-
-        .error.show {
-            display: block;
-        }
-
-        /* Loading state */
-        .btn-calculate.loading {
+        .btn-next.loading {
             position: relative;
             color: transparent;
         }
 
-        .btn-calculate.loading::after {
+        .btn-next.loading::after {
             content: "";
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             top: 50%;
             left: 50%;
-            margin-left: -10px;
-            margin-top: -10px;
+            margin-left: -9px;
+            margin-top: -9px;
             border: 3px solid rgba(6, 44, 67, 0.3);
             border-radius: 50%;
             border-top-color: #062c43;
@@ -370,9 +550,138 @@
             }
         }
 
-        /* ========================================== */
-        /* RESPONSIVE DESIGN */
-        /* ========================================== */
+        .btn-full {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            background: rgba(91, 192, 190, 0.12);
+            border: 2px solid rgba(91, 192, 190, 0.4);
+            color: #5bc0be;
+            transition: all 0.3s ease;
+        }
+
+        .btn-full:hover {
+            background: rgba(91, 192, 190, 0.22);
+        }
+
+        /* ── Summary ── */
+        .summary-section {
+            margin-bottom: 22px;
+        }
+
+        .summary-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #5bc0be;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(91, 192, 190, 0.2);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .s-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .s-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .s-item-label {
+            font-size: 11px;
+            color: #a0a6b1;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 3px;
+        }
+
+        .s-item-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e0e6f1;
+        }
+
+        /* ── Success ── */
+        .success-screen {
+            text-align: center;
+            padding: 16px 0 8px;
+        }
+
+        .success-icon-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(91, 192, 190, 0.15);
+            border: 2px solid rgba(91, 192, 190, 0.4);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            line-height: 1;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #e0e6f1;
+            margin-bottom: 8px;
+        }
+
+        .success-sub {
+            font-size: 14px;
+            color: #a0a6b1;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .ref-box {
+            background: rgba(91, 192, 190, 0.08);
+            border: 2px solid rgba(91, 192, 190, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .ref-box-label {
+            font-size: 12px;
+            color: #5bc0be;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 4px;
+        }
+
+        .ref-box-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #e0e6f1;
+        }
+
+        .disclaimer {
+            font-size: 11px;
+            color: rgba(160, 166, 177, 0.6);
+            text-align: center;
+            margin-top: 18px;
+            line-height: 1.6;
+        }
+
         @media (max-width: 640px) {
             body {
                 padding: 10px;
@@ -383,175 +692,861 @@
             }
 
             .main-title {
-                font-size: 24px;
+                font-size: 22px;
             }
 
-            .result-value {
-                font-size: 28px;
+            .field-row {
+                grid-template-columns: 1fr;
             }
 
-            .heading-container {
-                flex-direction: column;
-                row-gap: 0.5em;
-                margin-bottom: 0;
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .icon-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
         @media (max-width: 400px) {
             .main-container {
-                padding: 20px;
+                padding: 18px;
             }
         }
     </style>
 </head>
 
 <body>
-
-    <!-- ========================================== -->
-    <!-- GO BACK BUTTON -->
-    <!-- ========================================== -->
-    <div class="back-button-wrapper" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-        <button onclick="goBack()" class="btn-go-back" type="button">
-            ← Go Back
-        </button>
-        <a href="questionnaire.html" class="btn-wizard">
-            ✨ Get My Estimate →
-        </a>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MAIN CONTAINER -->
-    <!-- ========================================== -->
     <div class="main-container">
-        <!-- Header -->
+
         <div class="heading-container">
-            <img src="/mindhomeco_logo.jpg" alt="Mindhome logo" />
-            <h1 class="main-title">Home Insurance Premium Calculator</h1>
+            <img src="/mindhomeco_logo.jpg" alt="MindHome logo" style="height:48px;width:auto;">
+            <h1 class="main-title">Get My Quote</h1>
         </div>
 
-        <!-- Address Section -->
-        <div class="address-section">
-            <h2 class="section-title">Property Address</h2>
+        <!-- Step progress bar: 9 steps -->
+        <div class="step-bar" id="stepBar">
+            <div class="step-dot active" id="dot-1">1</div>
+            <div class="step-line" id="line-1"></div>
+            <div class="step-dot" id="dot-2">2</div>
+            <div class="step-line" id="line-2"></div>
+            <div class="step-dot" id="dot-3">3</div>
+            <div class="step-line" id="line-3"></div>
+            <div class="step-dot" id="dot-4">4</div>
+            <div class="step-line" id="line-4"></div>
+            <div class="step-dot" id="dot-5">5</div>
+            <div class="step-line" id="line-5"></div>
+            <div class="step-dot" id="dot-6">6</div>
+            <div class="step-line" id="line-6"></div>
+            <div class="step-dot" id="dot-7">7</div>
+            <div class="step-line" id="line-7"></div>
+            <div class="step-dot" id="dot-8">8</div>
+            <div class="step-line" id="line-8"></div>
+            <div class="step-dot" id="dot-9">9</div>
+        </div>
 
-            <div class="form-group" style="position: relative;">
-                <label class="form-label" for="autocomplete">Search Address</label>
-                <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address..."
+        <!-- ══════════════════════════════════
+         STEP 1 — Property Address
+    ══════════════════════════════════ -->
+        <div class="q-page active" id="q1">
+            <h2 class="section-title">What is the property address?</h2>
+            <p class="section-sub">Search for the home you'd like to insure. We use this to verify the property
+                location.</p>
+
+            <div class="addr-wrap">
+                <label class="form-label" for="autocomplete">Search address</label>
+                <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address…"
                     autocomplete="off">
                 <p class="hint">Type your address and select from the dropdown</p>
                 <div id="suggestionsDropdown" class="suggestions-dropdown"></div>
             </div>
 
-            <div id="errorMessage" class="message error-message">
+            <div id="errorMessage" class="msg msg-error">
                 <ul id="errorList"></ul>
             </div>
-
-            <div id="successMessage" class="message success-message">
+            <div id="successMessage" class="msg msg-success">
                 <p>✓ Address verified successfully</p>
-                <div class="address-preview" id="addressPreview"></div>
+                <div class="addr-preview" id="addressPreview"></div>
+            </div>
+
+            <div class="nav-row" style="margin-top:20px;">
+                <button class="btn-next" id="next-1" onclick="goTo(2)" disabled>Continue →</button>
             </div>
         </div>
 
-        <!-- Calculator Section -->
-        <div class="calculator-section">
-            <h2 class="section-title">Property Details</h2>
+        <!-- ══════════════════════════════════
+         STEP 2 — Coverage Type
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q2">
+            <h2 class="section-title">What type of coverage are you looking for?</h2>
+            <p class="section-sub">Choose the level of protection that fits your needs and budget.</p>
 
-            <form id="premiumForm">
-                <div class="form-group">
-                    <label class="form-label" for="bedrooms">Number of Bedrooms</label>
-                    <input type="number" id="bedrooms" name="bedrooms" min="1" max="10" step="1" required>
+            <div class="options-list">
+                <div class="opt-card" onclick="pick('coverage','Basic',this)">
+                    <span class="opt-emoji">✅</span>
+                    <div class="opt-text">
+                        <h3>Basic</h3>
+                        <p>More affordable coverage based on local requirements.</p>
+                    </div>
+                    <div class="opt-radio"></div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="sqft">Square Footage</label>
-                    <input type="number" id="sqft" name="sqft" min="500" max="10000" step="100" required>
+                <div class="opt-card" onclick="pick('coverage','Better',this)">
+                    <span class="opt-emoji">⚖️</span>
+                    <div class="opt-text">
+                        <h3>Somewhere in between</h3>
+                        <p>Comprehensive coverage with a few extras.</p>
+                    </div>
+                    <div class="opt-radio"></div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="coverage">Coverage A (Property Value)</label>
-                    <input type="number" id="coverage" name="coverage" min="50000" max="2000000" step="10000" required>
+                <div class="opt-card" onclick="pick('coverage','Enhanced',this)">
+                    <span class="opt-emoji">🏅</span>
+                    <div class="opt-text">
+                        <h3>Enhanced</h3>
+                        <p>Personalized coverage options for your home.</p>
+                    </div>
+                    <div class="opt-radio"></div>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="age">Age of Home (years)</label>
-                    <input type="number" id="age" name="age" min="0" max="150" step="1" required>
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(1)">← Back</button>
+                <button class="btn-next" id="next-2" onclick="goTo(3)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 3 — Property Type
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q3">
+            <h2 class="section-title">What type of property is it?</h2>
+            <p class="section-sub">Select the type of property you'd like to insure.</p>
+
+            <div class="options-list">
+                <div class="opt-card" onclick="pick('propertyType','House',this)">
+                    <span class="opt-emoji">🏠</span>
+                    <div class="opt-text">
+                        <h3>House</h3>
+                        <p>A single-family home, townhouse, or duplex you own — you are listed on the deed.</p>
+                    </div>
+                    <div class="opt-radio"></div>
                 </div>
+                <div class="opt-card" onclick="pick('propertyType','Condo',this)">
+                    <span class="opt-emoji">🏢</span>
+                    <div class="opt-text">
+                        <h3>Condo</h3>
+                        <p>A multi-family building or complex in which you own a unit.</p>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+            </div>
 
-                <button type="submit" class="btn-calculate">Calculate Premium</button>
-            </form>
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(2)">← Back</button>
+                <button class="btn-next" id="next-3" onclick="goTo(4)" disabled>Continue →</button>
+            </div>
+        </div>
 
-            <div id="error" class="error"></div>
+        <!-- ══════════════════════════════════
+         STEP 4 — Occupants
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q4">
+            <h2 class="section-title">Who is living in the property?</h2>
+            <p class="section-sub">Tell us about the current or intended occupancy status.</p>
 
-            <div id="result" class="result">
-                <div class="result-label">Estimated Annual Premium</div>
-                <div class="result-value">
-                    <span class="result-currency">$</span><span id="premiumValue">0.00</span>
+            <div class="options-list">
+                <div class="opt-card" onclick="pick('occupant','Me',this)">
+                    <span class="opt-emoji">🧑</span>
+                    <div class="opt-text">
+                        <h3>Me</h3>
+                        <p>I am the owner of this house and I live in it full time.</p>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+                <div class="opt-card" onclick="pick('occupant','Renter',this)">
+                    <span class="opt-emoji">📋</span>
+                    <div class="opt-text">
+                        <h3>Renter</h3>
+                        <p>This house is rented out to tenants on a long-term basis (usually a year), or will be rented
+                            in the next 30 days.</p>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+                <div class="opt-card" onclick="pick('occupant','Vacant',this)">
+                    <span class="opt-emoji">🔨</span>
+                    <div class="opt-text">
+                        <h3>Vacant, or will be renovated</h3>
+                        <p>This home is vacant with no contents, or has planned renovations that will make the home
+                            unoccupied.</p>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+            </div>
+
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(3)">← Back</button>
+                <button class="btn-next" id="next-4" onclick="goTo(5)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 5 — Policy Start
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q5">
+            <h2 class="section-title">When do you want to start your policy?</h2>
+            <p class="section-sub">This helps us find the most relevant options for your timeline.</p>
+
+            <div class="options-list">
+                <div class="opt-card" onclick="pick('policyStart','This week',this)">
+                    <span class="opt-emoji">📅</span>
+                    <div class="opt-text">
+                        <h3>This week</h3>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+                <div class="opt-card" onclick="pick('policyStart','A few weeks from now',this)">
+                    <span class="opt-emoji">📆</span>
+                    <div class="opt-text">
+                        <h3>A few weeks from now</h3>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+                <div class="opt-card" onclick="pick('policyStart','In 1–2 months',this)">
+                    <span class="opt-emoji">🗓️</span>
+                    <div class="opt-text">
+                        <h3>A couple of months from now</h3>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+                <div class="opt-card" onclick="pick('policyStart','Just browsing',this)">
+                    <span class="opt-emoji">🔍</span>
+                    <div class="opt-text">
+                        <h3>Just browsing</h3>
+                    </div>
+                    <div class="opt-radio"></div>
+                </div>
+            </div>
+
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(4)">← Back</button>
+                <button class="btn-next" id="next-5" onclick="goTo(6)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 6 — Personal Info
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q6">
+            <h2 class="section-title">Whose name will be on this policy?</h2>
+            <p class="section-sub">We need a few more details in order to personalise your quote.</p>
+
+            <div class="field-row field-group">
+                <div>
+                    <label class="form-label" for="firstName">First name</label>
+                    <input class="form-input" id="firstName" type="text" placeholder="e.g. Daniel"
+                        oninput="validatePersonal()">
+                    <div class="field-error" id="err-firstName">First name is required</div>
+                </div>
+                <div>
+                    <label class="form-label" for="middleName">Middle name <span
+                            class="optional">(optional)</span></label>
+                    <input class="form-input" id="middleName" type="text" placeholder="e.g. B">
+                </div>
+            </div>
+            <div class="field-group">
+                <label class="form-label" for="lastName">Last name</label>
+                <input class="form-input" id="lastName" type="text" placeholder="e.g. Turgel"
+                    oninput="validatePersonal()">
+                <div class="field-error" id="err-lastName">Last name is required</div>
+            </div>
+            <div class="field-group">
+                <label class="form-label" for="dob">Date of birth</label>
+                <input class="form-input" id="dob" type="text" placeholder="MM/DD/YYYY" maxlength="10"
+                    oninput="formatDOB(this);validatePersonal()">
+                <div class="field-error" id="err-dob">Please enter a valid date (MM/DD/YYYY)</div>
+            </div>
+            <div class="field-group">
+                <label class="form-label" for="email">Email address</label>
+                <input class="form-input" id="email" type="email" placeholder="e.g. dturgel@gmail.com"
+                    oninput="validatePersonal()">
+                <div class="field-error" id="err-email">Please enter a valid email address</div>
+            </div>
+            <div class="field-group">
+                <label class="form-label" for="phone">Phone number</label>
+                <input class="form-input" id="phone" type="tel" placeholder="(718) 000-0000" maxlength="14"
+                    oninput="formatPhone(this);validatePersonal()">
+                <div class="field-error" id="err-phone">Please enter a valid 10-digit phone number</div>
+            </div>
+
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(5)">← Back</button>
+                <button class="btn-next" id="next-6" onclick="goTo(7)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 7 — Home Details
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q7">
+            <h2 class="section-title">We need a few more details</h2>
+            <p class="section-sub">Just double-check and fill in the blanks to help us provide quotes that fit your
+                needs.</p>
+
+            <div class="sub-section-title">Type of home</div>
+            <div class="icon-grid" id="homeTypeGrid">
+                <div class="icon-tile" onclick="pickTile('homeType','Detached home',this)">
+                    <span class="icon-tile-emoji">🏠</span><span class="icon-tile-label">Detached home</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('homeType','Attached rowhouse – middle',this)">
+                    <span class="icon-tile-emoji">🏘️</span><span class="icon-tile-label">Attached rowhouse –
+                        middle</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('homeType','Attached rowhouse – end',this)">
+                    <span class="icon-tile-emoji">🏚️</span><span class="icon-tile-label">Attached rowhouse – end</span>
+                </div>
+            </div>
+
+            <div class="field-row field-group">
+                <div>
+                    <label class="form-label" for="yearBuilt">Year built</label>
+                    <input class="form-input" id="yearBuilt" type="number" min="1800" max="2025" placeholder="e.g. 1973"
+                        oninput="validateHome()">
+                </div>
+                <div>
+                    <label class="form-label" for="sqft">Square footage</label>
+                    <input class="form-input" id="sqft" type="number" min="100" max="20000" placeholder="e.g. 2714"
+                        oninput="validateHome()">
+                </div>
+            </div>
+
+            <div class="field-group">
+                <div class="sub-label">Number of bedrooms</div>
+                <div class="tog-row" id="bedroomsGroup">
+                    <div class="tog" onclick="pickToggle('bedrooms','1',this,'bedroomsGroup')">1</div>
+                    <div class="tog" onclick="pickToggle('bedrooms','2',this,'bedroomsGroup')">2</div>
+                    <div class="tog" onclick="pickToggle('bedrooms','3',this,'bedroomsGroup')">3</div>
+                    <div class="tog" onclick="pickToggle('bedrooms','4',this,'bedroomsGroup')">4</div>
+                    <div class="tog" onclick="pickToggle('bedrooms','5+',this,'bedroomsGroup')">5+</div>
+                </div>
+            </div>
+            <div class="field-group">
+                <div class="sub-label">Stories</div>
+                <div class="tog-row" id="storiesGroup">
+                    <div class="tog" onclick="pickToggle('stories','1',this,'storiesGroup')">1</div>
+                    <div class="tog" onclick="pickToggle('stories','1.5',this,'storiesGroup')">1.5</div>
+                    <div class="tog" onclick="pickToggle('stories','2',this,'storiesGroup')">2</div>
+                    <div class="tog" onclick="pickToggle('stories','3+',this,'storiesGroup')">3+</div>
+                </div>
+            </div>
+            <div class="field-group">
+                <div class="sub-label">Swimming pool</div>
+                <div class="tog-row" id="poolGroup">
+                    <div class="tog" onclick="pickToggle('pool','No',this,'poolGroup')">No</div>
+                    <div class="tog" onclick="pickToggle('pool','Yes',this,'poolGroup')">Yes</div>
+                </div>
+            </div>
+
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(6)">← Back</button>
+                <button class="btn-next" id="next-7" onclick="goTo(8)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 8 — Foundation & Walls
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q8">
+            <h2 class="section-title">Let's talk about your foundation and walls</h2>
+            <p class="section-sub">This will help us get more accurate quotes for you.</p>
+
+            <div class="sub-section-title">Exterior wall finish</div>
+            <div class="icon-grid" id="wallFinishGrid">
+                <div class="icon-tile" onclick="pickTile('wallFinish','Metal siding',this)">
+                    <span class="icon-tile-emoji">🪟</span><span class="icon-tile-label">Metal siding</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Vinyl siding',this)">
+                    <span class="icon-tile-emoji">🟦</span><span class="icon-tile-label">Vinyl siding</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Wood siding',this)">
+                    <span class="icon-tile-emoji">🪵</span><span class="icon-tile-label">Wood siding</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Cement fiber siding',this)">
+                    <span class="icon-tile-emoji">🧱</span><span class="icon-tile-label">Cement fiber siding</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Synthetic stucco',this)">
+                    <span class="icon-tile-emoji">🔲</span><span class="icon-tile-label">Synthetic stucco</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Masonry stucco',this)">
+                    <span class="icon-tile-emoji">🟫</span><span class="icon-tile-label">Masonry stucco</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Brick veneer',this)">
+                    <span class="icon-tile-emoji">🏚</span><span class="icon-tile-label">Brick veneer</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('wallFinish','Other',this)">
+                    <span class="icon-tile-emoji">···</span><span class="icon-tile-label">Other</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label class="form-label" for="wallStructure">Exterior wall structure</label>
+                <select class="form-select" id="wallStructure"
+                    onchange="answers.wallStructure=this.value;validateWalls()">
+                    <option value="">Select structure…</option>
+                    <option>Wood framing</option>
+                    <option>Light gauge steel framing</option>
+                    <option>Solid concrete or concrete block</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label class="form-label" for="foundationType">Foundation type</label>
+                <select class="form-select" id="foundationType"
+                    onchange="answers.foundationType=this.value;validateWalls()">
+                    <option value="">Select foundation…</option>
+                    <option>Crawlspace</option>
+                    <option>Full basement</option>
+                    <option>Concrete slab</option>
+                    <option>Piers or pilings</option>
+                </select>
+            </div>
+
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(7)">← Back</button>
+                <button class="btn-next" id="next-8" onclick="goTo(9)" disabled>Continue →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 9 — Roof Details
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q9">
+            <h2 class="section-title">Tell us about your roof</h2>
+            <p class="section-sub">Roof details are one of the most important factors in calculating your quote.</p>
+
+            <div class="sub-section-title">Roof material</div>
+            <div class="icon-grid" id="roofMaterialGrid">
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Basic asphalt shingles',this)">
+                    <span class="icon-tile-emoji">🔲</span><span class="icon-tile-label">Basic asphalt shingles</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Architectural asphalt shingles',this)">
+                    <span class="icon-tile-emoji">◼️</span><span class="icon-tile-label">Architectural asphalt
+                        shingles</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Built up',this)">
+                    <span class="icon-tile-emoji">🪨</span><span class="icon-tile-label">Built up</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Metal basic',this)">
+                    <span class="icon-tile-emoji">🔳</span><span class="icon-tile-label">Metal basic</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Clay tile',this)">
+                    <span class="icon-tile-emoji">🏺</span><span class="icon-tile-label">Clay tile</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Concrete tile',this)">
+                    <span class="icon-tile-emoji">🟫</span><span class="icon-tile-label">Concrete tile</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Wood shingles',this)">
+                    <span class="icon-tile-emoji">🪵</span><span class="icon-tile-label">Wood shingles</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofMaterial','Asphalt membrane',this)">
+                    <span class="icon-tile-emoji">⬛</span><span class="icon-tile-label">Asphalt membrane</span>
+                </div>
+            </div>
+
+            <div class="sub-section-title">Roof style</div>
+            <div class="icon-grid" id="roofStyleGrid">
+                <div class="icon-tile" onclick="pickTile('roofStyle','Gable',this)">
+                    <span class="icon-tile-emoji">🏠</span><span class="icon-tile-label">Gable</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofStyle','Hip',this)">
+                    <span class="icon-tile-emoji">⛺</span><span class="icon-tile-label">Hip</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofStyle','Flat',this)">
+                    <span class="icon-tile-emoji">🏢</span><span class="icon-tile-label">Flat</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofStyle','Complex',this)">
+                    <span class="icon-tile-emoji">🏰</span><span class="icon-tile-label">Complex</span>
+                </div>
+                <div class="icon-tile" onclick="pickTile('roofStyle','Other',this)">
+                    <span class="icon-tile-emoji">···</span><span class="icon-tile-label">Other</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label class="form-label" for="roofYear">Year roof constructed / replaced</label>
+                <input class="form-input" id="roofYear" type="number" min="1900" max="2025" placeholder="e.g. 2021"
+                    oninput="validateRoof()">
+            </div>
+
+            <div class="divider"></div>
+            <div
+                style="background:rgba(91,192,190,0.07);border:1px solid rgba(91,192,190,0.2);border-radius:10px;padding:14px 18px;margin-bottom:4px;">
+                <div
+                    style="font-size:12px;color:#5bc0be;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">
+                    Almost done!</div>
+                <div style="font-size:13px;color:#a0a6b1;line-height:1.5;">By clicking <strong
+                        style="color:#e0e6f1;">Review &amp; Submit</strong> you'll see a full summary of your answers
+                    before we send anything.</div>
+            </div>
+
+            <div class="nav-row">
+                <button class="btn-back" onclick="goTo(8)">← Back</button>
+                <button class="btn-next" id="next-9" onclick="goTo(10)" disabled>Review &amp; Submit →</button>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════
+         STEP 10 — Review & Summary
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q10">
+            <h2 class="section-title">Review your information</h2>
+            <p class="section-sub">Please confirm these details are correct before we submit your quote request.</p>
+
+            <div class="summary-section">
+                <div class="summary-section-title">Property address</div>
+                <div class="summary-grid">
+                    <div class="s-item full">
+                        <div class="s-item-label">Address</div>
+                        <div class="s-item-value" id="s-address">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <div class="summary-section-title">Coverage preferences</div>
+                <div class="summary-grid">
+                    <div class="s-item">
+                        <div class="s-item-label">Coverage level</div>
+                        <div class="s-item-value" id="s-coverage">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Property type</div>
+                        <div class="s-item-value" id="s-propertyType">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Occupancy</div>
+                        <div class="s-item-value" id="s-occupant">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Policy start</div>
+                        <div class="s-item-value" id="s-policyStart">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <div class="summary-section-title">Policy holder</div>
+                <div class="summary-grid">
+                    <div class="s-item full">
+                        <div class="s-item-label">Full name</div>
+                        <div class="s-item-value" id="s-name">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Date of birth</div>
+                        <div class="s-item-value" id="s-dob">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Phone</div>
+                        <div class="s-item-value" id="s-phone">—</div>
+                    </div>
+                    <div class="s-item full">
+                        <div class="s-item-label">Email</div>
+                        <div class="s-item-value" id="s-email">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <div class="summary-section-title">Property details</div>
+                <div class="summary-grid">
+                    <div class="s-item">
+                        <div class="s-item-label">Home type</div>
+                        <div class="s-item-value" id="s-homeType">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Year built</div>
+                        <div class="s-item-value" id="s-yearBuilt">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Square footage</div>
+                        <div class="s-item-value" id="s-sqft">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Bedrooms</div>
+                        <div class="s-item-value" id="s-bedrooms">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Stories</div>
+                        <div class="s-item-value" id="s-stories">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Swimming pool</div>
+                        <div class="s-item-value" id="s-pool">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <div class="summary-section-title">Foundation &amp; walls</div>
+                <div class="summary-grid">
+                    <div class="s-item">
+                        <div class="s-item-label">Wall finish</div>
+                        <div class="s-item-value" id="s-wallFinish">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Wall structure</div>
+                        <div class="s-item-value" id="s-wallStructure">—</div>
+                    </div>
+                    <div class="s-item full">
+                        <div class="s-item-label">Foundation type</div>
+                        <div class="s-item-value" id="s-foundationType">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <div class="summary-section-title">Roof</div>
+                <div class="summary-grid">
+                    <div class="s-item">
+                        <div class="s-item-label">Roof material</div>
+                        <div class="s-item-value" id="s-roofMaterial">—</div>
+                    </div>
+                    <div class="s-item">
+                        <div class="s-item-label">Roof style</div>
+                        <div class="s-item-value" id="s-roofStyle">—</div>
+                    </div>
+                    <div class="s-item full">
+                        <div class="s-item-label">Year constructed / replaced</div>
+                        <div class="s-item-value" id="s-roofYear">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-next" style="width:100%;margin-top:4px;" onclick="submitForm()">Submit My Quote Request
+                →</button>
+            <button class="btn-full" onclick="goTo(9)">← Edit Answers</button>
+            <p class="disclaimer">By applying for this insurance, you declare that the <strong
+                    style="color:#e0e6f1;">information provided is correct and complete</strong> to the best of your
+                knowledge.</p>
+        </div>
+
+        <!-- ══════════════════════════════════
+         SUCCESS SCREEN
+    ══════════════════════════════════ -->
+        <div class="q-page" id="q11">
+            <div class="success-screen">
+                <div class="success-icon-wrap">✅</div>
+                <div class="success-title">You're all set!</div>
+                <p class="success-sub">Thank you for submitting your quote request.<br>One of our licensed agents will
+                    contact you shortly to discuss your personalised options.</p>
+                <div class="ref-box">
+                    <div class="ref-box-label">Reference number</div>
+                    <div class="ref-box-value" id="refNumber">HQ-000000</div>
+                </div>
+                <div class="ref-box">
+                    <div class="ref-box-label">Questions? Call us anytime</div>
+                    <div class="ref-box-value">(800) 865-9905</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT -->
-    <!-- ========================================== -->
+    </div><!-- .main-container -->
 
     <script>
-        // ==========================================
-        // MAPBOX CONFIGURATION
-        // ==========================================
-        // Get your free API key at: https://account.mapbox.com/
-        // Free tier: 100,000 requests/month
+        // ══════════════════════════════════
+        // CONFIG
+        // ══════════════════════════════════
         const MAPBOX_TOKEN = 'pk.eyJ1IjoibWluZGhvbWUiLCJhIjoiY21sZ3p2bnd6MDN5YjNlcHh0eG0yc3VxNSJ9.p5uKGoe-j7kdXjl73ewguw';
 
-        // ==========================================
-        // GO BACK BUTTON FUNCTION
-        // ==========================================
-        function goBack() {
-            window.history.back();
+        // ══════════════════════════════════
+        // STATE
+        // ══════════════════════════════════
+        const answers = {
+            address: null,
+            coverage: null, propertyType: null, occupant: null, policyStart: null,
+            homeType: null, bedrooms: null, stories: null, pool: null,
+            wallFinish: null, wallStructure: null, foundationType: null,
+            roofMaterial: null, roofStyle: null
+        };
+
+        // ══════════════════════════════════
+        // NAVIGATION
+        // ══════════════════════════════════
+        function goTo(n) {
+            document.querySelectorAll('.q-page').forEach(p => p.classList.remove('active'));
+            document.getElementById('q' + n).classList.add('active');
+            updateStepBar(n);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (n === 10) buildSummary();
         }
 
-        // Pre-fill form from questionnaire URL params
-        (function prefillFromParams() {
-            const p = new URLSearchParams(window.location.search);
-            if (p.get('bedrooms')) document.getElementById('bedrooms').value  = p.get('bedrooms');
-            if (p.get('sqft'))     document.getElementById('sqft').value      = p.get('sqft');
-            if (p.get('coverage')) document.getElementById('coverage').value  = p.get('coverage');
-            if (p.get('age'))      document.getElementById('age').value       = p.get('age');
-            if (p.get('address'))  {
-                document.getElementById('autocomplete').value = decodeURIComponent(p.get('address'));
+        function updateStepBar(active) {
+            for (let i = 1; i <= 9; i++) {
+                const dot = document.getElementById('dot-' + i);
+                const line = document.getElementById('line-' + i);
+                if (!dot) continue;
+                if (i < active) { dot.className = 'step-dot done'; dot.textContent = '✓'; }
+                else if (i === active) { dot.className = 'step-dot active'; dot.textContent = i; }
+                else { dot.className = 'step-dot'; dot.textContent = i; }
+                if (line) line.className = 'step-line' + (i < active ? ' done' : '');
             }
-        })();
+        }
 
-        // ==========================================
-        // ADDRESS FORM LOGIC (MapBox Version)
-        // ==========================================
+        // ══════════════════════════════════
+        // OPTION CARD SELECTION
+        // ══════════════════════════════════
+        const stepMap = { coverage: 2, propertyType: 3, occupant: 4, policyStart: 5 };
+        function pick(key, val, el) {
+            el.closest('.options-list').querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[key] = val;
+            const btn = document.getElementById('next-' + stepMap[key]);
+            if (btn) btn.disabled = false;
+        }
 
+        // ══════════════════════════════════
+        // ICON TILE SELECTION
+        // ══════════════════════════════════
+        function pickTile(key, val, el) {
+            el.closest('.icon-grid').querySelectorAll('.icon-tile').forEach(t => t.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[key] = val;
+            if (key === 'homeType') validateHome();
+            if (key === 'wallFinish') validateWalls();
+            if (key === 'roofMaterial' || key === 'roofStyle') validateRoof();
+        }
+
+        // ══════════════════════════════════
+        // TOGGLE PILLS
+        // ══════════════════════════════════
+        function pickToggle(key, val, el, groupId) {
+            document.getElementById(groupId).querySelectorAll('.tog').forEach(t => t.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[key] = val;
+            validateHome();
+        }
+
+        // ══════════════════════════════════
+        // PERSONAL INFO VALIDATION
+        // ══════════════════════════════════
+        function formatDOB(el) {
+            let v = el.value.replace(/\D/g, '');
+            if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+            if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
+            el.value = v;
+        }
+        function formatPhone(el) {
+            let v = el.value.replace(/\D/g, '');
+            if (v.length > 0) v = '(' + v;
+            if (v.length > 4) v = v.slice(0, 4) + ') ' + v.slice(4);
+            if (v.length > 9) v = v.slice(0, 9) + '-' + v.slice(9, 13);
+            el.value = v;
+        }
+        function validatePersonal() {
+            const fn = document.getElementById('firstName').value.trim();
+            const ln = document.getElementById('lastName').value.trim();
+            const dob = document.getElementById('dob').value.trim();
+            const em = document.getElementById('email').value.trim();
+            const ph = document.getElementById('phone').value.trim();
+            const dobOk = /^\d{2}\/\d{2}\/\d{4}$/.test(dob);
+            const emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+            const phOk = ph.replace(/\D/g, '').length === 10;
+            showFieldErr('err-dob', dob.length > 0 && !dobOk);
+            showFieldErr('err-email', em.length > 0 && !emOk);
+            showFieldErr('err-phone', ph.length > 0 && !phOk);
+            document.getElementById('next-6').disabled = !(fn && ln && dobOk && emOk && phOk);
+        }
+        function showFieldErr(id, show) {
+            const el = document.getElementById(id);
+            if (el) el.className = 'field-error' + (show ? ' show' : '');
+        }
+
+        // ══════════════════════════════════
+        // HOME / WALLS / ROOF VALIDATION
+        // ══════════════════════════════════
+        function validateHome() {
+            const yb = parseInt(document.getElementById('yearBuilt').value);
+            const sf = parseInt(document.getElementById('sqft').value);
+            const ok = answers.homeType
+                && (yb >= 1800 && yb <= 2025)
+                && (sf >= 100 && sf <= 20000)
+                && answers.bedrooms && answers.stories && answers.pool;
+            document.getElementById('next-7').disabled = !ok;
+        }
+        function validateWalls() {
+            document.getElementById('next-8').disabled =
+                !(answers.wallFinish && answers.wallStructure && answers.foundationType);
+        }
+        function validateRoof() {
+            const ry = parseInt(document.getElementById('roofYear').value);
+            document.getElementById('next-9').disabled =
+                !(answers.roofMaterial && answers.roofStyle && ry >= 1900 && ry <= 2025);
+        }
+        document.getElementById('roofYear').addEventListener('input', validateRoof);
+
+        // ══════════════════════════════════
+        // BUILD SUMMARY
+        // ══════════════════════════════════
+        function buildSummary() {
+            const fn = document.getElementById('firstName').value.trim();
+            const mn = document.getElementById('middleName').value.trim();
+            const ln = document.getElementById('lastName').value.trim();
+            set('s-address', answers.address);
+            set('s-coverage', answers.coverage);
+            set('s-propertyType', answers.propertyType);
+            set('s-occupant', answers.occupant);
+            set('s-policyStart', answers.policyStart);
+            set('s-name', [fn, mn, ln].filter(Boolean).join(' '));
+            set('s-dob', document.getElementById('dob').value);
+            set('s-email', document.getElementById('email').value.trim());
+            set('s-phone', document.getElementById('phone').value.trim());
+            set('s-homeType', answers.homeType);
+            set('s-yearBuilt', document.getElementById('yearBuilt').value);
+            set('s-sqft', Number(document.getElementById('sqft').value).toLocaleString() + ' sq ft');
+            set('s-bedrooms', answers.bedrooms);
+            set('s-stories', answers.stories);
+            set('s-pool', answers.pool);
+            set('s-wallFinish', answers.wallFinish);
+            set('s-wallStructure', answers.wallStructure);
+            set('s-foundationType', answers.foundationType);
+            set('s-roofMaterial', answers.roofMaterial);
+            set('s-roofStyle', answers.roofStyle);
+            set('s-roofYear', document.getElementById('roofYear').value);
+        }
+        function set(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val || '—';
+        }
+
+        // ══════════════════════════════════
+        // SUBMIT
+        // ══════════════════════════════════
+        function submitForm() {
+            document.getElementById('refNumber').textContent =
+                'HQ-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('stepBar').style.display = 'none';
+            goTo(11);
+        }
+
+        // ══════════════════════════════════
+        // MAPBOX ADDRESS AUTOCOMPLETE
+        // ══════════════════════════════════
         let selectedAddress = null;
         let debounceTimer = null;
 
-        // DOM elements
         const autocompleteInput = document.getElementById('autocomplete');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorList = document.getElementById('errorList');
-        const successMessage = document.getElementById('successMessage');
-        const addressPreview = document.getElementById('addressPreview');
+        const errorMessageEl = document.getElementById('errorMessage');
+        const errorListEl = document.getElementById('errorList');
+        const successMessageEl = document.getElementById('successMessage');
+        const addressPreviewEl = document.getElementById('addressPreview');
         const suggestionsDropdown = document.getElementById('suggestionsDropdown');
 
-        // Initialize on page load
         function initAutocomplete() {
-            // Check if MapBox token is set
             if (!MAPBOX_TOKEN || MAPBOX_TOKEN === 'YOUR_MAPBOX_TOKEN_HERE') {
                 autocompleteInput.disabled = true;
-                autocompleteInput.placeholder = 'MapBox API key required - see instructions in code';
+                autocompleteInput.placeholder = 'MapBox API key required';
                 autocompleteInput.style.backgroundColor = '#ffe0e0';
-                autocompleteInput.style.cursor = 'not-allowed';
-                showError(['MapBox API key not configured. Please add your API key to the code.']);
                 return;
             }
-
             autocompleteInput.addEventListener('input', handleInput);
             autocompleteInput.addEventListener('focus', handleInput);
-
-            // Close dropdown when clicking outside
             document.addEventListener('click', function (e) {
                 if (!autocompleteInput.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
                     suggestionsDropdown.style.display = 'none';
@@ -559,283 +1554,109 @@
             });
         }
 
-        // Handle input changes
         function handleInput(e) {
             const query = e.target.value.trim();
-
             clearTimeout(debounceTimer);
             selectedAddress = null;
-            clearMessages();
-
-            if (query.length < 3) {
-                suggestionsDropdown.style.display = 'none';
-                return;
-            }
-
-            // Debounce API calls
-            debounceTimer = setTimeout(() => {
-                searchAddress(query);
-            }, 300);
+            answers.address = null;
+            document.getElementById('next-1').disabled = true;
+            clearMsgs();
+            if (query.length < 3) { suggestionsDropdown.style.display = 'none'; return; }
+            debounceTimer = setTimeout(() => searchAddress(query), 300);
         }
 
-        // Search for addresses using MapBox Geocoding API
         async function searchAddress(query) {
             try {
-                const response = await fetch(
-                    `https://api.mapbox.com/geocoding/v5/mapbox.places/` +
-                    `${encodeURIComponent(query)}.json?` +
-                    `country=us&` +
-                    `types=address&` +
-                    `limit=5&` +
-                    `access_token=${MAPBOX_TOKEN}`
+                const res = await fetch(
+                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
+                    `country=us&types=address&limit=5&access_token=${MAPBOX_TOKEN}`
                 );
-
-                if (!response.ok) {
-                    throw new Error('Search failed');
-                }
-
-                const data = await response.json();
-                displayMapboxSuggestions(data.features || []);
-            } catch (error) {
-                console.error('Search error:', error);
-                showError(['Failed to search addresses. Please try again.']);
+                if (!res.ok) throw new Error('Search failed');
+                const data = await res.json();
+                displaySuggestions(data.features || []);
+            } catch (err) {
+                showAddrErr(['Failed to search addresses. Please try again.']);
             }
         }
 
-        // Display MapBox address suggestions
-        function displayMapboxSuggestions(features) {
+        function displaySuggestions(features) {
             suggestionsDropdown.innerHTML = '';
-
-            if (features.length === 0) {
-                suggestionsDropdown.style.display = 'none';
-                return;
-            }
-
-            features.forEach(feature => {
+            if (!features.length) { suggestionsDropdown.style.display = 'none'; return; }
+            features.forEach(f => {
                 const item = document.createElement('div');
                 item.className = 'suggestion-item';
-                item.textContent = feature.place_name;
-
-                item.addEventListener('click', () => {
-                    handleMapboxSelect(feature);
-                });
-
+                item.textContent = f.place_name;
+                item.addEventListener('click', () => handleSelect(f));
                 suggestionsDropdown.appendChild(item);
             });
-
             suggestionsDropdown.style.display = 'block';
         }
 
-        // Handle MapBox address selection
-        function handleMapboxSelect(feature) {
-            clearMessages();
+        function handleSelect(feature) {
+            clearMsgs();
             suggestionsDropdown.style.display = 'none';
             autocompleteInput.value = feature.place_name;
-
-            // Parse address from MapBox result
-            const address = parseMapboxAddress(feature);
-
-            // Validate address
-            const validation = validateAddress(address);
-            if (!validation.isValid) {
-                showError(validation.errors);
-                return;
-            }
-
-            // Address is verified by MapBox
-            selectedAddress = address;
-            showSuccess(address);
+            const addr = parseAddr(feature);
+            const v = validateAddr(addr);
+            if (!v.isValid) { showAddrErr(v.errors); return; }
+            selectedAddress = addr;
+            answers.address = feature.place_name;
+            document.getElementById('next-1').disabled = false;
+            showSuccess(addr);
         }
 
-        // Parse MapBox address components
-        function parseMapboxAddress(feature) {
-            const context = {};
-
-            // Extract context information
+        function parseAddr(feature) {
+            const ctx = {};
             if (feature.context) {
                 feature.context.forEach(c => {
-                    if (c.id.startsWith('postcode')) {
-                        context.zipCode = c.text;
-                    }
-                    if (c.id.startsWith('place')) {
-                        context.city = c.text;
-                    }
-                    if (c.id.startsWith('region')) {
-                        context.state = c.short_code ? c.short_code.replace('US-', '') : c.text;
-                    }
+                    if (c.id.startsWith('postcode')) ctx.zipCode = c.text;
+                    if (c.id.startsWith('place')) ctx.city = c.text;
+                    if (c.id.startsWith('region')) ctx.state = c.short_code ? c.short_code.replace('US-', '') : c.text;
                 });
             }
-
-            // Build street address
-            let street = '';
-            if (feature.address) {
-                street = `${feature.address} ${feature.text}`;
-            } else {
-                street = feature.text;
-            }
-
-            return {
-                street: street || '',
-                city: context.city || '',
-                state: context.state || '',
-                zipCode: context.zipCode || '',
-                country: 'United States',
-                lat: feature.center ? feature.center[1] : null,
-                lon: feature.center ? feature.center[0] : null
-            };
+            const street = feature.address ? `${feature.address} ${feature.text}` : feature.text;
+            return { street, city: ctx.city || '', state: ctx.state || '', zipCode: ctx.zipCode || '' };
         }
 
-        // Validate address has all required fields
-        function validateAddress(address) {
+        function validateAddr(a) {
             const errors = [];
-
-            if (!address.street) errors.push('Street address is required');
-            if (!address.city) errors.push('City is required');
-            if (!address.state) errors.push('State is required');
-            if (!address.zipCode) {
-                errors.push('ZIP code is required');
-            } else if (!/^\d{5}(-\d{4})?$/.test(address.zipCode)) {
-                errors.push('Invalid ZIP code format');
-            }
-
-            return { isValid: errors.length === 0, errors: errors };
+            if (!a.street) errors.push('Street address is required');
+            if (!a.city) errors.push('City is required');
+            if (!a.state) errors.push('State is required');
+            if (!a.zipCode) errors.push('ZIP code is required');
+            else if (!/^\d{5}(-\d{4})?$/.test(a.zipCode)) errors.push('Invalid ZIP code format');
+            return { isValid: errors.length === 0, errors };
         }
 
-        // Show error messages
-        function showError(errors) {
-            errorList.innerHTML = '';
-            errors.forEach(error => {
+        function showAddrErr(errors) {
+            errorListEl.innerHTML = '';
+            errors.forEach(e => {
                 const li = document.createElement('li');
-                li.textContent = error;
-                errorList.appendChild(li);
+                li.textContent = e;
+                errorListEl.appendChild(li);
             });
-            errorMessage.classList.add('show');
-            successMessage.classList.remove('show');
+            errorMessageEl.classList.add('show');
+            successMessageEl.classList.remove('show');
+        }
+        function showSuccess(a) {
+            addressPreviewEl.textContent = `${a.street}, ${a.city}, ${a.state} ${a.zipCode}`;
+            successMessageEl.classList.add('show');
+            errorMessageEl.classList.remove('show');
+        }
+        function clearMsgs() {
+            errorMessageEl.classList.remove('show');
+            successMessageEl.classList.remove('show');
         }
 
-        // Show success message
-        function showSuccess(address) {
-            const addressString = `${address.street}, ${address.city}, ${address.state} ${address.zipCode}`;
-            addressPreview.textContent = addressString;
-            successMessage.classList.add('show');
-            errorMessage.classList.remove('show');
-        }
-
-        // Clear all messages
-        function clearMessages() {
-            errorMessage.classList.remove('show');
-            successMessage.classList.remove('show');
-        }
-
-        // Reset on autocomplete input change (when typing manually)
         autocompleteInput.addEventListener('input', function () {
-            if (selectedAddress && autocompleteInput.value !== addressPreview.textContent) {
+            if (selectedAddress && autocompleteInput.value !== addressPreviewEl.textContent) {
                 selectedAddress = null;
-                clearMessages();
+                answers.address = null;
+                document.getElementById('next-1').disabled = true;
+                clearMsgs();
             }
         });
 
-        // ==========================================
-        // PREMIUM CALCULATOR LOGIC
-        // ==========================================
-
-        // Model parameters extracted from trained Python model
-        const MODEL = {
-            coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
-            intercept: 1750.1500895522388,
-            scaler: {
-                mean: [3.5164179104477613, 2470.3014925373136, 442130.93919402984, 39.25970149253731],
-                scale: [1.1416925135517493, 851.6019470776408, 160375.7009750736, 20.13887648751911]
-            },
-            calibration: {
-                a: 2.2688583723656337,
-                b: -1806.3973226313328
-            }
-        };
-
-        function scaleFeatures(features) {
-            return features.map((value, i) => {
-                return (value - MODEL.scaler.mean[i]) / MODEL.scaler.scale[i];
-            });
-        }
-
-        function predict(features) {
-            const scaledFeatures = scaleFeatures(features);
-            let prediction = MODEL.intercept;
-            for (let i = 0; i < scaledFeatures.length; i++) {
-                prediction += MODEL.coefficients[i] * scaledFeatures[i];
-            }
-            const calibrated = MODEL.calibration.a * prediction + MODEL.calibration.b;
-            return Math.max(0, calibrated);
-        }
-
-        // Form submission handler
-        document.getElementById('premiumForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            document.getElementById('result').classList.remove('show');
-            document.getElementById('error').classList.remove('show');
-
-            const bedrooms = parseFloat(document.getElementById('bedrooms').value);
-            const sqft = parseFloat(document.getElementById('sqft').value);
-            const coverage = parseFloat(document.getElementById('coverage').value);
-            const age = parseFloat(document.getElementById('age').value);
-
-            if (isNaN(bedrooms) || isNaN(sqft) || isNaN(coverage) || isNaN(age)) {
-                showCalcError('Please fill in all fields with valid numbers.');
-                return;
-            }
-
-            if (bedrooms < 1 || bedrooms > 10) {
-                showCalcError('Number of bedrooms must be between 1 and 10.');
-                return;
-            }
-
-            if (sqft < 500 || sqft > 10000) {
-                showCalcError('Square footage must be between 500 and 10,000.');
-                return;
-            }
-
-            if (coverage < 50000 || coverage > 2000000) {
-                showCalcError('Coverage A must be between $50,000 and $2,000,000.');
-                return;
-            }
-
-            if (age < 0 || age > 150) {
-                showCalcError('Age of home must be between 0 and 150 years.');
-                return;
-            }
-
-            const submitBtn = document.querySelector('.btn-calculate');
-            submitBtn.classList.add('loading');
-
-            setTimeout(() => {
-                try {
-                    const features = [bedrooms, sqft, coverage, age];
-                    const premium = predict(features);
-
-                    document.getElementById('premiumValue').textContent = premium.toFixed(2);
-                    document.getElementById('result').classList.add('show');
-
-                    if (window.innerWidth < 640) {
-                        document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
-                } catch (error) {
-                    showCalcError('An error occurred while calculating the premium. Please try again.');
-                    console.error('Calculation error:', error);
-                } finally {
-                    submitBtn.classList.remove('loading');
-                }
-            }, 300);
-        });
-
-        function showCalcError(message) {
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-        }
-
-        // Initialize when page loads
         window.addEventListener('load', initAutocomplete);
     </script>
 </body>
