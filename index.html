@@ -18,7 +18,6 @@
             min-height: 100vh;
             color: #e0e6f1;
             padding: 20px;
-            a
         }
 
         /* ── Main container ── */
@@ -1044,6 +1043,12 @@
             </div>
 
             <div class="field-group">
+                <label class="form-label" for="homeValue">Estimated home value</label>
+                <input class="form-input" id="homeValue" type="number" min="10000" max="10000000"
+                    placeholder="e.g. 450000" oninput="validateHome()">
+            </div>
+
+            <div class="field-group">
                 <div class="sub-label">Number of bedrooms</div>
                 <div class="tog-row" id="bedroomsGroup">
                     <div class="tog" onclick="pickToggle('bedrooms','1',this,'bedroomsGroup')">1</div>
@@ -1294,6 +1299,10 @@
                         <div class="s-item-value" id="s-sqft">—</div>
                     </div>
                     <div class="s-item">
+                        <div class="s-item-label">Estimated home value</div>
+                        <div class="s-item-value" id="s-homeValue">—</div>
+                    </div>
+                    <div class="s-item">
                         <div class="s-item-label">Bedrooms</div>
                         <div class="s-item-value" id="s-bedrooms">—</div>
                     </div>
@@ -1354,22 +1363,52 @@
         </div>
 
         <!-- ══════════════════════════════════
-         SUCCESS SCREEN
+         SUCCESS / QUOTE RESULTS SCREEN
     ══════════════════════════════════ -->
         <div class="q-page" id="q11">
             <div class="success-screen">
-                <div class="success-icon-wrap">✅</div>
-                <div class="success-title">You're all set!</div>
-                <p class="success-sub">Thank you for submitting your quote request.<br>One of our licensed agents will
-                    contact you shortly to discuss your personalised options.</p>
-                <div class="ref-box">
+                <div class="success-icon-wrap">🏠</div>
+                <div class="success-title">Your estimated quote</div>
+                <p class="success-sub">Based on the details you provided, here is your personalised estimate. A licensed
+                    agent will be in touch to finalise your policy.</p>
+
+                <!-- Premium result box -->
+                <div
+                    style="background:rgba(91,192,190,0.1);border:2px solid rgba(91,192,190,0.4);border-radius:16px;padding:24px 28px;margin-bottom:16px;text-align:center;">
+                    <div
+                        style="font-size:12px;color:#5bc0be;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                        Estimated annual premium</div>
+                    <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+                        <span style="font-size:18px;font-weight:700;color:#e0e6f1;">$</span>
+                        <span id="premiumAnnual"
+                            style="font-size:52px;font-weight:800;color:#5bc0be;line-height:1;">—</span>
+                    </div>
+                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(91,192,190,0.2);">
+                        <span style="font-size:14px;color:#a0a6b1;">Approx. </span>
+                        <span id="premiumMonthly" style="font-size:18px;font-weight:700;color:#e0e6f1;">—</span>
+                        <span style="font-size:14px;color:#a0a6b1;"> / month</span>
+                    </div>
+                </div>
+
+                <div id="calcError"
+                    style="background:rgba(255,100,100,0.1);border:2px solid rgba(255,100,100,0.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;color:#ff6464;font-size:14px;display:none;">
+                </div>
+
+                <div class="ref-box" style="margin-bottom:16px;">
                     <div class="ref-box-label">Reference number</div>
                     <div class="ref-box-value" id="refNumber">HQ-000000</div>
                 </div>
                 <div class="ref-box">
-                    <div class="ref-box-label">Questions? Call us anytime</div>
+                    <div class="ref-box-label">Speak to a licensed agent</div>
                     <div class="ref-box-value">(800) 865-9905</div>
                 </div>
+
+                <p style="font-size:11px;color:rgba(160,166,177,0.55);margin-top:16px;line-height:1.6;">This is an
+                    estimate only and does not constitute a binding quote. Final premium is subject to underwriting
+                    review and may vary. Coverage availability and qualification may vary by jurisdiction.</p>
+
+                <button class="btn-browser-back" onclick="window.history.back()"
+                    style="margin-top:20px;display:block;">&#8592; Back to previous page</button>
             </div>
         </div>
 
@@ -1490,9 +1529,11 @@
         function validateHome() {
             const yb = parseInt(document.getElementById('yearBuilt').value);
             const sf = parseInt(document.getElementById('sqft').value);
+            const hv = parseInt(document.getElementById('homeValue').value);
             const ok = answers.homeType
                 && (yb >= 1800 && yb <= 2025)
                 && (sf >= 100 && sf <= 20000)
+                && (hv >= 10000 && hv <= 10000000)
                 && answers.bedrooms && answers.stories && answers.pool;
             document.getElementById('next-7').disabled = !ok;
         }
@@ -1526,6 +1567,7 @@
             set('s-homeType', answers.homeType);
             set('s-yearBuilt', document.getElementById('yearBuilt').value);
             set('s-sqft', Number(document.getElementById('sqft').value).toLocaleString() + ' sq ft');
+            set('s-homeValue', '$' + Number(document.getElementById('homeValue').value).toLocaleString());
             set('s-bedrooms', answers.bedrooms);
             set('s-stories', answers.stories);
             set('s-pool', answers.pool);
@@ -1542,14 +1584,57 @@
         }
 
         // ══════════════════════════════════
-        // SUBMIT
+        // PREMIUM MODEL
+        // ══════════════════════════════════
+        const MODEL = {
+            coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
+            intercept: 1750.1500895522388,
+            scaler: {
+                mean: [3.5164179104477613, 2470.3014925373136, 442130.93919402984, 39.25970149253731],
+                scale: [1.1416925135517493, 851.6019470776408, 160375.7009750736, 20.13887648751911]
+            },
+            calibration: { a: 2.2688583723656337, b: -1806.3973226313328 }
+        };
+
+        function predict(features) {
+            const scaled = features.map((v, i) => (v - MODEL.scaler.mean[i]) / MODEL.scaler.scale[i]);
+            let p = MODEL.intercept;
+            scaled.forEach((s, i) => p += MODEL.coefficients[i] * s);
+            return Math.max(0, MODEL.calibration.a * p + MODEL.calibration.b);
+        }
+
+        // ══════════════════════════════════
+        // SUBMIT & CALCULATE
         // ══════════════════════════════════
         function submitForm() {
-            document.getElementById('refNumber').textContent =
-                'HQ-' + Math.floor(100000 + Math.random() * 900000);
+            const ref = 'HQ-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('refNumber').textContent = ref;
             document.getElementById('stepBar').style.display = 'none';
             document.querySelector('.btn-browser-back').closest('div').style.display = 'none';
+
+            // Parse inputs for model
+            const bedroomsRaw = answers.bedrooms || '0';
+            const bedrooms = parseFloat(bedroomsRaw.replace('+', '')) || 0;
+            const sqft = parseFloat(document.getElementById('sqft').value) || 0;
+            const homeValue = parseFloat(document.getElementById('homeValue').value) || 0;
+            const yearBuilt = parseInt(document.getElementById('yearBuilt').value) || 1980;
+            const age = new Date().getFullYear() - yearBuilt;
+
             goTo(11);
+
+            // Small delay for rendering, then calculate
+            setTimeout(() => {
+                try {
+                    const annual = predict([bedrooms, sqft, homeValue, age]);
+                    const monthly = annual / 12;
+                    document.getElementById('premiumAnnual').textContent = annual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    document.getElementById('premiumMonthly').textContent = '$' + monthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                } catch (e) {
+                    const err = document.getElementById('calcError');
+                    err.textContent = 'Unable to calculate estimate. Please call us to discuss your options.';
+                    err.style.display = 'block';
+                }
+            }, 300);
         }
 
         // ══════════════════════════════════
