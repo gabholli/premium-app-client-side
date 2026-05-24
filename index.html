@@ -18,6 +18,7 @@
             min-height: 100vh;
             color: #e0e6f1;
             padding: 20px;
+            a
         }
 
         /* ── Main container ── */
@@ -682,6 +683,25 @@
             line-height: 1.6;
         }
 
+        /* ── Browser history back button (top of container) ── */
+        .btn-browser-back {
+            background: none;
+            border: none;
+            color: #5bc0be;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            padding: 4px 0;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-browser-back:hover {
+            opacity: 1;
+        }
+
         @media (max-width: 640px) {
             body {
                 padding: 10px;
@@ -718,6 +738,11 @@
 
 <body>
     <div class="main-container">
+
+        <!-- Browser history back — always at top of card -->
+        <div style="margin-bottom:18px;">
+            <button class="btn-browser-back" onclick="window.history.back()">&#8592; Back to previous page</button>
+        </div>
 
         <div class="heading-container">
             <img src="/mindhomeco_logo.jpg" alt="MindHome logo" style="height:48px;width:auto;">
@@ -1319,9 +1344,10 @@
                 </div>
             </div>
 
-            <button class="btn-next" style="width:100%;margin-top:4px;" onclick="submitForm()">Submit My Quote Request
-                →</button>
-            <button class="btn-full" onclick="goTo(9)">← Edit Answers</button>
+            <div class="nav-row" style="margin-top:4px;">
+                <button class="btn-back" onclick="goTo(9)">← Back</button>
+                <button class="btn-next" onclick="submitForm()">Submit My Quote Request →</button>
+            </div>
             <p class="disclaimer">By applying for this insurance, you declare that the <strong
                     style="color:#e0e6f1;">information provided is correct and complete</strong> to the best of your
                 knowledge.</p>
@@ -1522,6 +1548,7 @@
             document.getElementById('refNumber').textContent =
                 'HQ-' + Math.floor(100000 + Math.random() * 900000);
             document.getElementById('stepBar').style.display = 'none';
+            document.querySelector('.btn-browser-back').closest('div').style.display = 'none';
             goTo(11);
         }
 
