@@ -1,1852 +1,1359 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Get My Quote — MindHome</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0b132b;
-            min-height: 100vh;
-            color: #e0e6f1;
-            padding: 20px;
-        }
-
-        /* ── Main container ── */
-        .main-container {
-            background: #1c2541;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 40px;
-        }
-
-        .heading-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 1.5em;
-        }
-
-        .main-title {
-            font-size: 28px;
-            text-align: center;
-            color: #e0e6f1;
-            font-weight: 700;
-        }
-
-        /* ── Step progress bar ── */
-        .step-bar {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .step-dot {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid rgba(91, 192, 190, 0.25);
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(224, 230, 241, 0.35);
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .step-dot.active {
-            border-color: #5bc0be;
-            background: #5bc0be;
-            color: #062c43;
-        }
-
-        .step-dot.done {
-            border-color: #5bc0be;
-            background: rgba(91, 192, 190, 0.18);
-            color: #5bc0be;
-        }
-
-        .step-line {
-            flex: 1;
-            height: 2px;
-            background: rgba(91, 192, 190, 0.18);
-            transition: background 0.3s;
-        }
-
-        .step-line.done {
-            background: #5bc0be;
-        }
-
-        /* ── Section headings ── */
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #5bc0be;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .section-sub {
-            font-size: 14px;
-            color: #a0a6b1;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        /* ── Wizard page visibility ── */
-        .q-page {
-            display: none;
-            animation: fadeUp 0.3s ease;
-        }
-
-        .q-page.active {
-            display: block;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(-8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ── Option cards (list layout) ── */
-        .options-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .opt-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid rgba(224, 230, 241, 0.1);
-            border-radius: 10px;
-            padding: 15px 18px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .opt-card:hover {
-            border-color: rgba(91, 192, 190, 0.45);
-            background: rgba(91, 192, 190, 0.05);
-        }
-
-        .opt-card.selected {
-            border-color: #5bc0be;
-            background: rgba(91, 192, 190, 0.1);
-        }
-
-        .opt-emoji {
-            font-size: 22px;
-            width: 32px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .opt-text {
-            flex: 1;
-        }
-
-        .opt-text h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #e0e6f1;
-            margin-bottom: 2px;
-        }
-
-        .opt-text p {
-            font-size: 12px;
-            color: #a0a6b1;
-            line-height: 1.4;
-        }
-
-        .opt-radio {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid rgba(91, 192, 190, 0.3);
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .opt-card.selected .opt-radio {
-            border-color: #5bc0be;
-            background: #5bc0be;
-        }
-
-        .opt-card.selected .opt-radio::after {
-            content: '';
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #062c43;
-            display: block;
-        }
-
-        /* ── Address autocomplete ── */
-        .addr-wrap {
-            position: relative;
-            margin-bottom: 6px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            color: #e0e6f1;
-        }
-
-        .form-label .optional {
-            font-weight: 400;
-            color: #a0a6b1;
-            font-size: 13px;
-        }
-
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: max(16px, 1rem);
-            font-family: inherit;
-            transition: all 0.3s ease;
-            background: #f9f9f9;
-            color: #333;
-            outline: none;
-        }
-
-        .form-input:focus,
-        .form-select:focus {
-            background: white;
-            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.2);
-            border-color: #5bc0be;
-        }
-
-        .form-select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            background-color: #f9f9f9;
-            padding-right: 38px;
-            cursor: pointer;
-        }
-
-        .form-select:focus {
-            background-color: white;
-        }
-
-        .hint {
-            font-size: 12px;
-            color: #a0a6b1;
-            margin-top: 4px;
-        }
-
-        .suggestions-dropdown {
-            position: absolute;
-            background: white;
-            border-radius: 10px;
-            margin-top: 4px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-            max-height: 280px;
-            overflow-y: auto;
-            display: none;
-            z-index: 9999;
-            width: 100%;
-        }
-
-        .suggestion-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            border-bottom: 1px solid #f0f0f0;
-            color: #333;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        .suggestion-item:hover {
-            background: #f5f5f5;
-        }
-
-        .msg {
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .msg.show {
-            display: block;
-            animation: fadeUp 0.3s ease;
-        }
-
-        .msg-error {
-            background: rgba(255, 100, 100, 0.1);
-            border: 2px solid rgba(255, 100, 100, 0.3);
-        }
-
-        .msg-error ul {
-            margin-left: 1.25rem;
-            color: #ff6464;
-            font-size: 14px;
-        }
-
-        .msg-success {
-            background: rgba(91, 192, 190, 0.1);
-            border: 2px solid rgba(91, 192, 190, 0.3);
-        }
-
-        .msg-success p {
-            color: #5bc0be;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .msg-success .addr-preview {
-            color: #e0e6f1;
-            font-size: 13px;
-        }
-
-        /* ── Icon grid (visual tile selections) ── */
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .icon-tile {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid rgba(224, 230, 241, 0.1);
-            border-radius: 10px;
-            padding: 14px 8px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            user-select: none;
-        }
-
-        .icon-tile:hover {
-            border-color: rgba(91, 192, 190, 0.45);
-            background: rgba(91, 192, 190, 0.05);
-        }
-
-        .icon-tile.selected {
-            border-color: #5bc0be;
-            background: rgba(91, 192, 190, 0.1);
-        }
-
-        .icon-tile-emoji {
-            font-size: 26px;
-            line-height: 1;
-        }
-
-        .icon-tile-label {
-            font-size: 11px;
-            font-weight: 600;
-            color: #a0a6b1;
-            line-height: 1.25;
-        }
-
-        .icon-tile.selected .icon-tile-label {
-            color: #5bc0be;
-        }
-
-        /* ── Toggle pill buttons ── */
-        .sub-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #a0a6b1;
-            margin-bottom: 8px;
-            margin-top: 2px;
-        }
-
-        .tog-row {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 16px;
-        }
-
-        .tog {
-            padding: 9px 18px;
-            border-radius: 8px;
-            border: 2px solid rgba(224, 230, 241, 0.12);
-            background: rgba(255, 255, 255, 0.03);
-            font-size: 14px;
-            font-weight: 600;
-            color: #a0a6b1;
-            cursor: pointer;
-            transition: all 0.18s;
-            font-family: inherit;
-            user-select: none;
-        }
-
-        .tog:hover {
-            border-color: rgba(91, 192, 190, 0.4);
-            color: #e0e6f1;
-        }
-
-        .tog.selected {
-            border-color: #5bc0be;
-            background: rgba(91, 192, 190, 0.12);
-            color: #5bc0be;
-        }
-
-        /* ── Field helpers ── */
-        .field-group {
-            margin-bottom: 16px;
-        }
-
-        .field-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .field-error {
-            font-size: 12px;
-            color: #ff6464;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .field-error.show {
-            display: block;
-        }
-
-        /* ── Dividers ── */
-        .divider {
-            height: 1px;
-            background: rgba(91, 192, 190, 0.15);
-            margin: 22px 0;
-        }
-
-        .sub-section-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #5bc0be;
-            margin-bottom: 12px;
-        }
-
-        /* ── Nav buttons ── */
-        .nav-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .btn-back {
-            padding: 12px 20px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 2px solid rgba(224, 230, 241, 0.15);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #e0e6f1;
-            cursor: pointer;
-            font-family: inherit;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn-back:hover {
-            border-color: rgba(91, 192, 190, 0.5);
-            color: #5bc0be;
-        }
-
-        .btn-next {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            background: #5bc0be;
-            color: #062c43;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(91, 192, 190, 0.25);
-        }
-
-        .btn-next:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(91, 192, 190, 0.35);
-        }
-
-        .btn-next:disabled {
-            background: rgba(91, 192, 190, 0.22);
-            color: rgba(6, 44, 67, 0.45);
-            box-shadow: none;
-            cursor: default;
-            transform: none;
-        }
-
-        .btn-next.loading {
-            position: relative;
-            color: transparent;
-        }
-
-        .btn-next.loading::after {
-            content: "";
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            top: 50%;
-            left: 50%;
-            margin-left: -9px;
-            margin-top: -9px;
-            border: 3px solid rgba(6, 44, 67, 0.3);
-            border-radius: 50%;
-            border-top-color: #062c43;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .btn-full {
-            width: 100%;
-            margin-top: 10px;
-            padding: 14px 24px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            background: rgba(91, 192, 190, 0.12);
-            border: 2px solid rgba(91, 192, 190, 0.4);
-            color: #5bc0be;
-            transition: all 0.3s ease;
-        }
-
-        .btn-full:hover {
-            background: rgba(91, 192, 190, 0.22);
-        }
-
-        /* ── Summary ── */
-        .summary-section {
-            margin-bottom: 22px;
-        }
-
-        .summary-section-title {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: #5bc0be;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(91, 192, 190, 0.2);
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .s-item {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            padding: 10px 12px;
-        }
-
-        .s-item.full {
-            grid-column: 1 / -1;
-        }
-
-        .s-item-label {
-            font-size: 11px;
-            color: #a0a6b1;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin-bottom: 3px;
-        }
-
-        .s-item-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: #e0e6f1;
-        }
-
-        /* ── Success ── */
-        .success-screen {
-            text-align: center;
-            padding: 16px 0 8px;
-        }
-
-        .success-icon-wrap {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: rgba(91, 192, 190, 0.15);
-            border: 2px solid rgba(91, 192, 190, 0.4);
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 34px;
-            line-height: 1;
-        }
-
-        .success-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #e0e6f1;
-            margin-bottom: 8px;
-        }
-
-        .success-sub {
-            font-size: 14px;
-            color: #a0a6b1;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .ref-box {
-            background: rgba(91, 192, 190, 0.08);
-            border: 2px solid rgba(91, 192, 190, 0.3);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-
-        .ref-box-label {
-            font-size: 12px;
-            color: #5bc0be;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 4px;
-        }
-
-        .ref-box-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: #e0e6f1;
-        }
-
-        .savings-box {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .savings-radio-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            color: #e0e6f1;
-            line-height: 1.3;
-        }
-
-        .savings-radio-row:not(:last-child) {
-            margin-bottom: 6px;
-        }
-
-        .savings-radio-row input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #5bc0be;
-            flex-shrink: 0;
-            cursor: pointer;
-        }
-
-        .disclaimer {
-            font-size: 11px;
-            color: rgba(160, 166, 177, 0.6);
-            text-align: center;
-            margin-top: 18px;
-            line-height: 1.6;
-        }
-
-        /* ── Browser history back button (top of container) ── */
-        .btn-browser-back {
-            background: none;
-            border: none;
-            color: #5bc0be;
-            font-size: 13px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            padding: 4px 0;
-            opacity: 0.8;
-            transition: opacity 0.2s;
-            letter-spacing: 0.2px;
-        }
-
-        .btn-browser-back:hover {
+<!-- Echelon × MindHome — Protection bolt-on checkout with live Shopify Storefront handoff -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echelon × MindHome — Protect &amp; Save</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet">
+<style>
+    :root {
+        --navy: #0C2340;
+        /* Echelon structural ink */
+        --navy-2: #13315C;
+        --purple: #8A288F;
+        /* MindHome accent */
+        --purple-2: #B23AB8;
+        --grad: linear-gradient(120deg, #0C2340 0%, #4A1E5C 55%, #8A288F 100%);
+        --grad-soft: linear-gradient(120deg, #F4F6FB, #F6EEF7);
+        --save: #0E9E6E;
+        --save-soft: #E4F5EE;
+        --bg: #F5F7FB;
+        --card: #FFFFFF;
+        --line: #E2E8F1;
+        --line-2: #D7DEEA;
+        --muted: #5C6B82;
+        --ink: #0C2340;
+        --warn: #9A5B00;
+        --radius: 16px;
+        --shadow: 0 1px 2px rgba(12, 35, 64, .05), 0 10px 30px rgba(12, 35, 64, .07);
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    html,
+    body {
+        margin: 0
+    }
+
+    body {
+        font-family: Inter, system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.5
+    }
+
+    .num {
+        font-family: "Space Grotesk", Inter, sans-serif;
+        font-variant-numeric: tabular-nums
+    }
+
+    /* top bar */
+    .topbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 24px;
+        height: 60px;
+        background: var(--navy);
+        color: #fff;
+        position: relative
+    }
+
+    .topbar::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background: var(--grad)
+    }
+
+    .lockup {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        font-size: 17px;
+        letter-spacing: .2px;
+        display: flex;
+        align-items: center;
+        gap: 9px
+    }
+
+    .lockup .e {
+        color: #fff
+    }
+
+    .lockup .x {
+        color: #7E8BA3;
+        font-weight: 500;
+        font-size: 14px
+    }
+
+    .lockup .m {
+        background: linear-gradient(90deg, #C77FCB, #E8B6EC);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent
+    }
+
+    .topbar .ref {
+        margin-left: auto;
+        font-size: 12.5px;
+        color: #9FB0C9;
+        display: flex;
+        gap: 18px
+    }
+
+    .topbar .ref b {
+        color: #fff;
+        font-weight: 600
+    }
+
+    @media(max-width:680px) {
+        .topbar .ref span.hideS {
+            display: none
+        }
+    }
+
+    /* progress rail */
+    .rail {
+        display: flex;
+        gap: 6px;
+        padding: 16px 24px 0;
+        max-width: 1120px;
+        margin: 0 auto;
+        width: 100%
+    }
+
+    .rail .seg {
+        flex: 1;
+        height: 5px;
+        border-radius: 99px;
+        background: var(--line)
+    }
+
+    .rail .seg.done {
+        background: var(--navy-2)
+    }
+
+    .rail .seg.active {
+        background: var(--grad)
+    }
+
+    .railcap {
+        max-width: 1120px;
+        margin: 7px auto 0;
+        padding: 0 24px;
+        width: 100%;
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        font-weight: 500
+    }
+
+    /* layout */
+    .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 24px;
+        display: grid;
+        grid-template-columns: 1fr 372px;
+        gap: 28px;
+        align-items: start
+    }
+
+    @media(max-width:880px) {
+        .wrap {
+            grid-template-columns: 1fr;
+            padding-bottom: 118px
+        }
+    }
+
+    .step {
+        display: none;
+        animation: fade .26s ease
+    }
+
+    .step.show {
+        display: block
+    }
+
+    @keyframes fade {
+        from {
+            opacity: 0;
+            transform: translateY(7px)
+        }
+
+        to {
             opacity: 1;
+            transform: none
+        }
+    }
+
+    .eyebrow {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+        background: var(--grad);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block
+    }
+
+    h1 {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        color: var(--navy);
+        font-size: 27px;
+        line-height: 1.18;
+        margin: 7px 0 7px;
+        letter-spacing: -.3px
+    }
+
+    .sub {
+        color: var(--muted);
+        margin: 0 0 22px;
+        max-width: 48ch
+    }
+
+    /* option cards */
+    .opt {
+        display: flex;
+        gap: 15px;
+        align-items: flex-start;
+        width: 100%;
+        background: var(--card);
+        border: 1.5px solid var(--line);
+        border-radius: var(--radius);
+        padding: 17px 19px;
+        margin-bottom: 13px;
+        cursor: pointer;
+        text-align: left;
+        transition: border-color .15s, box-shadow .15s, background .15s;
+        position: relative
+    }
+
+    .opt:hover {
+        border-color: var(--line-2)
+    }
+
+    .opt.sel {
+        border-color: var(--purple);
+        background: var(--grad-soft);
+        box-shadow: var(--shadow)
+    }
+
+    .opt .ic {
+        font-size: 23px;
+        line-height: 1;
+        margin-top: 2px
+    }
+
+    .opt h3 {
+        margin: 0 0 3px;
+        font-size: 16px;
+        color: var(--navy)
+    }
+
+    .opt p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted)
+    }
+
+    .opt .tag {
+        position: absolute;
+        top: 15px;
+        right: 17px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: var(--save);
+        background: var(--save-soft);
+        padding: 3px 10px;
+        border-radius: 99px
+    }
+
+    .opt .price {
+        font-family: "Space Grotesk";
+        font-weight: 600;
+        color: var(--navy);
+        white-space: nowrap;
+        margin-top: 3px;
+        font-size: 14px
+    }
+
+    .opt .price .strike {
+        color: var(--muted);
+        font-weight: 400;
+        font-size: 12px;
+        text-decoration: line-through;
+        margin-left: 6px
+    }
+
+    .opt .chk {
+        margin-left: auto;
+        width: 23px;
+        height: 23px;
+        border-radius: 50%;
+        border: 2px solid var(--line);
+        flex: none;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 13px;
+        transition: .15s
+    }
+
+    .opt.sel .chk {
+        background: var(--purple);
+        border-color: var(--purple)
+    }
+
+    /* device rows */
+    .dev {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 13px 15px;
+        margin-bottom: 10px
+    }
+
+    .dev .meta {
+        flex: 1
+    }
+
+    .dev .meta h4 {
+        margin: 0 0 2px;
+        font-size: 14px;
+        color: var(--navy)
+    }
+
+    .dev .meta span {
+        font-size: 12px;
+        color: var(--muted)
+    }
+
+    .pill {
+        font-size: 10.5px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 99px;
+        margin-left: 7px;
+        vertical-align: 1px
+    }
+
+    .pill.fire {
+        background: #FBE7DF;
+        color: #B6431A
+    }
+
+    .pill.water {
+        background: #DEEBFB;
+        color: #1A57B6
+    }
+
+    .pill.none {
+        background: #ECE4F2;
+        color: #6B2E86
+    }
+
+    .stepper {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden
+    }
+
+    .stepper button {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: #fff;
+        font-size: 18px;
+        cursor: pointer;
+        color: var(--purple)
+    }
+
+    .stepper button:hover {
+        background: var(--grad-soft)
+    }
+
+    .stepper .q {
+        width: 36px;
+        text-align: center;
+        font-family: "Space Grotesk";
+        font-weight: 600;
+        font-size: 14px
+    }
+
+    /* savings ledger */
+    .ledger {
+        position: sticky;
+        top: 18px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: var(--shadow);
+        overflow: hidden
+    }
+
+    .ledger::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--grad)
+    }
+
+    .ledger h2 {
+        font-family: "Space Grotesk";
+        font-size: 12.5px;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 4px 0 14px;
+        font-weight: 600
+    }
+
+    .big {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        color: var(--save);
+        font-size: 42px;
+        line-height: 1;
+        letter-spacing: -1.4px
+    }
+
+    .biglab {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin: 5px 0 17px
+    }
+
+    .lrow {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 9px 0;
+        font-size: 13.5px;
+        border-top: 1px dashed var(--line)
+    }
+
+    .lrow:first-of-type {
+        border-top: none
+    }
+
+    .lrow .k {
+        color: var(--muted)
+    }
+
+    .lrow .v {
+        font-family: "Space Grotesk";
+        font-weight: 600;
+        color: var(--ink)
+    }
+
+    .lrow .v.save {
+        color: var(--save)
+    }
+
+    .credits {
+        display: flex;
+        gap: 9px;
+        margin: 15px 0 5px
+    }
+
+    .credit {
+        flex: 1;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        padding: 10px;
+        text-align: center;
+        font-size: 11.5px;
+        transition: .15s
+    }
+
+    .credit .pct {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        font-size: 18px;
+        display: block
+    }
+
+    .credit.on {
+        border-color: var(--save);
+        background: var(--save-soft)
+    }
+
+    .credit.on .pct {
+        color: var(--save)
+    }
+
+    .credit.off {
+        opacity: .5
+    }
+
+    .credit.off .pct {
+        color: var(--muted)
+    }
+
+    .payback {
+        margin-top: 15px;
+        background: var(--grad);
+        color: #fff;
+        border-radius: 13px;
+        padding: 15px 17px
+    }
+
+    .payback .p1 {
+        font-size: 12px;
+        color: #E5D2EA;
+        margin-bottom: 3px
+    }
+
+    .payback .p2 {
+        font-family: "Space Grotesk";
+        font-weight: 700;
+        font-size: 19px
+    }
+
+    .hint {
+        margin-top: 13px;
+        font-size: 12px;
+        color: var(--warn);
+        background: #FFF8EC;
+        border: 1px solid #F3E2BE;
+        border-radius: 11px;
+        padding: 10px 12px;
+        display: none
+    }
+
+    .hint.show {
+        display: block
+    }
+
+    /* buttons */
+    .nav {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        align-items: center
+    }
+
+    .btn {
+        font-family: Inter;
+        font-size: 14.5px;
+        font-weight: 600;
+        border-radius: 12px;
+        padding: 14px 24px;
+        cursor: pointer;
+        border: 1.5px solid transparent;
+        transition: transform .08s, filter .15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px
+    }
+
+    .btn:active {
+        transform: translateY(1px)
+    }
+
+    .btn.primary {
+        background: var(--grad);
+        color: #fff
+    }
+
+    .btn.primary:hover {
+        filter: brightness(1.08)
+    }
+
+    .btn.ghost {
+        background: transparent;
+        color: var(--navy);
+        border-color: var(--line-2)
+    }
+
+    .btn.wide {
+        width: 100%;
+        justify-content: center;
+        padding: 16px
+    }
+
+    .btn[disabled] {
+        opacity: .4;
+        cursor: not-allowed;
+        filter: none
+    }
+
+    .skip {
+        margin-left: auto;
+        font-size: 13px;
+        color: var(--muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: underline
+    }
+
+    .spin {
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255, 255, 255, .4);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: sp .7s linear infinite;
+        display: inline-block
+    }
+
+    @keyframes sp {
+        to {
+            transform: rotate(360deg)
+        }
+    }
+
+    /* prefilled form */
+    .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 13px
+    }
+
+    .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 0 0 5px
+    }
+
+    .field input {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1.5px solid var(--line);
+        border-radius: 11px;
+        font-family: Inter;
+        font-size: 14px;
+        background: #fff;
+        color: var(--ink)
+    }
+
+    .field input:focus {
+        outline: none;
+        border-color: var(--purple)
+    }
+
+    .prefill {
+        font-size: 11px;
+        color: var(--save);
+        font-weight: 600;
+        margin-left: 6px
+    }
+
+    .panelnote {
+        background: var(--grad-soft);
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 14px 16px;
+        font-size: 13px;
+        color: var(--navy);
+        margin-bottom: 18px;
+        display: flex;
+        gap: 11px
+    }
+
+    /* finance */
+    .fin {
+        display: flex;
+        gap: 11px;
+        margin: 7px 0 4px
+    }
+
+    .fin .o {
+        flex: 1;
+        border: 1.5px solid var(--line);
+        border-radius: 13px;
+        padding: 14px;
+        cursor: pointer;
+        background: #fff
+    }
+
+    .fin .o.sel {
+        border-color: var(--purple);
+        background: var(--grad-soft)
+    }
+
+    .fin .o b {
+        font-family: "Space Grotesk";
+        display: block;
+        color: var(--navy);
+        font-size: 17px
+    }
+
+    .fin .o span {
+        font-size: 12px;
+        color: var(--muted)
+    }
+
+    /* wiring inspector */
+    .wire {
+        margin-top: 18px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        overflow: hidden
+    }
+
+    .wire summary {
+        cursor: pointer;
+        padding: 13px 15px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--navy);
+        background: #F8FAFD;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 9px
+    }
+
+    .wire summary::-webkit-details-marker {
+        display: none
+    }
+
+    .wire summary .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--save);
+        box-shadow: 0 0 0 3px var(--save-soft)
+    }
+
+    .wire pre {
+        margin: 0;
+        padding: 15px;
+        background: #0C1A2E;
+        color: #CFE3FF;
+        font-size: 11.5px;
+        line-height: 1.55;
+        overflow: auto;
+        max-height: 280px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace
+    }
+
+    .wire .k {
+        color: #7FC9FF
+    }
+
+    .wire .s {
+        color: #9FE0B0
+    }
+
+    .wire .c {
+        color: #6E84A3
+    }
+
+    /* confirmation */
+    .done {
+        text-align: center;
+        padding: 32px 10px
+    }
+
+    .done .badge {
+        width: 66px;
+        height: 66px;
+        border-radius: 50%;
+        background: var(--grad);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 30px;
+        margin: 0 auto 17px
+    }
+
+    .timeline {
+        max-width: 430px;
+        margin: 24px auto 0;
+        text-align: left
+    }
+
+    .ti {
+        display: flex;
+        gap: 13px;
+        padding: 12px 0;
+        border-top: 1px dashed var(--line);
+        font-size: 13.5px
+    }
+
+    .ti:first-child {
+        border-top: none
+    }
+
+    .ti .d {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--purple);
+        margin-top: 5px;
+        flex: none
+    }
+
+    .ti b {
+        color: var(--navy)
+    }
+
+    /* mobile sticky */
+    .mbar {
+        display: none
+    }
+
+    @media(max-width:880px) {
+        .ledger {
+            display: none
         }
 
-        @media (max-width: 640px) {
-            body {
-                padding: 10px;
-            }
-
-            .main-container {
-                padding: 24px;
-            }
-
-            .main-title {
-                font-size: 22px;
-            }
-
-            .field-row {
-                grid-template-columns: 1fr;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .icon-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .mbar {
+            display: flex;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #fff;
+            border-top: 1px solid var(--line);
+            padding: 13px 18px;
+            align-items: center;
+            gap: 14px;
+            z-index: 20;
+            box-shadow: 0 -7px 22px rgba(12, 35, 64, .09)
         }
 
-        @media (max-width: 400px) {
-            .main-container {
-                padding: 18px;
-            }
+        .mbar .ms {
+            flex: 1
         }
-    </style>
-</head>
 
-<body>
-    <div class="main-container">
+        .mbar .ms b {
+            font-family: "Space Grotesk";
+            color: var(--save);
+            font-size: 20px;
+            display: block
+        }
 
-        <!-- Browser history back — always at top of card -->
-        <div style="margin-bottom:18px;">
-            <button class="btn-browser-back" onclick="window.history.back()">&#8592; Back to previous page</button>
-        </div>
+        .mbar .ms span {
+            font-size: 11px;
+            color: var(--muted)
+        }
+    }
 
-        <div class="heading-container">
-            <img src="/mindhomeco_logo.jpg" alt="MindHome logo" style="height:48px;width:auto;">
-            <h1 class="main-title">Get My Quote</h1>
-        </div>
+    .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--navy);
+        color: #fff;
+        padding: 13px 20px;
+        border-radius: 12px;
+        font-size: 13.5px;
+        box-shadow: var(--shadow);
+        transition: transform .3s;
+        z-index: 50;
+        max-width: 90%
+    }
 
-        <!-- Step progress bar: 9 steps -->
-        <div class="step-bar" id="stepBar">
-            <div class="step-dot active" id="dot-1">1</div>
-            <div class="step-line" id="line-1"></div>
-            <div class="step-dot" id="dot-2">2</div>
-            <div class="step-line" id="line-2"></div>
-            <div class="step-dot" id="dot-3">3</div>
-            <div class="step-line" id="line-3"></div>
-            <div class="step-dot" id="dot-4">4</div>
-            <div class="step-line" id="line-4"></div>
-            <div class="step-dot" id="dot-5">5</div>
-            <div class="step-line" id="line-5"></div>
-            <div class="step-dot" id="dot-6">6</div>
-            <div class="step-line" id="line-6"></div>
-            <div class="step-dot" id="dot-7">7</div>
-            <div class="step-line" id="line-7"></div>
-            <div class="step-dot" id="dot-8">8</div>
-            <div class="step-line" id="line-8"></div>
-            <div class="step-dot" id="dot-9">9</div>
-        </div>
+    .toast.show {
+        transform: translateX(-50%) translateY(0)
+    }
+</style>
 
-        <!-- ══════════════════════════════════
-         STEP 1 — Property Address
-    ══════════════════════════════════ -->
-        <div class="q-page active" id="q1">
-            <h2 class="section-title">What is the property address?</h2>
-            <p class="section-sub">Search for the home you'd like to insure. We use this to verify the property
-                location.</p>
+<div class="topbar">
+    <div class="lockup"><span class="e">Echelon</span><span class="x">×</span><span class="m">MindHome</span></div>
+    <div class="ref">
+        <span class="hideS">Quote <b id="refTop">HQ-4815</b></span>
+        <span>Est. premium <b id="premTop">$1,840/yr</b></span>
+    </div>
+</div>
 
-            <div class="addr-wrap">
-                <label class="form-label" for="autocomplete">Search address</label>
-                <input type="text" id="autocomplete" class="form-input" placeholder="Start typing your address…"
-                    autocomplete="off">
-                <p class="hint">Type your address and select from the dropdown</p>
-                <div id="suggestionsDropdown" class="suggestions-dropdown"></div>
+<div class="rail" id="rail"></div>
+<div class="railcap"><span id="capLeft">Protection</span><span id="capRight">Step 1 of 4</span></div>
+
+<div class="wrap">
+    <div class="col">
+
+        <!-- STEP 0 -->
+        <section class="step show" data-step="0">
+            <div class="eyebrow">Your quote is ready</div>
+            <h1>You qualify for up to 50% off your premium</h1>
+            <p class="sub">Jordan, based on your home at 482 Marigold Ln, MindHome devices that actively prevent
+                water and fire losses can lower your Echelon premium. Add them now and your agent applies the credit
+                when your policy binds.</p>
+            <div class="panelnote"><span>💡</span>
+                <div>Insurers reward <b>active mitigation</b>, not just alarms.
+                    A valve that shuts off a leak, or an extinguisher that puts out a fire, is what unlocks the credit —
+                    so the kit is built around devices that act, not just notify.</div>
             </div>
-
-            <div id="errorMessage" class="msg msg-error">
-                <ul id="errorList"></ul>
+            <div class="nav">
+                <button class="btn primary" onclick="go(1)">See my protection options →</button>
+                <button class="skip" onclick="go(4,true)">No thanks, just submit my quote</button>
             </div>
-            <div id="successMessage" class="msg msg-success">
-                <p>✓ Address verified successfully</p>
-                <div class="addr-preview" id="addressPreview"></div>
-            </div>
+        </section>
 
-            <div class="nav-row" style="margin-top:20px;">
-                <button class="btn-next" id="next-1" onclick="goTo(2)" disabled>Continue →</button>
-            </div>
-        </div>
+        <!-- STEP 1 -->
+        <section class="step" data-step="1">
+            <div class="eyebrow">Choose your protection</div>
+            <h1>Pick a kit — watch your savings update</h1>
+            <p class="sub">The Complete Bundle unlocks both credits and caps your savings at 50%. Or protect one risk,
+                or build your own. The ledger recalculates live.</p>
 
-        <!-- ══════════════════════════════════
-         STEP 2 — Coverage Type
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q2">
-            <h2 class="section-title">What type of coverage are you looking for?</h2>
-            <p class="section-sub">Choose the level of protection that fits your needs and budget.</p>
-
-            <div class="options-list">
-                <div class="opt-card" onclick="pick('coverage','Basic',this)">
-                    <span class="opt-emoji">✅</span>
-                    <div class="opt-text">
-                        <h3>Basic</h3>
-                        <p>More affordable coverage based on local requirements.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('coverage','Better',this)">
-                    <span class="opt-emoji">⚖️</span>
-                    <div class="opt-text">
-                        <h3>Somewhere in between</h3>
-                        <p>Comprehensive coverage with a few extras.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('coverage','Enhanced',this)">
-                    <span class="opt-emoji">🏅</span>
-                    <div class="opt-text">
-                        <h3>Enhanced</h3>
-                        <p>Personalized coverage options for your home.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-            </div>
-
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(1)">← Back</button>
-                <button class="btn-next" id="next-2" onclick="goTo(3)" disabled>Continue →</button>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════
-         STEP 3 — Property Type
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q3">
-            <h2 class="section-title">What type of property is it?</h2>
-            <p class="section-sub">Select the type of property you'd like to insure.</p>
-
-            <div class="options-list">
-                <div class="opt-card" onclick="pick('propertyType','House',this)">
-                    <span class="opt-emoji">🏠</span>
-                    <div class="opt-text">
-                        <h3>House</h3>
-                        <p>A single-family home, townhouse, or duplex you own — you are listed on the deed.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('propertyType','Condo',this)">
-                    <span class="opt-emoji">🏢</span>
-                    <div class="opt-text">
-                        <h3>Condo</h3>
-                        <p>A multi-family building or complex in which you own a unit.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-            </div>
-
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(2)">← Back</button>
-                <button class="btn-next" id="next-3" onclick="goTo(4)" disabled>Continue →</button>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════
-         STEP 4 — Occupants
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q4">
-            <h2 class="section-title">Who is living in the property?</h2>
-            <p class="section-sub">Tell us about the current or intended occupancy status.</p>
-
-            <div class="options-list">
-                <div class="opt-card" onclick="pick('occupant','Me',this)">
-                    <span class="opt-emoji">🧑</span>
-                    <div class="opt-text">
-                        <h3>Me</h3>
-                        <p>I am the owner of this house and I live in it full time.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('occupant','Renter',this)">
-                    <span class="opt-emoji">📋</span>
-                    <div class="opt-text">
-                        <h3>Renter</h3>
-                        <p>This house is rented out to tenants on a long-term basis (usually a year), or will be rented
-                            in the next 30 days.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('occupant','Vacant',this)">
-                    <span class="opt-emoji">🔨</span>
-                    <div class="opt-text">
-                        <h3>Vacant, or will be renovated</h3>
-                        <p>This home is vacant with no contents, or has planned renovations that will make the home
-                            unoccupied.</p>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-            </div>
-
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(3)">← Back</button>
-                <button class="btn-next" id="next-4" onclick="goTo(5)" disabled>Continue →</button>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════
-         STEP 5 — Policy Start
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q5">
-            <h2 class="section-title">When do you want to start your policy?</h2>
-            <p class="section-sub">This helps us find the most relevant options for your timeline.</p>
-
-            <div class="options-list">
-                <div class="opt-card" onclick="pick('policyStart','This week',this)">
-                    <span class="opt-emoji">📅</span>
-                    <div class="opt-text">
-                        <h3>This week</h3>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('policyStart','A few weeks from now',this)">
-                    <span class="opt-emoji">📆</span>
-                    <div class="opt-text">
-                        <h3>A few weeks from now</h3>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('policyStart','In 1–2 months',this)">
-                    <span class="opt-emoji">🗓️</span>
-                    <div class="opt-text">
-                        <h3>A couple of months from now</h3>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-                <div class="opt-card" onclick="pick('policyStart','Just browsing',this)">
-                    <span class="opt-emoji">🔍</span>
-                    <div class="opt-text">
-                        <h3>Just browsing</h3>
-                    </div>
-                    <div class="opt-radio"></div>
-                </div>
-            </div>
-
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(4)">← Back</button>
-                <button class="btn-next" id="next-5" onclick="goTo(6)" disabled>Continue →</button>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════
-         STEP 6 — Personal Info
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q6">
-            <h2 class="section-title">Whose name will be on this policy?</h2>
-            <p class="section-sub">We need a few more details in order to personalise your quote.</p>
-
-            <div class="field-row field-group">
+            <button class="opt" data-pkg="bundle" onclick="pick('bundle')">
+                <span class="ic">🛡️</span>
                 <div>
-                    <label class="form-label" for="firstName">First name</label>
-                    <input class="form-input" id="firstName" type="text" placeholder="e.g. Daniel"
-                        oninput="validatePersonal()">
-                    <div class="field-error" id="err-firstName">First name is required</div>
+                    <h3>Complete Protection Bundle</h3>
+                    <p>2 auto fire extinguishers · Ting arc monitor · water shutoff + leak detector · 5 leak sensors</p>
+                    <div class="price">$599.99<span class="strike">$921 separately</span></div>
                 </div>
+                <span class="tag">Unlocks 50%</span><span class="chk">✓</span>
+            </button>
+
+            <button class="opt" data-pkg="fire" onclick="pick('fire')">
+                <span class="ic">🔥</span>
                 <div>
-                    <label class="form-label" for="middleName">Middle name <span
-                            class="optional">(optional)</span></label>
-                    <input class="form-input" id="middleName" type="text" placeholder="e.g. B">
+                    <h3>Fire Protection Kit</h3>
+                    <p>2 auto fire extinguishers · Ting arc fault monitor</p>
+                    <div class="price">$397.00</div>
                 </div>
-            </div>
-            <div class="field-group">
-                <label class="form-label" for="lastName">Last name</label>
-                <input class="form-input" id="lastName" type="text" placeholder="e.g. Turgel"
-                    oninput="validatePersonal()">
-                <div class="field-error" id="err-lastName">Last name is required</div>
-            </div>
-            <div class="field-group">
-                <label class="form-label" for="dob">Date of birth</label>
-                <input class="form-input" id="dob" type="text" placeholder="MM/DD/YYYY" maxlength="10"
-                    oninput="formatDOB(this);validatePersonal()">
-                <div class="field-error" id="err-dob">Please enter a valid date (MM/DD/YYYY)</div>
-            </div>
-            <div class="field-group">
-                <label class="form-label" for="email">Email address</label>
-                <input class="form-input" id="email" type="email" placeholder="e.g. dturgel@gmail.com"
-                    oninput="validatePersonal()">
-                <div class="field-error" id="err-email">Please enter a valid email address</div>
-            </div>
-            <div class="field-group">
-                <label class="form-label" for="phone">Phone number</label>
-                <input class="form-input" id="phone" type="tel" placeholder="(718) 000-0000" maxlength="14"
-                    oninput="formatPhone(this);validatePersonal()">
-                <div class="field-error" id="err-phone">Please enter a valid 10-digit phone number</div>
-            </div>
+                <span class="tag">Unlocks 20%</span><span class="chk">✓</span>
+            </button>
 
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(5)">← Back</button>
-                <button class="btn-next" id="next-6" onclick="goTo(7)" disabled>Continue →</button>
-            </div>
-        </div>
-
-        <!-- ══════════════════════════════════
-         STEP 7 — Home Details
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q7">
-            <h2 class="section-title">We need a few more details</h2>
-            <p class="section-sub">Just double-check and fill in the blanks to help us provide quotes that fit your
-                needs.</p>
-
-            <div class="sub-section-title">Type of home</div>
-            <div class="icon-grid" id="homeTypeGrid">
-                <div class="icon-tile" onclick="pickTile('homeType','Detached home',this)">
-                    <span class="icon-tile-emoji">🏠</span><span class="icon-tile-label">Detached home</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('homeType','Attached rowhouse – middle',this)">
-                    <span class="icon-tile-emoji">🏘️</span><span class="icon-tile-label">Attached rowhouse –
-                        middle</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('homeType','Attached rowhouse – end',this)">
-                    <span class="icon-tile-emoji">🏚️</span><span class="icon-tile-label">Attached rowhouse – end</span>
-                </div>
-            </div>
-
-            <div class="field-row field-group">
+            <button class="opt" data-pkg="water" onclick="pick('water')">
+                <span class="ic">💧</span>
                 <div>
-                    <label class="form-label" for="yearBuilt">Year built</label>
-                    <input class="form-input" id="yearBuilt" type="number" min="1800" max="2025" placeholder="e.g. 1973"
-                        oninput="validateHome()">
+                    <h3>Water Protection Kit</h3>
+                    <p>Water shutoff + leak detector · 5 leak sensors</p>
+                    <div class="price">$524.00</div>
                 </div>
+                <span class="tag">Unlocks 30%</span><span class="chk">✓</span>
+            </button>
+
+            <button class="opt" data-pkg="custom" onclick="pick('custom')">
+                <span class="ic">🧩</span>
                 <div>
-                    <label class="form-label" for="sqft">Square footage</label>
-                    <input class="form-input" id="sqft" type="number" min="100" max="20000" placeholder="e.g. 2714"
-                        oninput="validateHome()">
+                    <h3>Build your own</h3>
+                    <p>Choose devices à la carte — the ledger shows which credit you've unlocked.</p>
                 </div>
+                <span class="chk">✓</span>
+            </button>
+
+            <div id="customPicker" style="display:none; margin-top:8px"></div>
+
+            <div class="nav">
+                <button class="btn ghost" onclick="go(0)">← Back</button>
+                <button class="btn primary" id="toReview" onclick="go(2)" disabled>Continue →</button>
+            </div>
+        </section>
+
+        <!-- STEP 2 -->
+        <section class="step" data-step="2">
+            <div class="eyebrow">Review &amp; payment</div>
+            <h1>Your protection plan</h1>
+            <p class="sub">One-time device cost, or spread it with PowerPay. Either way the premium credit is annual and
+                recurring.</p>
+            <div id="reviewList"></div>
+            <div style="margin-top:18px; font-weight:600; color:var(--navy); font-size:14px">How would you like to pay?
+            </div>
+            <div class="fin">
+                <div class="o sel" data-fin="once" onclick="setFin('once')"><b
+                        id="finOnce">$599.99</b><span>One-time</span></div>
+                <div class="o" data-fin="mo" onclick="setFin('mo')"><b id="finMo">$50/mo</b><span>12 mo · PowerPay · 0%
+                        intro</span></div>
+            </div>
+            <div class="nav">
+                <button class="btn ghost" onclick="go(1)">← Back</button>
+                <button class="btn primary" onclick="go(3)">Continue to shipping →</button>
+            </div>
+        </section>
+
+        <!-- STEP 3 -->
+        <section class="step" data-step="3">
+            <div class="eyebrow">Where should we ship it</div>
+            <h1>Confirm your details</h1>
+            <p class="sub">Pulled from your quote — just check it over. Nothing to retype.</p>
+            <div class="panelnote"><span>🔗</span>
+                <div>We'll attach quote ref <b id="refForm">HQ-4815</b> to this order so your agent links the devices to
+                    your policy and applies the credit at binding.</div>
+            </div>
+            <div class="grid2" style="margin-bottom:13px">
+                <div class="field"><label>First name <span class="prefill">prefilled</span></label><input id="fFirst"
+                        value="Jordan"></div>
+                <div class="field"><label>Last name <span class="prefill">prefilled</span></label><input id="fLast"
+                        value="Maxwell"></div>
+            </div>
+            <div class="field" style="margin-bottom:13px"><label>Shipping address <span class="prefill">from step
+                        1</span></label><input id="fAddr" value="482 Marigold Ln, Boulder, CO 80302"></div>
+            <div class="grid2" style="margin-bottom:13px">
+                <div class="field"><label>Email <span class="prefill">prefilled</span></label><input id="fEmail"
+                        value="jordan.maxwell@email.com"></div>
+                <div class="field"><label>Phone <span class="prefill">prefilled</span></label><input id="fPhone"
+                        value="(303) 555-0148"></div>
             </div>
 
-            <div class="field-group">
-                <label class="form-label" for="homeValue">Estimated home value</label>
-                <input class="form-input" id="homeValue" type="number" min="10000" max="10000000"
-                    placeholder="e.g. 450000" oninput="validateHome()">
-            </div>
+            <details class="wire" id="wireBox">
+                <summary><span class="dot"></span> Storefront API request preview — this is the live payload that ships
+                    to Shopify</summary>
+                <pre id="wirePre"></pre>
+            </details>
 
-            <div class="field-group">
-                <div class="sub-label">Number of bedrooms</div>
-                <div class="tog-row" id="bedroomsGroup">
-                    <div class="tog" onclick="pickToggle('bedrooms','1',this,'bedroomsGroup')">1</div>
-                    <div class="tog" onclick="pickToggle('bedrooms','2',this,'bedroomsGroup')">2</div>
-                    <div class="tog" onclick="pickToggle('bedrooms','3',this,'bedroomsGroup')">3</div>
-                    <div class="tog" onclick="pickToggle('bedrooms','4',this,'bedroomsGroup')">4</div>
-                    <div class="tog" onclick="pickToggle('bedrooms','5+',this,'bedroomsGroup')">5+</div>
-                </div>
+            <div class="nav">
+                <button class="btn ghost" onclick="go(2)">← Back</button>
+                <button class="btn primary" id="placeBtn" onclick="placeOrder()">Place order &amp; submit quote
+                    →</button>
             </div>
-            <div class="field-group">
-                <div class="sub-label">Stories</div>
-                <div class="tog-row" id="storiesGroup">
-                    <div class="tog" onclick="pickToggle('stories','1',this,'storiesGroup')">1</div>
-                    <div class="tog" onclick="pickToggle('stories','1.5',this,'storiesGroup')">1.5</div>
-                    <div class="tog" onclick="pickToggle('stories','2',this,'storiesGroup')">2</div>
-                    <div class="tog" onclick="pickToggle('stories','3+',this,'storiesGroup')">3+</div>
-                </div>
-            </div>
-            <div class="field-group">
-                <div class="sub-label">Swimming pool</div>
-                <div class="tog-row" id="poolGroup">
-                    <div class="tog" onclick="pickToggle('pool','No',this,'poolGroup')">No</div>
-                    <div class="tog" onclick="pickToggle('pool','Yes',this,'poolGroup')">Yes</div>
-                </div>
-            </div>
+            <p style="font-size:11.5px;color:var(--muted);margin-top:14px">
+                Continuing creates a Shopify cart via the Storefront API and redirects to secure checkout with your
+                quote ref and credit attached.
+                PowerPay financing is available at checkout. Premium credit is applied by a licensed agent at binding,
+                subject to underwriting and jurisdiction.</p>
+        </section>
 
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(6)">← Back</button>
-                <button class="btn-next" id="next-7" onclick="goTo(8)" disabled>Continue →</button>
+        <!-- STEP 4 -->
+        <section class="step" data-step="4">
+            <div class="done">
+                <div class="badge">✓</div>
+                <h1 style="margin-bottom:4px">You're protected — and saving</h1>
+                <p class="sub" style="margin:0 auto" id="doneSub">Cart created and handed off to checkout. Your quote
+                    and protection plan are linked for your agent.</p>
+                <div class="timeline" id="timeline">
+                    <div class="ti"><span class="d"></span>
+                        <div><b>Devices ship in 2–3 business days</b><br><span style="color:var(--muted)">To 482
+                                Marigold Ln · tracking sent to your email</span></div>
+                    </div>
+                    <div class="ti"><span class="d"></span>
+                        <div><b>Agent reviews your application</b><br><span style="color:var(--muted)">Quote ref HQ-4815
+                                linked to your device order</span></div>
+                    </div>
+                    <div class="ti"><span class="d"></span>
+                        <div><b>Premium credit applied at binding</b><br><span style="color:var(--muted)"
+                                id="doneSave">Up to $920/yr off your homeowners premium</span></div>
+                    </div>
+                </div>
+                <button class="btn primary" style="margin-top:24px" onclick="go(0)">↺ Run the demo again</button>
             </div>
+        </section>
+    </div>
+
+    <!-- LEDGER -->
+    <aside class="ledger" id="ledger">
+        <h2>Your savings</h2>
+        <div class="big num" id="bigSave">$0</div>
+        <div class="biglab">estimated off your premium per year</div>
+        <div class="credits">
+            <div class="credit off" id="cFire"><span class="pct num">20%</span>Fire credit</div>
+            <div class="credit off" id="cWater"><span class="pct num">30%</span>Water credit</div>
         </div>
-
-        <!-- ══════════════════════════════════
-         STEP 8 — Foundation & Walls
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q8">
-            <h2 class="section-title">Let's talk about your foundation and walls</h2>
-            <p class="section-sub">This will help us get more accurate quotes for you.</p>
-
-            <div class="sub-section-title">Exterior wall finish</div>
-            <div class="icon-grid" id="wallFinishGrid">
-                <div class="icon-tile" onclick="pickTile('wallFinish','Metal siding',this)">
-                    <span class="icon-tile-emoji">🪟</span><span class="icon-tile-label">Metal siding</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Vinyl siding',this)">
-                    <span class="icon-tile-emoji">🟦</span><span class="icon-tile-label">Vinyl siding</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Wood siding',this)">
-                    <span class="icon-tile-emoji">🪵</span><span class="icon-tile-label">Wood siding</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Cement fiber siding',this)">
-                    <span class="icon-tile-emoji">🧱</span><span class="icon-tile-label">Cement fiber siding</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Synthetic stucco',this)">
-                    <span class="icon-tile-emoji">🔲</span><span class="icon-tile-label">Synthetic stucco</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Masonry stucco',this)">
-                    <span class="icon-tile-emoji">🟫</span><span class="icon-tile-label">Masonry stucco</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Brick veneer',this)">
-                    <span class="icon-tile-emoji">🏚</span><span class="icon-tile-label">Brick veneer</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('wallFinish','Other',this)">
-                    <span class="icon-tile-emoji">···</span><span class="icon-tile-label">Other</span>
-                </div>
-            </div>
-
-            <div class="field-group">
-                <label class="form-label" for="wallStructure">Exterior wall structure</label>
-                <select class="form-select" id="wallStructure"
-                    onchange="answers.wallStructure=this.value;validateWalls()">
-                    <option value="">Select structure…</option>
-                    <option>Wood framing</option>
-                    <option>Light gauge steel framing</option>
-                    <option>Solid concrete or concrete block</option>
-                </select>
-            </div>
-            <div class="field-group">
-                <label class="form-label" for="foundationType">Foundation type</label>
-                <select class="form-select" id="foundationType"
-                    onchange="answers.foundationType=this.value;validateWalls()">
-                    <option value="">Select foundation…</option>
-                    <option>Crawlspace</option>
-                    <option>Full basement</option>
-                    <option>Concrete slab</option>
-                    <option>Piers or pilings</option>
-                </select>
-            </div>
-
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(7)">← Back</button>
-                <button class="btn-next" id="next-8" onclick="goTo(9)" disabled>Continue →</button>
-            </div>
+        <div class="lrow"><span class="k">Annual premium</span><span class="v num">$1,840</span></div>
+        <div class="lrow"><span class="k">Premium credit</span><span class="v save num" id="lCredit">–$0</span></div>
+        <div class="lrow"><span class="k">Device cost (once)</span><span class="v num" id="lDevice">$0</span></div>
+        <div class="payback" id="paybackBox" style="display:none">
+            <div class="p1">Devices pay for themselves in</div>
+            <div class="p2 num" id="paybackVal">—</div>
         </div>
+        <div class="hint" id="hint"></div>
+    </aside>
+</div>
 
-        <!-- ══════════════════════════════════
-         STEP 9 — Roof Details
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q9">
-            <h2 class="section-title">Tell us about your roof</h2>
-            <p class="section-sub">Roof details are one of the most important factors in calculating your quote.</p>
+<div class="mbar">
+    <div class="ms"><b class="num" id="mSave">$0</b><span>saved per year</span></div>
+    <button class="btn primary" onclick="mobileNext()" id="mBtn">Continue →</button>
+</div>
+<div class="toast" id="toast"></div>
 
-            <div class="sub-section-title">Roof material</div>
-            <div class="icon-grid" id="roofMaterialGrid">
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Basic asphalt shingles',this)">
-                    <span class="icon-tile-emoji">🔲</span><span class="icon-tile-label">Basic asphalt shingles</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Architectural asphalt shingles',this)">
-                    <span class="icon-tile-emoji">◼️</span><span class="icon-tile-label">Architectural asphalt
-                        shingles</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Built up',this)">
-                    <span class="icon-tile-emoji">🪨</span><span class="icon-tile-label">Built up</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Metal basic',this)">
-                    <span class="icon-tile-emoji">🔳</span><span class="icon-tile-label">Metal basic</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Clay tile',this)">
-                    <span class="icon-tile-emoji">🏺</span><span class="icon-tile-label">Clay tile</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Concrete tile',this)">
-                    <span class="icon-tile-emoji">🟫</span><span class="icon-tile-label">Concrete tile</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Wood shingles',this)">
-                    <span class="icon-tile-emoji">🪵</span><span class="icon-tile-label">Wood shingles</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofMaterial','Asphalt membrane',this)">
-                    <span class="icon-tile-emoji">⬛</span><span class="icon-tile-label">Asphalt membrane</span>
-                </div>
-            </div>
+<script>
+    /* ============================================================
+       SHOPIFY STOREFRONT CONFIG  —  fill these two, ship it.
+       ------------------------------------------------------------
+       1. storefrontToken: Shopify admin → Settings → Apps and sales
+          channels → Develop apps → (create app) → Storefront API,
+          enable unauthenticated_read_product_listings +
+          unauthenticated_write_checkouts → install → copy the
+          "Storefront API access token" (public, safe in browser).
+       2. domain: detected as smartinsure.myshopify.com from the
+          store's auth token. Confirm in admin. www.mindhome.co also
+          works as the API host.
+       The numeric checkout token in the site's <meta> is NOT this
+       token and will not authenticate GraphQL.
+       ============================================================ */
+    const SHOPIFY = {
+        domain: "smartinsure.myshopify.com",
+        apiVersion: "2025-10",
+        storefrontToken: "",            // <-- PASTE Storefront API token
+    };
 
-            <div class="sub-section-title">Roof style</div>
-            <div class="icon-grid" id="roofStyleGrid">
-                <div class="icon-tile" onclick="pickTile('roofStyle','Gable',this)">
-                    <span class="icon-tile-emoji">🏠</span><span class="icon-tile-label">Gable</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofStyle','Hip',this)">
-                    <span class="icon-tile-emoji">⛺</span><span class="icon-tile-label">Hip</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofStyle','Flat',this)">
-                    <span class="icon-tile-emoji">🏢</span><span class="icon-tile-label">Flat</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofStyle','Complex',this)">
-                    <span class="icon-tile-emoji">🏰</span><span class="icon-tile-label">Complex</span>
-                </div>
-                <div class="icon-tile" onclick="pickTile('roofStyle','Other',this)">
-                    <span class="icon-tile-emoji">···</span><span class="icon-tile-label">Other</span>
-                </div>
-            </div>
+    /* Real product handles, verified from mindhome.co.
+       Variant IDs are resolved from these at runtime — no ID hunting.
+       presence handle is a best guess; confirm if you sell it here. */
+    const HANDLES = {
+        ext: "mindhome-fire-extinguisher",
+        ting: "electric-arc-monitor",
+        smoke: "mindhome-smoke-alarm-1",
+        shutoff: "mindhome-water-shutoff-and-leak-monitor",
+        sensor: "mindhome-leak-sensor",
+        presence: "everything-presence-lite",      // confirm handle
+        bundle: "mindhome-risk-services-bundle",
+    };
 
-            <div class="field-group">
-                <label class="form-label" for="roofYear">Year roof constructed / replaced</label>
-                <input class="form-input" id="roofYear" type="number" min="1900" max="2025" placeholder="e.g. 2021"
-                    oninput="validateRoof()">
-            </div>
+    const CATALOG = {
+        ext: { name: "Auto Fire Extinguisher", price: 149, risk: "fire", sub: "Suppresses a fire automatically" },
+        ting: { name: "Ting Arc Fault Monitor", price: 99, risk: "fire", sub: "Stops electrical fires 24/7" },
+        smoke: { name: "Smart Smoke Detector", price: 59, risk: "fire", sub: "Instant phone + siren alert" },
+        shutoff: { name: "Water Shutoff + Leak Detector", price: 399, risk: "water", sub: "Cuts water on a leak" },
+        sensor: { name: "Leak Sensor", price: 25, risk: "water", sub: "Catches leaks room by room" },
+        presence: { name: "Presence Detector", price: 69, risk: "none", sub: "mmWave occupancy sensing" },
+    };
+    const PKGS = {
+        bundle: { ext: 2, ting: 1, shutoff: 1, sensor: 5 },
+        fire: { ext: 2, ting: 1 },
+        water: { shutoff: 1, sensor: 5 },
+        custom: {},
+    };
+    const PREMIUM = 1840;
 
-            <div class="divider"></div>
-            <div
-                style="background:rgba(91,192,190,0.07);border:1px solid rgba(91,192,190,0.2);border-radius:10px;padding:14px 18px;margin-bottom:4px;">
-                <div
-                    style="font-size:12px;color:#5bc0be;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;">
-                    Almost done!</div>
-                <div style="font-size:13px;color:#a0a6b1;line-height:1.5;">By clicking <strong
-                        style="color:#e0e6f1;">Review &amp; Submit</strong> you'll see a full summary of your answers
-                    before we send anything.</div>
-            </div>
+    let state = {
+        step: 0, pkg: null, cart: {}, fin: "once",
+        quoteRef: "HQ-4815", email: "jordan.maxwell@email.com"
+    };
 
-            <div class="nav-row">
-                <button class="btn-back" onclick="goTo(8)">← Back</button>
-                <button class="btn-next" id="next-9" onclick="goTo(10)" disabled>Review &amp; Submit →</button>
-            </div>
-        </div>
+    /* ---------- Storefront API ---------- */
+    const SF_ENDPOINT = () => `https://${SHOPIFY.domain}/api/${SHOPIFY.apiVersion}/graphql.json`;
 
-        <!-- ══════════════════════════════════
-         STEP 10 — Review & Summary
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q10">
-            <h2 class="section-title">Review your information</h2>
-            <p class="section-sub">Please confirm these details are correct before we submit your quote request.</p>
-
-            <div class="summary-section">
-                <div class="summary-section-title">Property address</div>
-                <div class="summary-grid">
-                    <div class="s-item full">
-                        <div class="s-item-label">Address</div>
-                        <div class="s-item-value" id="s-address">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-section">
-                <div class="summary-section-title">Coverage preferences</div>
-                <div class="summary-grid">
-                    <div class="s-item">
-                        <div class="s-item-label">Coverage level</div>
-                        <div class="s-item-value" id="s-coverage">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Property type</div>
-                        <div class="s-item-value" id="s-propertyType">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Occupancy</div>
-                        <div class="s-item-value" id="s-occupant">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Policy start</div>
-                        <div class="s-item-value" id="s-policyStart">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-section">
-                <div class="summary-section-title">Policy holder</div>
-                <div class="summary-grid">
-                    <div class="s-item full">
-                        <div class="s-item-label">Full name</div>
-                        <div class="s-item-value" id="s-name">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Date of birth</div>
-                        <div class="s-item-value" id="s-dob">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Phone</div>
-                        <div class="s-item-value" id="s-phone">—</div>
-                    </div>
-                    <div class="s-item full">
-                        <div class="s-item-label">Email</div>
-                        <div class="s-item-value" id="s-email">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-section">
-                <div class="summary-section-title">Property details</div>
-                <div class="summary-grid">
-                    <div class="s-item">
-                        <div class="s-item-label">Home type</div>
-                        <div class="s-item-value" id="s-homeType">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Year built</div>
-                        <div class="s-item-value" id="s-yearBuilt">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Square footage</div>
-                        <div class="s-item-value" id="s-sqft">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Estimated home value</div>
-                        <div class="s-item-value" id="s-homeValue">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Bedrooms</div>
-                        <div class="s-item-value" id="s-bedrooms">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Stories</div>
-                        <div class="s-item-value" id="s-stories">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Swimming pool</div>
-                        <div class="s-item-value" id="s-pool">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-section">
-                <div class="summary-section-title">Foundation &amp; walls</div>
-                <div class="summary-grid">
-                    <div class="s-item">
-                        <div class="s-item-label">Wall finish</div>
-                        <div class="s-item-value" id="s-wallFinish">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Wall structure</div>
-                        <div class="s-item-value" id="s-wallStructure">—</div>
-                    </div>
-                    <div class="s-item full">
-                        <div class="s-item-label">Foundation type</div>
-                        <div class="s-item-value" id="s-foundationType">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="summary-section">
-                <div class="summary-section-title">Roof</div>
-                <div class="summary-grid">
-                    <div class="s-item">
-                        <div class="s-item-label">Roof material</div>
-                        <div class="s-item-value" id="s-roofMaterial">—</div>
-                    </div>
-                    <div class="s-item">
-                        <div class="s-item-label">Roof style</div>
-                        <div class="s-item-value" id="s-roofStyle">—</div>
-                    </div>
-                    <div class="s-item full">
-                        <div class="s-item-label">Year constructed / replaced</div>
-                        <div class="s-item-value" id="s-roofYear">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="nav-row" style="margin-top:4px;">
-                <button class="btn-back" onclick="goTo(9)">← Back</button>
-                <button class="btn-next" onclick="submitForm()">Submit My Quote Request →</button>
-            </div>
-            <p class="disclaimer">By applying for this insurance, you declare that the <strong
-                    style="color:#e0e6f1;">information provided is correct and complete</strong> to the best of your
-                knowledge.</p>
-        </div>
-
-        <!-- ══════════════════════════════════
-         SUCCESS / QUOTE RESULTS SCREEN
-    ══════════════════════════════════ -->
-        <div class="q-page" id="q11">
-            <div class="success-screen">
-                <div class="success-icon-wrap">🏠</div>
-                <div class="success-title">Your estimated quote</div>
-                <p class="success-sub">Based on the details you provided, here is your personalised estimate. A licensed
-                    agent will be in touch to finalise your policy.</p>
-
-                <!-- Premium result box -->
-                <div
-                    style="background:rgba(91,192,190,0.1);border:2px solid rgba(91,192,190,0.4);border-radius:16px;padding:24px 28px;margin-bottom:16px;text-align:center;">
-                    <div
-                        style="font-size:12px;color:#5bc0be;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
-                        Estimated annual premium</div>
-                    <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
-                        <span style="font-size:18px;font-weight:700;color:#e0e6f1;">$</span>
-                        <span id="premiumAnnual"
-                            style="font-size:52px;font-weight:800;color:#5bc0be;line-height:1;">—</span>
-                    </div>
-                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(91,192,190,0.2);">
-                        <span style="font-size:14px;color:#a0a6b1;">Approx. </span>
-                        <span id="premiumMonthly" style="font-size:18px;font-weight:700;color:#e0e6f1;">—</span>
-                        <span style="font-size:14px;color:#a0a6b1;"> / month</span>
-                    </div>
-                </div>
-
-                <div id="calcError"
-                    style="background:rgba(255,100,100,0.1);border:2px solid rgba(255,100,100,0.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;color:#ff6464;font-size:14px;display:none;">
-                </div>
-
-                <div class="ref-box" style="margin-bottom:16px;">
-                    <div class="ref-box-label">Reference number</div>
-                    <div class="ref-box-value" id="refNumber">HQ-000000</div>
-                </div>
-                <div class="ref-box">
-                    <div class="ref-box-label">Speak to a licensed agent</div>
-                    <div class="ref-box-value">(800) 865-9905</div>
-                </div>
-
-                <div class="ref-box savings-box" id="savingsMsgBox">
-                    <div class="ref-box-label">Special offer</div>
-                    <div class="ref-box-value" style="font-size:15px;">Are you interested in savings up to 50%?</div>
-                </div>
-
-                <div class="ref-box savings-box" id="savingsOptionsBox">
-                    <label class="savings-radio-row">
-                        <input type="checkbox" name="savingsOption" value="fire">
-                        <span>Add fire protection for 20% savings</span>
-                    </label>
-                    <label class="savings-radio-row">
-                        <input type="checkbox" name="savingsOption" value="water">
-                        <span>Add water protection for 30% savings</span>
-                    </label>
-                </div>
-
-                <button class="btn-next" id="savingsSubmitBtn" onclick="submitSavingsRequest()"
-                    style="width:100%;margin-bottom:16px;">Submit Request</button>
-
-                <p style="font-size:11px;color:rgba(160,166,177,0.55);margin-top:16px;line-height:1.6;">This is an
-                    estimate only and does not constitute a binding quote. Final premium is subject to underwriting
-                    review and may vary. Coverage availability and qualification may vary by jurisdiction.</p>
-
-                <button class="btn-browser-back" onclick="window.history.back()"
-                    style="margin-top:20px;display:block;">&#8592; Back to previous page</button>
-            </div>
-        </div>
-
-    </div><!-- .main-container -->
-
-    <script>
-        // ══════════════════════════════════
-        // CONFIG
-        // ══════════════════════════════════
-        const MAPBOX_TOKEN = 'pk.eyJ1IjoibWluZGhvbWUiLCJhIjoiY21sZ3p2bnd6MDN5YjNlcHh0eG0yc3VxNSJ9.p5uKGoe-j7kdXjl73ewguw';
-
-        // ══════════════════════════════════
-        // STATE
-        // ══════════════════════════════════
-        const answers = {
-            address: null,
-            coverage: null, propertyType: null, occupant: null, policyStart: null,
-            homeType: null, bedrooms: null, stories: null, pool: null,
-            wallFinish: null, wallStructure: null, foundationType: null,
-            roofMaterial: null, roofStyle: null
-        };
-
-        // ══════════════════════════════════
-        // NAVIGATION
-        // ══════════════════════════════════
-        function goTo(n) {
-            document.querySelectorAll('.q-page').forEach(p => p.classList.remove('active'));
-            document.getElementById('q' + n).classList.add('active');
-            updateStepBar(n);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (n === 10) buildSummary();
-        }
-
-        function updateStepBar(active) {
-            for (let i = 1; i <= 9; i++) {
-                const dot = document.getElementById('dot-' + i);
-                const line = document.getElementById('line-' + i);
-                if (!dot) continue;
-                if (i < active) { dot.className = 'step-dot done'; dot.textContent = '✓'; }
-                else if (i === active) { dot.className = 'step-dot active'; dot.textContent = i; }
-                else { dot.className = 'step-dot'; dot.textContent = i; }
-                if (line) line.className = 'step-line' + (i < active ? ' done' : '');
-            }
-        }
-
-        // ══════════════════════════════════
-        // OPTION CARD SELECTION
-        // ══════════════════════════════════
-        const stepMap = { coverage: 2, propertyType: 3, occupant: 4, policyStart: 5 };
-        function pick(key, val, el) {
-            el.closest('.options-list').querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            answers[key] = val;
-            const btn = document.getElementById('next-' + stepMap[key]);
-            if (btn) btn.disabled = false;
-        }
-
-        // ══════════════════════════════════
-        // ICON TILE SELECTION
-        // ══════════════════════════════════
-        function pickTile(key, val, el) {
-            el.closest('.icon-grid').querySelectorAll('.icon-tile').forEach(t => t.classList.remove('selected'));
-            el.classList.add('selected');
-            answers[key] = val;
-            if (key === 'homeType') validateHome();
-            if (key === 'wallFinish') validateWalls();
-            if (key === 'roofMaterial' || key === 'roofStyle') validateRoof();
-        }
-
-        // ══════════════════════════════════
-        // TOGGLE PILLS
-        // ══════════════════════════════════
-        function pickToggle(key, val, el, groupId) {
-            document.getElementById(groupId).querySelectorAll('.tog').forEach(t => t.classList.remove('selected'));
-            el.classList.add('selected');
-            answers[key] = val;
-            validateHome();
-        }
-
-        // ══════════════════════════════════
-        // PERSONAL INFO VALIDATION
-        // ══════════════════════════════════
-        function formatDOB(el) {
-            let v = el.value.replace(/\D/g, '');
-            if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
-            if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
-            el.value = v;
-        }
-        function formatPhone(el) {
-            let v = el.value.replace(/\D/g, '');
-            if (v.length > 0) v = '(' + v;
-            if (v.length > 4) v = v.slice(0, 4) + ') ' + v.slice(4);
-            if (v.length > 9) v = v.slice(0, 9) + '-' + v.slice(9, 13);
-            el.value = v;
-        }
-        function validatePersonal() {
-            const fn = document.getElementById('firstName').value.trim();
-            const ln = document.getElementById('lastName').value.trim();
-            const dob = document.getElementById('dob').value.trim();
-            const em = document.getElementById('email').value.trim();
-            const ph = document.getElementById('phone').value.trim();
-            const dobOk = /^\d{2}\/\d{2}\/\d{4}$/.test(dob);
-            const emOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
-            const phOk = ph.replace(/\D/g, '').length === 10;
-            showFieldErr('err-dob', dob.length > 0 && !dobOk);
-            showFieldErr('err-email', em.length > 0 && !emOk);
-            showFieldErr('err-phone', ph.length > 0 && !phOk);
-            document.getElementById('next-6').disabled = !(fn && ln && dobOk && emOk && phOk);
-        }
-        function showFieldErr(id, show) {
-            const el = document.getElementById(id);
-            if (el) el.className = 'field-error' + (show ? ' show' : '');
-        }
-
-        // ══════════════════════════════════
-        // HOME / WALLS / ROOF VALIDATION
-        // ══════════════════════════════════
-        function validateHome() {
-            const yb = parseInt(document.getElementById('yearBuilt').value);
-            const sf = parseInt(document.getElementById('sqft').value);
-            const hv = parseInt(document.getElementById('homeValue').value);
-            const ok = answers.homeType
-                && (yb >= 1800 && yb <= 2025)
-                && (sf >= 100 && sf <= 20000)
-                && (hv >= 10000 && hv <= 10000000)
-                && answers.bedrooms && answers.stories && answers.pool;
-            document.getElementById('next-7').disabled = !ok;
-        }
-        function validateWalls() {
-            document.getElementById('next-8').disabled =
-                !(answers.wallFinish && answers.wallStructure && answers.foundationType);
-        }
-        function validateRoof() {
-            const ry = parseInt(document.getElementById('roofYear').value);
-            document.getElementById('next-9').disabled =
-                !(answers.roofMaterial && answers.roofStyle && ry >= 1900 && ry <= 2025);
-        }
-        document.getElementById('roofYear').addEventListener('input', validateRoof);
-
-        // ══════════════════════════════════
-        // BUILD SUMMARY
-        // ══════════════════════════════════
-        function buildSummary() {
-            const fn = document.getElementById('firstName').value.trim();
-            const mn = document.getElementById('middleName').value.trim();
-            const ln = document.getElementById('lastName').value.trim();
-            set('s-address', answers.address);
-            set('s-coverage', answers.coverage);
-            set('s-propertyType', answers.propertyType);
-            set('s-occupant', answers.occupant);
-            set('s-policyStart', answers.policyStart);
-            set('s-name', [fn, mn, ln].filter(Boolean).join(' '));
-            set('s-dob', document.getElementById('dob').value);
-            set('s-email', document.getElementById('email').value.trim());
-            set('s-phone', document.getElementById('phone').value.trim());
-            set('s-homeType', answers.homeType);
-            set('s-yearBuilt', document.getElementById('yearBuilt').value);
-            set('s-sqft', Number(document.getElementById('sqft').value).toLocaleString() + ' sq ft');
-            set('s-homeValue', '$' + Number(document.getElementById('homeValue').value).toLocaleString());
-            set('s-bedrooms', answers.bedrooms);
-            set('s-stories', answers.stories);
-            set('s-pool', answers.pool);
-            set('s-wallFinish', answers.wallFinish);
-            set('s-wallStructure', answers.wallStructure);
-            set('s-foundationType', answers.foundationType);
-            set('s-roofMaterial', answers.roofMaterial);
-            set('s-roofStyle', answers.roofStyle);
-            set('s-roofYear', document.getElementById('roofYear').value);
-        }
-        function set(id, val) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = val || '—';
-        }
-
-        // ══════════════════════════════════
-        // PREMIUM MODEL
-        // ══════════════════════════════════
-        const MODEL = {
-            coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
-            intercept: 1750.1500895522388,
-            scaler: {
-                mean: [3.5164179104477613, 2470.3014925373136, 442130.93919402984, 39.25970149253731],
-                scale: [1.1416925135517493, 851.6019470776408, 160375.7009750736, 20.13887648751911]
+    async function sfFetch(query, variables) {
+        const res = await fetch(SF_ENDPOINT(), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Shopify-Storefront-Access-Token": SHOPIFY.storefrontToken,
             },
-            calibration: { a: 2.2688583723656337, b: -1806.3973226313328 }
-        };
-
-        function predict(features) {
-            const scaled = features.map((v, i) => (v - MODEL.scaler.mean[i]) / MODEL.scaler.scale[i]);
-            let p = MODEL.intercept;
-            scaled.forEach((s, i) => p += MODEL.coefficients[i] * s);
-            return Math.max(0, MODEL.calibration.a * p + MODEL.calibration.b);
-        }
-
-        // ══════════════════════════════════
-        // SUBMIT & CALCULATE
-        // ══════════════════════════════════
-        function submitForm() {
-            const ref = 'HQ-' + Math.floor(100000 + Math.random() * 900000);
-            document.getElementById('refNumber').textContent = ref;
-            document.getElementById('stepBar').style.display = 'none';
-            document.querySelector('.btn-browser-back').closest('div').style.display = 'none';
-
-            // Parse inputs for model
-            const bedroomsRaw = answers.bedrooms || '0';
-            const bedrooms = parseFloat(bedroomsRaw.replace('+', '')) || 0;
-            const sqft = parseFloat(document.getElementById('sqft').value) || 0;
-            const homeValue = parseFloat(document.getElementById('homeValue').value) || 0;
-            const yearBuilt = parseInt(document.getElementById('yearBuilt').value) || 1980;
-            const age = new Date().getFullYear() - yearBuilt;
-
-            goTo(11);
-
-            // Small delay for rendering, then calculate
-            setTimeout(() => {
-                try {
-                    const annual = predict([bedrooms, sqft, homeValue, age]);
-                    const monthly = annual / 12;
-                    document.getElementById('premiumAnnual').textContent = annual.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    document.getElementById('premiumMonthly').textContent = '$' + monthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                } catch (e) {
-                    const err = document.getElementById('calcError');
-                    err.textContent = 'Unable to calculate estimate. Please call us to discuss your options.';
-                    err.style.display = 'block';
-                }
-                equalizeSavingsBoxHeights();
-            }, 300);
-        }
-
-        // ══════════════════════════════════
-        // MATCH SAVINGS BOX HEIGHTS TO REF BOXES
-        // ══════════════════════════════════
-        function equalizeSavingsBoxHeights() {
-            const refBoxes = document.querySelectorAll('#q11 .ref-box:not(.savings-box)');
-            if (!refBoxes.length) return;
-            const targetHeight = Math.max(...Array.from(refBoxes).map(b => b.offsetHeight));
-            document.getElementById('savingsMsgBox').style.height = targetHeight + 'px';
-            document.getElementById('savingsOptionsBox').style.height = targetHeight + 'px';
-        }
-
-        // ══════════════════════════════════
-        // SAVINGS OPTIONS SUBMIT
-        // ══════════════════════════════════
-        function submitSavingsRequest() {
-            const selected = Array.from(document.querySelectorAll('#savingsOptionsBox input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
-            const btn = document.getElementById('savingsSubmitBtn');
-            if (!selected.length) {
-                btn.textContent = 'Please select an option';
-                setTimeout(() => { btn.textContent = 'Submit Request'; }, 1800);
-                return;
-            }
-            btn.disabled = true;
-            btn.textContent = 'Request submitted ✓';
-        }
-
-        // ══════════════════════════════════
-        // MAPBOX ADDRESS AUTOCOMPLETE
-        // ══════════════════════════════════
-        let selectedAddress = null;
-        let debounceTimer = null;
-
-        const autocompleteInput = document.getElementById('autocomplete');
-        const errorMessageEl = document.getElementById('errorMessage');
-        const errorListEl = document.getElementById('errorList');
-        const successMessageEl = document.getElementById('successMessage');
-        const addressPreviewEl = document.getElementById('addressPreview');
-        const suggestionsDropdown = document.getElementById('suggestionsDropdown');
-
-        function initAutocomplete() {
-            if (!MAPBOX_TOKEN || MAPBOX_TOKEN === 'YOUR_MAPBOX_TOKEN_HERE') {
-                autocompleteInput.disabled = true;
-                autocompleteInput.placeholder = 'MapBox API key required';
-                autocompleteInput.style.backgroundColor = '#ffe0e0';
-                return;
-            }
-            autocompleteInput.addEventListener('input', handleInput);
-            autocompleteInput.addEventListener('focus', handleInput);
-            document.addEventListener('click', function (e) {
-                if (!autocompleteInput.contains(e.target) && !suggestionsDropdown.contains(e.target)) {
-                    suggestionsDropdown.style.display = 'none';
-                }
-            });
-        }
-
-        function handleInput(e) {
-            const query = e.target.value.trim();
-            clearTimeout(debounceTimer);
-            selectedAddress = null;
-            answers.address = null;
-            document.getElementById('next-1').disabled = true;
-            clearMsgs();
-            if (query.length < 3) { suggestionsDropdown.style.display = 'none'; return; }
-            debounceTimer = setTimeout(() => searchAddress(query), 300);
-        }
-
-        async function searchAddress(query) {
-            try {
-                const res = await fetch(
-                    `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
-                    `country=us&types=address&limit=5&access_token=${MAPBOX_TOKEN}`
-                );
-                if (!res.ok) throw new Error('Search failed');
-                const data = await res.json();
-                displaySuggestions(data.features || []);
-            } catch (err) {
-                showAddrErr(['Failed to search addresses. Please try again.']);
-            }
-        }
-
-        function displaySuggestions(features) {
-            suggestionsDropdown.innerHTML = '';
-            if (!features.length) { suggestionsDropdown.style.display = 'none'; return; }
-            features.forEach(f => {
-                const item = document.createElement('div');
-                item.className = 'suggestion-item';
-                item.textContent = f.place_name;
-                item.addEventListener('click', () => handleSelect(f));
-                suggestionsDropdown.appendChild(item);
-            });
-            suggestionsDropdown.style.display = 'block';
-        }
-
-        function handleSelect(feature) {
-            clearMsgs();
-            suggestionsDropdown.style.display = 'none';
-            autocompleteInput.value = feature.place_name;
-            const addr = parseAddr(feature);
-            const v = validateAddr(addr);
-            if (!v.isValid) { showAddrErr(v.errors); return; }
-            selectedAddress = addr;
-            answers.address = feature.place_name;
-            document.getElementById('next-1').disabled = false;
-            showSuccess(addr);
-        }
-
-        function parseAddr(feature) {
-            const ctx = {};
-            if (feature.context) {
-                feature.context.forEach(c => {
-                    if (c.id.startsWith('postcode')) ctx.zipCode = c.text;
-                    if (c.id.startsWith('place')) ctx.city = c.text;
-                    if (c.id.startsWith('region')) ctx.state = c.short_code ? c.short_code.replace('US-', '') : c.text;
-                });
-            }
-            const street = feature.address ? `${feature.address} ${feature.text}` : feature.text;
-            return { street, city: ctx.city || '', state: ctx.state || '', zipCode: ctx.zipCode || '' };
-        }
-
-        function validateAddr(a) {
-            const errors = [];
-            if (!a.street) errors.push('Street address is required');
-            if (!a.city) errors.push('City is required');
-            if (!a.state) errors.push('State is required');
-            if (!a.zipCode) errors.push('ZIP code is required');
-            else if (!/^\d{5}(-\d{4})?$/.test(a.zipCode)) errors.push('Invalid ZIP code format');
-            return { isValid: errors.length === 0, errors };
-        }
-
-        function showAddrErr(errors) {
-            errorListEl.innerHTML = '';
-            errors.forEach(e => {
-                const li = document.createElement('li');
-                li.textContent = e;
-                errorListEl.appendChild(li);
-            });
-            errorMessageEl.classList.add('show');
-            successMessageEl.classList.remove('show');
-        }
-        function showSuccess(a) {
-            addressPreviewEl.textContent = `${a.street}, ${a.city}, ${a.state} ${a.zipCode}`;
-            successMessageEl.classList.add('show');
-            errorMessageEl.classList.remove('show');
-        }
-        function clearMsgs() {
-            errorMessageEl.classList.remove('show');
-            successMessageEl.classList.remove('show');
-        }
-
-        autocompleteInput.addEventListener('input', function () {
-            if (selectedAddress && autocompleteInput.value !== addressPreviewEl.textContent) {
-                selectedAddress = null;
-                answers.address = null;
-                document.getElementById('next-1').disabled = true;
-                clearMsgs();
-            }
+            body: JSON.stringify({ query, variables }),
         });
+        if (!res.ok) throw new Error("Storefront API HTTP " + res.status);
+        const json = await res.json();
+        if (json.errors?.length) throw new Error(json.errors[0].message);
+        return json.data;
+    }
+    const Q_VARIANT = `query($h:String!){product(handle:$h){title variants(first:1){nodes{id}}}}`;
+    const M_CART = `mutation($input:CartInput!){cartCreate(input:$input){
+  cart{id checkoutUrl} userErrors{field message}}}`;
 
-        window.addEventListener('load', initAutocomplete);
-        window.addEventListener('resize', equalizeSavingsBoxHeights);
-    </script>
-</body>
+    async function resolveVariant(handle) {
+        const d = await sfFetch(Q_VARIANT, { h: handle });
+        const id = d.product?.variants?.nodes?.[0]?.id;
+        if (!id) throw new Error("No purchasable variant for handle “" + handle + "”");
+        return id; // gid://shopify/ProductVariant/####
+    }
 
-</html>
+    /* lines to buy, given current cart (bundle SKU if exact bundle) */
+    function lineSpec() {
+        if (isBundle(state.cart)) return [["bundle", 1]];
+        return Object.entries(state.cart).filter(([, q]) => q > 0);
+    }
+    function cartInput() {
+        const u = unlocked(state.cart), pct = creditPct(u), save = Math.round(PREMIUM * pct / 100);
+        return {
+            note: `Insurance bolt-on — Echelon quote ${state.quoteRef}`,
+            buyerIdentity: { email: getVal('fEmail', state.email) },
+            attributes: [
+                { key: "quote_ref", value: state.quoteRef },
+                { key: "premium_credit_pct", value: String(pct) },
+                { key: "est_annual_savings", value: "$" + save },
+                { key: "ship_to", value: getVal('fAddr', "") },
+                { key: "source", value: "premium-app-bolton" },
+            ],
+            lines: lineSpec().map(([k, q]) => ({
+                _handle: HANDLES[k],                 // resolved → merchandiseId before send
+                quantity: q,
+                attributes: [{ key: "risk", value: CATALOG[k] ? CATALOG[k].risk : "bundle" }],
+            })),
+        };
+    }
+
+    async function createCheckout() {
+        const input = cartInput();
+        // resolve handles → variant gids
+        for (const line of input.lines) {
+            line.merchandiseId = await resolveVariant(line._handle);
+            delete line._handle;
+        }
+        const d = await sfFetch(M_CART, { input });
+        const err = d.cartCreate.userErrors?.[0];
+        if (err) throw new Error(err.message);
+        return d.cartCreate.cart.checkoutUrl;
+    }
+
+    /* no-token fallback: cart permalink (needs numeric ids; works once resolved) */
+    function cartPermalinkTemplate() {
+        const u = unlocked(state.cart), pct = creditPct(u);
+        const items = lineSpec().map(([k, q]) => `{${HANDLES[k]}→id}:${q}`).join(",");
+        return `https://${SHOPIFY.domain.replace('smartinsure.myshopify.com', 'www.mindhome.co')}/cart/${items}`
+            + `?attributes[quote_ref]=${state.quoteRef}&attributes[credit_pct]=${pct}`;
+    }
+
+    /* ---------- place order ---------- */
+    async function placeOrder() {
+        const btn = document.getElementById('placeBtn');
+        if (!SHOPIFY.storefrontToken) {
+            toast("Demo mode — paste a Storefront token in SHOPIFY.storefrontToken to go live. Showing the real payload instead.");
+            go(4); return;
+        }
+        btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Creating secure cart…';
+        try {
+            const url = await createCheckout();
+            btn.innerHTML = 'Redirecting to checkout…';
+            window.top.location.href = url;     // hand off to Shopify checkout
+        } catch (e) {
+            btn.disabled = false; btn.innerHTML = 'Place order &amp; submit quote →';
+            toast("Checkout error: " + e.message);
+        }
+    }
+
+    /* ---------- credit math ---------- */
+    function unlocked(cart) {
+        return {
+            fire: (cart.ext >= 1 && cart.ting >= 1),
+            water: (cart.shutoff >= 1 && (cart.sensor || 0) >= 3)
+        };
+    }
+    function creditPct(u) { return (u.fire ? 20 : 0) + (u.water ? 30 : 0); }
+    function deviceCost(cart) { return Object.entries(cart).reduce((s, [k, q]) => s + (CATALOG[k]?.price || 0) * q, 0); }
+    function isBundle(cart) {
+        const b = PKGS.bundle, keys = new Set([...Object.keys(b), ...Object.keys(cart)]);
+        for (const k of keys) { if ((cart[k] || 0) !== (b[k] || 0)) return false; } return true;
+    }
+    function getVal(id, fb) { const el = document.getElementById(id); return el ? el.value : fb; }
+
+    /* ---------- render ---------- */
+    function render() {
+        const u = unlocked(state.cart), pct = creditPct(u), annualSave = Math.round(PREMIUM * pct / 100);
+        let dev = deviceCost(state.cart); if (isBundle(state.cart)) dev = 599.99;
+        const hasItems = Object.values(state.cart).some(q => q > 0);
+
+        document.getElementById('bigSave').textContent = '$' + annualSave.toLocaleString();
+        document.getElementById('mSave').textContent = '$' + annualSave.toLocaleString();
+        document.getElementById('lCredit').textContent = '–$' + annualSave.toLocaleString();
+        document.getElementById('lDevice').textContent = dev ? ('$' + dev.toLocaleString(undefined, { minimumFractionDigits: dev % 1 ? 2 : 0 })) : '$0';
+        document.getElementById('cFire').className = 'credit ' + (u.fire ? 'on' : 'off');
+        document.getElementById('cWater').className = 'credit ' + (u.water ? 'on' : 'off');
+
+        const pb = document.getElementById('paybackBox');
+        if (annualSave > 0 && dev > 0) {
+            const m = Math.max(1, Math.round(dev / annualSave * 12));
+            document.getElementById('paybackVal').textContent = m + ' month' + (m > 1 ? 's' : '');
+            pb.style.display = 'block';
+        } else pb.style.display = 'none';
+
+        const hint = document.getElementById('hint');
+        if (hasItems && pct < 50) {
+            const t = []; if (!u.fire) t.push("add an extinguisher + Ting to unlock 20% fire credit");
+            if (!u.water) t.push("add the shutoff + 3 leak sensors to unlock 30% water credit");
+            hint.textContent = "You're leaving savings on the table — " + t.join(", and ") + ".";
+            hint.classList.add('show');
+        } else hint.classList.remove('show');
+
+        document.getElementById('finOnce').textContent = '$' + dev.toLocaleString(undefined, { minimumFractionDigits: dev % 1 ? 2 : 0 });
+        document.getElementById('finMo').textContent = '$' + (Math.round(dev / 12)) + '/mo';
+
+        const rv = document.getElementById('reviewList');
+        if (rv) {
+            let rows = Object.entries(state.cart).filter(([, q]) => q > 0).map(([k, q]) =>
+                `<div class="dev"><div class="meta"><h4>${CATALOG[k].name}<span class="pill ${CATALOG[k].risk}">${CATALOG[k].risk === 'none' ? 'extra' : CATALOG[k].risk}</span></h4><span>${CATALOG[k].sub}</span></div><div class="num" style="font-weight:600;color:var(--navy)">× ${q}</div></div>`).join('');
+            rows += `<div class="dev" style="background:var(--save-soft);border-color:var(--save)"><div class="meta"><h4>Annual premium credit</h4><span>${pct}% off · applied at binding · recurring</span></div><div class="num" style="font-weight:700;color:var(--save)">–$${annualSave.toLocaleString()}/yr</div></div>`;
+            rv.innerHTML = rows;
+        }
+        document.getElementById('toReview').disabled = !hasItems;
+        document.getElementById('doneSave').textContent = `Up to $${annualSave.toLocaleString()}/yr off your homeowners premium`;
+        renderWire();
+    }
+
+    /* live API payload preview */
+    function renderWire() {
+        const pre = document.getElementById('wirePre'); if (!pre) return;
+        const input = cartInput();
+        const shown = {
+            ...input, lines: input.lines.map(l => ({
+                merchandiseId: `‹resolve handle “${l._handle}”›`, quantity: l.quantity, attributes: l.attributes
+            }))
+        };
+        const j = JSON.stringify(shown, null, 2)
+            .replace(/"(\w+)":/g, '<span class="k">"$1"</span>:')
+            .replace(/: "([^"]*)"/g, ': <span class="s">"$1"</span>');
+        pre.innerHTML =
+            `<span class="c"># POST ${SF_ENDPOINT()}</span>
+<span class="c"># X-Shopify-Storefront-Access-Token: ${SHOPIFY.storefrontToken || '‹paste token›'}</span>
+
+<span class="k">mutation</span> cartCreate(<span class="k">$input</span>: CartInput!) {
+  cartCreate(input: <span class="k">$input</span>) { cart { id checkoutUrl } userErrors { field message } }
+}
+
+<span class="c"># variables</span>
+{ "input": ${j} }`;
+    }
+
+    /* ---------- package pick ---------- */
+    function pick(pkg) {
+        state.pkg = pkg;
+        document.querySelectorAll('.opt[data-pkg]').forEach(o => o.classList.toggle('sel', o.dataset.pkg === pkg));
+        const picker = document.getElementById('customPicker');
+        if (pkg === 'custom') {
+            state.cart = {}; picker.style.display = 'block';
+            picker.innerHTML = Object.entries(CATALOG).map(([k, d]) => `
+      <div class="dev"><div class="meta"><h4>${d.name}<span class="pill ${d.risk}">${d.risk === 'none' ? 'extra' : d.risk}</span></h4><span>${d.sub} · $${d.price}</span></div>
+      <div class="stepper"><button onclick="qty('${k}',-1)">–</button><span class="q num" id="q-${k}">0</span><button onclick="qty('${k}',1)">+</button></div></div>`).join('');
+        } else { picker.style.display = 'none'; state.cart = { ...PKGS[pkg] }; }
+        render();
+    }
+    function qty(k, d) {
+        state.cart[k] = Math.max(0, (state.cart[k] || 0) + d);
+        if (state.cart[k] === 0) delete state.cart[k];
+        document.getElementById('q-' + k).textContent = state.cart[k] || 0; render();
+    }
+    function setFin(f) { state.fin = f; document.querySelectorAll('.fin .o').forEach(o => o.classList.toggle('sel', o.dataset.fin === f)); }
+
+    /* ---------- nav ---------- */
+    const CAPS = ["Protection", "Choose kit", "Review", "Shipping", "Done"];
+    function buildRail() { document.getElementById('rail').innerHTML = [0, 1, 2, 3].map(i => `<div class="seg" id="seg${i}"></div>`).join(''); }
+    function go(s, skipped) {
+        if (skipped) {
+            state.cart = {}; state.pkg = null; render();
+            document.getElementById('doneSub').textContent = "Quote ref HQ-4815 submitted. A licensed agent will be in touch to finalize your policy.";
+            document.getElementById('timeline').style.display = 'none';
+        } else if (s === 4) { document.getElementById('timeline').style.display = ''; }
+        state.step = s;
+        document.querySelectorAll('.step').forEach(el => el.classList.toggle('show', +el.dataset.step === s));
+        for (let i = 0; i < 4; i++) { const seg = document.getElementById('seg' + i); seg.className = 'seg' + (i < s ? ' done' : i === s ? ' active' : ''); }
+        const ss = Math.min(s, 4);
+        document.getElementById('capLeft').textContent = CAPS[ss];
+        document.getElementById('capRight').textContent = s >= 4 ? 'Complete' : ('Step ' + (s + 1) + ' of 4');
+        document.getElementById('ledger').style.display = (s >= 4) ? 'none' : '';
+        document.querySelector('.mbar').style.display = (window.innerWidth <= 880 && s >= 1 && s <= 2) ? 'flex' : 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function mobileNext() { if (state.step === 1 && Object.values(state.cart).some(q => q > 0)) go(2); else if (state.step === 2) go(3); }
+
+    let toastT;
+    function toast(msg) {
+        const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+        clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4200);
+    }
+
+    buildRail(); render(); go(0);
+</script>
