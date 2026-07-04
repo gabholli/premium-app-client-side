@@ -664,6 +664,64 @@
         margin-left: 6px
     }
 
+    /* address autocomplete (Mapbox Geocoding API) */
+    .addr-wrap {
+        position: relative
+    }
+
+    .suggest-list {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        max-height: 240px;
+        overflow-y: auto;
+        z-index: 30;
+        display: none
+    }
+
+    .suggest-list.show {
+        display: block
+    }
+
+    .suggest-item {
+        padding: 10px 13px;
+        font-size: 13px;
+        color: var(--ink);
+        cursor: pointer;
+        border-bottom: 1px solid var(--line)
+    }
+
+    .suggest-item:last-child {
+        border-bottom: none
+    }
+
+    .suggest-item:hover {
+        background: var(--grad-soft)
+    }
+
+    .addr-status {
+        font-size: 12px;
+        margin-top: 6px;
+        display: none
+    }
+
+    .addr-status.show {
+        display: block
+    }
+
+    .addr-status.ok {
+        color: var(--save)
+    }
+
+    .addr-status.err {
+        color: #C0392B
+    }
+
     .panelnote {
         background: var(--grad-soft);
         border: 1px solid var(--line);
@@ -896,7 +954,8 @@
         <section class="step show" data-step="0">
             <div class="eyebrow">Your quote is ready</div>
             <h1>You qualify for up to 50% off your premium</h1>
-            <p class="sub">Jordan, based on your home at 482 Marigold Ln, MindHome devices that actively prevent
+            <p class="sub"><span id="heroName">Jordan</span>, based on your home at <span id="heroAddr">482 Marigold
+                    Ln</span>, MindHome devices that actively prevent
                 water and fire losses can lower your Echelon premium. Add them now and your agent applies the credit
                 when your policy binds.</p>
             <div class="panelnote"><span>💡</span>
@@ -904,6 +963,42 @@
                     A valve that shuts off a leak, or an extinguisher that puts out a fire, is what unlocks the credit —
                     so the kit is built around devices that act, not just notify.</div>
             </div>
+
+            <div style="margin-bottom:18px">
+                <div style="font-weight:600;color:var(--navy);font-size:14px;margin-bottom:10px">Your name &amp;
+                    property</div>
+                <div class="grid2" style="margin-bottom:13px">
+                    <div class="field"><label>First name</label><input id="hqFirst" value="Jordan"
+                            oninput="syncHeroAndForm()"></div>
+                    <div class="field"><label>Last name</label><input id="hqLast" value="Maxwell"
+                            oninput="syncHeroAndForm()"></div>
+                </div>
+                <div class="field addr-wrap">
+                    <label>Property address</label>
+                    <input id="hqAddrSearch" value="482 Marigold Ln, Boulder, CO 80302" autocomplete="off"
+                        oninput="handleAddrInput(event)" onfocus="handleAddrInput(event)">
+                    <div id="hqAddrSuggestions" class="suggest-list"></div>
+                    <div id="hqAddrStatus" class="addr-status"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:18px">
+                <div style="font-weight:600;color:var(--navy);font-size:14px;margin-bottom:10px">Your home details <span
+                        class="prefill">edit to update your quote</span></div>
+                <div class="grid2" style="margin-bottom:13px">
+                    <div class="field"><label>Bedrooms</label><input id="hqBedrooms" type="number" min="1" max="10"
+                            value="3" oninput="recalcPremium()"></div>
+                    <div class="field"><label>Square footage</label><input id="hqSqft" type="number" min="200"
+                            max="20000" step="10" value="2100" oninput="recalcPremium()"></div>
+                </div>
+                <div class="grid2">
+                    <div class="field"><label>Estimated home value</label><input id="hqHomeValue" type="number"
+                            min="10000" max="10000000" step="1000" value="400000" oninput="recalcPremium()"></div>
+                    <div class="field"><label>Year built</label><input id="hqYearBuilt" type="number" min="1800"
+                            max="2026" value="1995" oninput="recalcPremium()"></div>
+                </div>
+            </div>
+
             <div class="nav">
                 <button class="btn primary" onclick="go(1)">See my protection options →</button>
                 <button class="skip" onclick="go(4,true)">No thanks, just submit my quote</button>
@@ -1062,7 +1157,7 @@
             <div class="credit off" id="cFire"><span class="pct num">20%</span>Fire credit</div>
             <div class="credit off" id="cWater"><span class="pct num">30%</span>Water credit</div>
         </div>
-        <div class="lrow"><span class="k">Annual premium</span><span class="v num">$1,840</span></div>
+        <div class="lrow"><span class="k">Annual premium</span><span class="v num" id="lPremium">$1,840</span></div>
         <div class="lrow"><span class="k">Premium credit</span><span class="v save num" id="lCredit">–$0</span></div>
         <div class="lrow"><span class="k">Device cost (once)</span><span class="v num" id="lDevice">$0</span></div>
         <div class="payback" id="paybackBox" style="display:none">
@@ -1094,6 +1189,8 @@
        The numeric checkout token in the site's <meta> is NOT this
        token and will not authenticate GraphQL.
        ============================================================ */
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoibWluZGhvbWUiLCJhIjoiY21sZ3p2bnd6MDN5YjNlcHh0eG0yc3VxNSJ9.p5uKGoe-j7kdXjl73ewguw';
+
     const SHOPIFY = {
         domain: "smartinsure.myshopify.com",
         apiVersion: "2025-10",
@@ -1127,7 +1224,44 @@
         water: { shutoff: 1, sensor: 5 },
         custom: {},
     };
-    const PREMIUM = 1840;
+    let PREMIUM = 1840; // recalculated live by recalcPremium() below
+
+    /* ---------- Premium prediction model (ported from the "Get My Quote" wizard) ---------- */
+    const PREMIUM_MODEL = {
+        coefficients: [61.09909107103789, 247.32495465316828, 6.444056303890775, 40.239270399724056],
+        intercept: 1750.1500895522388,
+        scaler: {
+            mean: [3.5164179104477613, 2470.3014925373136, 442130.93919402984, 39.25970149253731],
+            scale: [1.1416925135517493, 851.6019470776408, 160375.7009750736, 20.13887648751911]
+        },
+        calibration: { a: 2.2688583723656337, b: -1806.3973226313328 }
+    };
+    function predictPremium(features) {
+        const scaled = features.map((v, i) => (v - PREMIUM_MODEL.scaler.mean[i]) / PREMIUM_MODEL.scaler.scale[i]);
+        let p = PREMIUM_MODEL.intercept;
+        scaled.forEach((s, i) => p += PREMIUM_MODEL.coefficients[i] * s);
+        return Math.max(0, PREMIUM_MODEL.calibration.a * p + PREMIUM_MODEL.calibration.b);
+    }
+
+    /* Reads the Step 0 home-detail fields, recomputes PREMIUM via the model,
+       updates the quote display in the top-right of the page, then re-renders
+       the ledger (credits/savings/payback all derive from PREMIUM). */
+    function recalcPremium() {
+        const bedrooms = parseFloat(document.getElementById('hqBedrooms').value) || 0;
+        const sqft = parseFloat(document.getElementById('hqSqft').value) || 0;
+        const homeValue = parseFloat(document.getElementById('hqHomeValue').value) || 0;
+        const yearBuilt = parseInt(document.getElementById('hqYearBuilt').value) || 1990;
+        const age = new Date().getFullYear() - yearBuilt;
+
+        PREMIUM = Math.round(predictPremium([bedrooms, sqft, homeValue, age]));
+
+        const premTop = document.getElementById('premTop');
+        if (premTop) premTop.textContent = '$' + PREMIUM.toLocaleString() + '/yr';
+        const lPremium = document.getElementById('lPremium');
+        if (lPremium) lPremium.textContent = '$' + PREMIUM.toLocaleString();
+
+        render();
+    }
 
     let state = {
         step: 0, pkg: null, cart: {}, fin: "once",
@@ -1240,6 +1374,113 @@
         for (const k of keys) { if ((cart[k] || 0) !== (b[k] || 0)) return false; } return true;
     }
     function getVal(id, fb) { const el = document.getElementById(id); return el ? el.value : fb; }
+
+    /* ---------- Name + address (Mapbox Geocoding API) ---------- */
+    let addrDebounceTimer = null;
+
+    function handleAddrInput(e) {
+        const query = e.target.value.trim();
+        clearTimeout(addrDebounceTimer);
+        hideAddrStatus();
+        if (query.length < 3) { hideSuggestions(); return; }
+        addrDebounceTimer = setTimeout(() => searchAddressMapbox(query), 300);
+    }
+
+    async function searchAddressMapbox(query) {
+        try {
+            const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?` +
+                `country=us&types=address&limit=5&access_token=${MAPBOX_TOKEN}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('geocoding request failed');
+            const data = await res.json();
+            renderSuggestions(data.features || []);
+        } catch (err) {
+            showAddrStatus('Address search failed — try again.', 'err');
+        }
+    }
+
+    function renderSuggestions(features) {
+        const box = document.getElementById('hqAddrSuggestions');
+        box.innerHTML = '';
+        if (!features.length) { hideSuggestions(); return; }
+        features.forEach(f => {
+            const item = document.createElement('div');
+            item.className = 'suggest-item';
+            item.textContent = f.place_name;
+            item.onclick = () => selectAddress(f);
+            box.appendChild(item);
+        });
+        box.classList.add('show');
+    }
+    function hideSuggestions() {
+        const box = document.getElementById('hqAddrSuggestions');
+        box.classList.remove('show'); box.innerHTML = '';
+    }
+    function showAddrStatus(msg, kind) {
+        const el = document.getElementById('hqAddrStatus');
+        el.textContent = msg; el.className = 'addr-status show ' + kind;
+    }
+    function hideAddrStatus() {
+        document.getElementById('hqAddrStatus').classList.remove('show');
+    }
+
+    function parseMapboxAddr(feature) {
+        const ctx = {};
+        (feature.context || []).forEach(c => {
+            if (c.id.startsWith('postcode')) ctx.zip = c.text;
+            if (c.id.startsWith('place')) ctx.city = c.text;
+            if (c.id.startsWith('region')) ctx.state = c.short_code ? c.short_code.replace('US-', '') : c.text;
+        });
+        const street = feature.address ? `${feature.address} ${feature.text}` : feature.text;
+        return { street, city: ctx.city || '', state: ctx.state || '', zip: ctx.zip || '' };
+    }
+    function validateMapboxAddr(a) {
+        const errors = [];
+        if (!a.street) errors.push('street address');
+        if (!a.city) errors.push('city');
+        if (!a.state) errors.push('state');
+        if (!a.zip) errors.push('ZIP code');
+        return errors;
+    }
+
+    function selectAddress(feature) {
+        hideSuggestions();
+        const a = parseMapboxAddr(feature);
+        const errors = validateMapboxAddr(a);
+        if (errors.length) {
+            showAddrStatus('Missing ' + errors.join(', ') + ' — try a more complete address.', 'err');
+            return;
+        }
+        document.getElementById('hqAddrSearch').value = feature.place_name;
+        state.addr = { ...a, full: feature.place_name };
+        showAddrStatus('✓ Address verified successfully', 'ok');
+        syncHeroAndForm();
+    }
+
+    document.addEventListener('click', (e) => {
+        const input = document.getElementById('hqAddrSearch');
+        const box = document.getElementById('hqAddrSuggestions');
+        if (input && box && !input.contains(e.target) && !box.contains(e.target)) hideSuggestions();
+    });
+
+    /* Push Step 0's name/address into the hero copy and the prefilled Step 3 fields */
+    function syncHeroAndForm() {
+        const first = document.getElementById('hqFirst').value.trim() || 'there';
+        const last = document.getElementById('hqLast').value.trim();
+        const addr = document.getElementById('hqAddrSearch').value.trim();
+
+        const heroName = document.getElementById('heroName');
+        const heroAddr = document.getElementById('heroAddr');
+        if (heroName) heroName.textContent = first;
+        if (heroAddr) heroAddr.textContent = addr;
+
+        const fFirst = document.getElementById('fFirst');
+        const fLast = document.getElementById('fLast');
+        const fAddr = document.getElementById('fAddr');
+        if (fFirst) fFirst.value = first;
+        if (fLast) fLast.value = last;
+        if (fAddr) fAddr.value = addr;
+    }
 
     /* ---------- render ---------- */
     function render() {
@@ -1355,5 +1596,5 @@
         clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4200);
     }
 
-    buildRail(); render(); go(0);
+    buildRail(); recalcPremium(); syncHeroAndForm(); go(0);
 </script>
