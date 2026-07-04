@@ -954,8 +954,7 @@
         <section class="step show" data-step="0">
             <div class="eyebrow">Your quote is ready</div>
             <h1>You qualify for up to 50% off your premium</h1>
-            <p class="sub"><span id="heroName">Jordan</span>, based on your home at <span id="heroAddr">482 Marigold
-                    Ln</span>, MindHome devices that actively prevent
+            <p class="sub">MindHome devices that actively prevent
                 water and fire losses can lower your Echelon premium. Add them now and your agent applies the credit
                 when your policy binds.</p>
             <div class="panelnote"><span>💡</span>
@@ -1098,10 +1097,9 @@
             <div class="field" style="margin-bottom:13px"><label>Shipping address <span class="prefill">from step
                         1</span></label><input id="fAddr" value="482 Marigold Ln, Boulder, CO 80302"></div>
             <div class="grid2" style="margin-bottom:13px">
-                <div class="field"><label>Email <span class="prefill">prefilled</span></label><input id="fEmail"
-                        value="jordan.maxwell@email.com"></div>
-                <div class="field"><label>Phone <span class="prefill">prefilled</span></label><input id="fPhone"
-                        value="(303) 555-0148"></div>
+                <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="you@email.com">
+                </div>
+                <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(555) 555-5555"></div>
             </div>
 
             <details class="wire" id="wireBox">
@@ -1265,7 +1263,7 @@
 
     let state = {
         step: 0, pkg: null, cart: {}, fin: "once",
-        quoteRef: "HQ-4815", email: "jordan.maxwell@email.com"
+        quoteRef: "HQ-4815", email: ""
     };
 
     /* ---------- Storefront API ---------- */
@@ -1468,11 +1466,6 @@
         const first = document.getElementById('hqFirst').value.trim() || 'there';
         const last = document.getElementById('hqLast').value.trim();
         const addr = document.getElementById('hqAddrSearch').value.trim();
-
-        const heroName = document.getElementById('heroName');
-        const heroAddr = document.getElementById('heroAddr');
-        if (heroName) heroName.textContent = first;
-        if (heroAddr) heroAddr.textContent = addr;
 
         const fFirst = document.getElementById('fFirst');
         const fLast = document.getElementById('fLast');
