@@ -967,14 +967,14 @@
                 <div style="font-weight:600;color:var(--navy);font-size:14px;margin-bottom:10px">Your name &amp;
                     property</div>
                 <div class="grid2" style="margin-bottom:13px">
-                    <div class="field"><label>First name</label><input id="hqFirst" value="Jordan"
+                    <div class="field"><label>First name</label><input id="hqFirst" value="Jordan" required
                             oninput="syncHeroAndForm()"></div>
-                    <div class="field"><label>Last name</label><input id="hqLast" value="Maxwell"
+                    <div class="field"><label>Last name</label><input id="hqLast" value="Maxwell" required
                             oninput="syncHeroAndForm()"></div>
                 </div>
                 <div class="field addr-wrap">
                     <label>Property address</label>
-                    <input id="hqAddrSearch" value="482 Marigold Ln, Boulder, CO 80302" autocomplete="off"
+                    <input id="hqAddrSearch" value="482 Marigold Ln, Boulder, CO 80302" autocomplete="off" required
                         oninput="handleAddrInput(event)" onfocus="handleAddrInput(event)">
                     <div id="hqAddrSuggestions" class="suggest-list"></div>
                     <div id="hqAddrStatus" class="addr-status"></div>
@@ -986,21 +986,24 @@
                         class="prefill">edit to update your quote</span></div>
                 <div class="grid2" style="margin-bottom:13px">
                     <div class="field"><label>Bedrooms</label><input id="hqBedrooms" type="number" min="1" max="10"
-                            value="3" oninput="recalcPremium()"></div>
+                            value="3" required oninput="recalcPremium()"></div>
                     <div class="field"><label>Square footage</label><input id="hqSqft" type="number" min="200"
-                            max="20000" step="10" value="2100" oninput="recalcPremium()"></div>
+                            max="20000" step="10" value="2100" required oninput="recalcPremium()"></div>
                 </div>
                 <div class="grid2">
                     <div class="field"><label>Estimated home value</label><input id="hqHomeValue" type="number"
-                            min="10000" max="10000000" step="1000" value="400000" oninput="recalcPremium()"></div>
+                            min="10000" max="10000000" step="1000" value="400000" required oninput="recalcPremium()">
+                    </div>
                     <div class="field"><label>Year built</label><input id="hqYearBuilt" type="number" min="1800"
-                            max="2026" value="1995" oninput="recalcPremium()"></div>
+                            max="2026" value="1995" required oninput="recalcPremium()"></div>
                 </div>
             </div>
 
             <div class="nav">
-                <button class="btn primary" onclick="go(1)">See my protection options →</button>
-                <button class="skip" onclick="go(4,true)">No thanks, just submit my quote</button>
+                <button class="btn primary" onclick="if (validateRequiredIn(0)) go(1)">See my protection options
+                    →</button>
+                <button class="skip" onclick="if (validateRequiredIn(0)) go(4,true)">No thanks, just submit my
+                    quote</button>
             </div>
         </section>
 
@@ -1090,16 +1093,17 @@
             </div>
             <div class="grid2" style="margin-bottom:13px">
                 <div class="field"><label>First name <span class="prefill">prefilled</span></label><input id="fFirst"
-                        value="Jordan"></div>
+                        required value="Jordan"></div>
                 <div class="field"><label>Last name <span class="prefill">prefilled</span></label><input id="fLast"
-                        value="Maxwell"></div>
+                        required value="Maxwell"></div>
             </div>
             <div class="field" style="margin-bottom:13px"><label>Shipping address <span class="prefill">from step
-                        1</span></label><input id="fAddr" value="482 Marigold Ln, Boulder, CO 80302"></div>
+                        1</span></label><input id="fAddr" value="482 Marigold Ln, Boulder, CO 80302" required></div>
             <div class="grid2" style="margin-bottom:13px">
-                <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="you@email.com">
-                </div>
-                <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(555) 555-5555"></div>
+                <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="you@email.com"
+                        required></div>
+                <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(555) 555-5555"
+                        required></div>
             </div>
 
             <details class="wire" id="wireBox">
@@ -1342,6 +1346,7 @@
 
     /* ---------- place order ---------- */
     async function placeOrder() {
+        if (!validateRequiredIn(3)) return;
         const btn = document.getElementById('placeBtn');
         if (!SHOPIFY.storefrontToken) {
             toast("Demo mode — paste a Storefront token in SHOPIFY.storefrontToken to go live. Showing the real payload instead.");
@@ -1372,6 +1377,24 @@
         for (const k of keys) { if ((cart[k] || 0) !== (b[k] || 0)) return false; } return true;
     }
     function getVal(id, fb) { const el = document.getElementById(id); return el ? el.value : fb; }
+
+    /* Checks every [required] input inside a given step section.
+       Uses each input's own reportValidity() so the browser's native
+       "please fill out this field" bubble appears on the first empty
+       or invalid one, and focuses it. Returns true only if all pass. */
+    function validateRequiredIn(stepNum) {
+        const container = document.querySelector('[data-step="' + stepNum + '"]');
+        if (!container) return true;
+        const fields = container.querySelectorAll('input[required]');
+        for (const el of fields) {
+            if (!el.checkValidity()) {
+                el.reportValidity();
+                el.focus();
+                return false;
+            }
+        }
+        return true;
+    }
 
     /* ---------- Name + address (Mapbox Geocoding API) ---------- */
     let addrDebounceTimer = null;
