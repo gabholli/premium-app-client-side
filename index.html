@@ -1074,7 +1074,8 @@
                                 Marigold Ln · tracking sent to your email</span></div>
                     </div>
                     <div class="ti"><span class="d"></span>
-                        <div><b>Agent reviews your application</b><br><span style="color:var(--muted)">Quote ref HQ-4815
+                        <div><b>Agent reviews your application</b><br><span style="color:var(--muted)">Quote ref <span
+                                    id="refDone">HQ-4815</span>
                                 linked to your device order</span></div>
                     </div>
                     <div class="ti"><span class="d"></span>
@@ -1133,7 +1134,7 @@
     const SHOPIFY = {
         domain: "smartinsure.myshopify.com",
         apiVersion: "2025-10",
-        storefrontToken: "0008290012b4c56663667bcdf738b411",            // <-- PASTE Storefront API token
+        storefrontToken: "",            // <-- PASTE Storefront API token
     };
 
     /* Product handles, confirmed against the live mindhome.co/collections/all
@@ -1205,10 +1206,45 @@
         render();
     }
 
+    /* Reads ?quote_ref=... from the URL, so this page works when linked to
+       from the real insurance quote flow (which generates a real HQ-######
+       ref). Falls back to a demo value when opened directly/standalone. */
+    function generateQuoteRef() {
+        return 'HQ-' + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    /* Priority: URL param (from the real quote flow) > cached in this
+       browser session (so a page refresh mid-checkout keeps the same ref)
+       > freshly generated. Every customer who lands here without a ref
+       gets their own unique HQ-######, instead of everyone sharing one
+       static demo value. */
+    function getQuoteRefFromURL() {
+        const fromUrl = new URLSearchParams(window.location.search).get('quote_ref');
+        try {
+            if (fromUrl) { sessionStorage.setItem('quote_ref', fromUrl); return fromUrl; }
+            const cached = sessionStorage.getItem('quote_ref');
+            if (cached) return cached;
+            const generated = generateQuoteRef();
+            sessionStorage.setItem('quote_ref', generated);
+            return generated;
+        } catch (e) {
+            // sessionStorage unavailable (private browsing, etc.) — fall back to in-memory only
+            return fromUrl || generateQuoteRef();
+        }
+    }
+
     let state = {
         step: 0, pkg: null, cart: {}, fin: "once",
-        quoteRef: "HQ-4815", email: ""
+        quoteRef: getQuoteRefFromURL(), email: ""
     };
+
+    /* Pushes state.quoteRef into every place it's displayed as static text */
+    function syncQuoteRefDisplay() {
+        const refTop = document.getElementById('refTop');
+        const refForm = document.getElementById('refForm');
+        if (refTop) refTop.textContent = state.quoteRef;
+        if (refForm) refForm.textContent = state.quoteRef;
+    }
 
     /* ---------- Storefront API ---------- */
     const SF_ENDPOINT = () => `https://${SHOPIFY.domain}/api/${SHOPIFY.apiVersion}/graphql.json`;
@@ -1518,9 +1554,10 @@
     function go(s, skipped) {
         if (skipped) {
             state.cart = {}; state.pkg = null; render();
-            document.getElementById('doneSub').textContent = "Quote ref HQ-4815 submitted. A licensed agent will be in touch to finalize your policy.";
+            document.getElementById('doneSub').textContent = `Quote ref ${state.quoteRef} submitted. A licensed agent will be in touch to finalize your policy.`;
             document.getElementById('timeline').style.display = 'none';
         } else if (s === 4) { document.getElementById('timeline').style.display = ''; }
+        if (s === 4) { const refDone = document.getElementById('refDone'); if (refDone) refDone.textContent = state.quoteRef; }
         state.step = s;
         document.querySelectorAll('.step').forEach(el => el.classList.toggle('show', +el.dataset.step === s));
         for (let i = 0; i < 4; i++) { const seg = document.getElementById('seg' + i); seg.className = 'seg' + (i < s ? ' done' : i === s ? ' active' : ''); }
@@ -1553,5 +1590,5 @@
         }
     });
 
-    buildRail(); recalcPremium(); syncHeroAndForm(); go(0);
+    buildRail(); recalcPremium(); syncHeroAndForm(); syncQuoteRefDisplay(); go(0);
 </script>
