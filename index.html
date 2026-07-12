@@ -1199,16 +1199,19 @@
         storefrontToken: "0008290012b4c56663667bcdf738b411",            // <-- PASTE Storefront API token
     };
 
-    /* Real product handles, verified from mindhome.co.
-       Variant IDs are resolved from these at runtime — no ID hunting.
-       presence handle is a best guess; confirm if you sell it here. */
+    /* Product handles, confirmed against the live mindhome.co/collections/all
+       catalog (both pages) on 2026-07-12. Variant IDs are resolved from
+       these at runtime — no ID hunting needed.
+       ⚠ "ting" resolves fine but the Ting Arc Monitor is currently SOLD OUT
+       on the live store — this will block both the Fire Protection Kit and
+       Complete Bundle at checkout until it's restocked in Shopify admin. */
     const HANDLES = {
         ext: "mindhome-fire-extinguisher",
         ting: "electric-arc-monitor",
-        smoke: "mindhome-smoke-alarm-1",
+        smoke: "mindhome-smoke-alarm",
         shutoff: "mindhome-water-shutoff-and-leak-monitor",
         sensor: "mindhome-leak-sensor",
-        presence: "everything-presence-lite",      // confirm handle
+        presence: "mindhome-presence-detector",      // confirmed via live catalog on mindhome.co
         bundle: "mindhome-risk-services-bundle",
     };
 
@@ -1611,6 +1614,20 @@
         const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
         clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4200);
     }
+
+    /* Resets the "Place order" button if the browser restores this page
+       from its back/forward cache — e.g. the user clicked through to
+       Shopify checkout, then hit the browser Back button. Without this,
+       the button stays stuck disabled/"Redirecting…" because the page's
+       JS never re-runs on a bfcache restore, it just reappears exactly
+       as it looked at the moment we navigated away. */
+    window.addEventListener('pageshow', () => {
+        const btn = document.getElementById('placeBtn');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Place order &amp; submit quote →';
+        }
+    });
 
     buildRail(); recalcPremium(); syncHeroAndForm(); go(0);
 </script>
