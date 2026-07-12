@@ -1292,7 +1292,7 @@
     }
     const Q_VARIANT = `query($h:String!){product(handle:$h){title variants(first:1){nodes{id}}}}`;
     const M_CART = `mutation($input:CartInput!){cartCreate(input:$input){
-  cart{id checkoutUrl} userErrors{field message}}}`;
+  cart{id checkoutUrl} userErrors{field message} warnings{code message}}}`;
 
     async function resolveVariant(handle) {
         const d = await sfFetch(Q_VARIANT, { h: handle });
@@ -1336,6 +1336,18 @@
         const d = await sfFetch(M_CART, { input });
         const err = d.cartCreate.userErrors?.[0];
         if (err) throw new Error(err.message);
+
+        // Stock problems live in `warnings`, not `userErrors`, as of Shopify
+        // API 2024-10+ — a sold-out item won't fail the mutation, it just
+        // gets flagged here. Surface it now instead of letting the person
+        // discover it after landing on Shopify's actual checkout page.
+        const stockWarnings = (d.cartCreate.warnings || []).filter(
+            w => w.code === 'MERCHANDISE_OUT_OF_STOCK' || w.code === 'MERCHANDISE_NOT_ENOUGH_STOCK'
+        );
+        if (stockWarnings.length) {
+            throw new Error(stockWarnings.map(w => w.message).join(' '));
+        }
+
         return d.cartCreate.cart.checkoutUrl;
     }
 
