@@ -767,63 +767,6 @@
         color: var(--muted)
     }
 
-    /* wiring inspector */
-    .wire {
-        margin-top: 18px;
-        border: 1px solid var(--line);
-        border-radius: 13px;
-        overflow: hidden
-    }
-
-    .wire summary {
-        cursor: pointer;
-        padding: 13px 15px;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--navy);
-        background: #F8FAFD;
-        list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 9px
-    }
-
-    .wire summary::-webkit-details-marker {
-        display: none
-    }
-
-    .wire summary .dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--save);
-        box-shadow: 0 0 0 3px var(--save-soft)
-    }
-
-    .wire pre {
-        margin: 0;
-        padding: 15px;
-        background: #0C1A2E;
-        color: #CFE3FF;
-        font-size: 11.5px;
-        line-height: 1.55;
-        overflow: auto;
-        max-height: 280px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace
-    }
-
-    .wire .k {
-        color: #7FC9FF
-    }
-
-    .wire .s {
-        color: #9FE0B0
-    }
-
-    .wire .c {
-        color: #6E84A3
-    }
-
     /* confirmation */
     .done {
         text-align: center;
@@ -1105,12 +1048,6 @@
                 <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(555) 555-5555"
                         required></div>
             </div>
-
-            <details class="wire" id="wireBox">
-                <summary><span class="dot"></span> Storefront API request preview — this is the live payload that ships
-                    to Shopify</summary>
-                <pre id="wirePre"></pre>
-            </details>
 
             <div class="nav">
                 <button class="btn ghost" onclick="go(2)">← Back</button>
@@ -1553,31 +1490,6 @@
         }
         document.getElementById('toReview').disabled = !hasItems;
         document.getElementById('doneSave').textContent = `Up to $${annualSave.toLocaleString()}/yr off your homeowners premium`;
-        renderWire();
-    }
-
-    /* live API payload preview */
-    function renderWire() {
-        const pre = document.getElementById('wirePre'); if (!pre) return;
-        const input = cartInput();
-        const shown = {
-            ...input, lines: input.lines.map(l => ({
-                merchandiseId: `‹resolve handle “${l._handle}”›`, quantity: l.quantity, attributes: l.attributes
-            }))
-        };
-        const j = JSON.stringify(shown, null, 2)
-            .replace(/"(\w+)":/g, '<span class="k">"$1"</span>:')
-            .replace(/: "([^"]*)"/g, ': <span class="s">"$1"</span>');
-        pre.innerHTML =
-            `<span class="c"># POST ${SF_ENDPOINT()}</span>
-<span class="c"># X-Shopify-Storefront-Access-Token: ${SHOPIFY.storefrontToken || '‹paste token›'}</span>
-
-<span class="k">mutation</span> cartCreate(<span class="k">$input</span>: CartInput!) {
-  cartCreate(input: <span class="k">$input</span>) { cart { id checkoutUrl } userErrors { field message } }
-}
-
-<span class="c"># variables</span>
-{ "input": ${j} }`;
     }
 
     /* ---------- package pick ---------- */
