@@ -2,10 +2,10 @@
 <html lang="en">
 
 <head>
-    <!-- Echelon × MindHome — Protection bolt-on checkout with live Shopify Storefront handoff -->
+    <!-- MindHome — Protection bolt-on checkout with live Shopify Storefront handoff -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Echelon × MindHome — Protect &amp; Save</title>
+    <title>MindHome — Protect &amp; Save</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -14,7 +14,7 @@
     <style>
         :root {
             --navy: #0C2340;
-            /* Echelon structural ink */
+            /* structural ink */
             --navy-2: #13315C;
             --purple: #8A288F;
             /* MindHome accent */
@@ -86,16 +86,6 @@
             display: flex;
             align-items: center;
             gap: 9px
-        }
-
-        .lockup .e {
-            color: #fff
-        }
-
-        .lockup .x {
-            color: #7E8BA3;
-            font-weight: 500;
-            font-size: 14px
         }
 
         .lockup .m {
@@ -887,7 +877,7 @@
 <body>
 
     <div class="topbar">
-        <div class="lockup"><span class="e">Echelon</span><span class="x">×</span><span class="m">MindHome</span></div>
+        <div class="lockup"><span class="m">MindHome</span></div>
         <div class="ref">
             <span class="hideS">Quote <b id="refTop">HQ-4815</b></span>
             <span>Est. premium <b id="premTop">$1,840/yr</b></span>
@@ -905,7 +895,8 @@
                 <div class="eyebrow">Your quote is ready</div>
                 <h1>You qualify for up to 50% off your premium</h1>
                 <p class="sub">MindHome devices that actively prevent
-                    water and fire losses can lower your Echelon premium. Add them now and your agent applies the credit
+                    water and fire losses can lower your home insurance premium. Add them now and your agent applies the
+                    credit
                     when your policy binds.</p>
                 <div class="panelnote"><span>💡</span>
                     <div>Insurers reward <b>active mitigation</b>, not just alarms.
@@ -1299,7 +1290,7 @@
         function cartInput() {
             const u = unlocked(state.cart), pct = creditPct(u), save = Math.round(PREMIUM * pct / 100);
             return {
-                note: `Insurance bolt-on — Echelon quote ${state.quoteRef}`,
+                note: `Insurance bolt-on — quote ${state.quoteRef}`,
                 buyerIdentity: { email: getVal('fEmail', state.email) },
                 attributes: [
                     { key: "quote_ref", value: state.quoteRef },
