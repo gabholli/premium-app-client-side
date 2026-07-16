@@ -925,7 +925,8 @@
 
                 <div style="margin-bottom:18px">
                     <div style="font-weight:600;color:var(--navy);font-size:14px;margin-bottom:10px">Your home details
-                        <span class="prefill">edit to update your quote</span></div>
+                        <span class="prefill">edit to update your quote</span>
+                    </div>
                     <div class="grid2" style="margin-bottom:13px">
                         <div class="field"><label>Bedrooms</label><input id="hqBedrooms" type="number" min="1" max="10"
                                 value="3" required oninput="recalcPremium()"></div>
@@ -1142,7 +1143,7 @@
         const SHOPIFY = {
             domain: "smartinsure.myshopify.com",
             apiVersion: "2025-10",
-            storefrontToken: "",            // <-- PASTE Storefront API token
+            storefrontToken: "0008290012b4c56663667bcdf738b411",            // <-- PASTE Storefront API token
         };
 
         /* Product handles, confirmed against the live mindhome.co/collections/all
@@ -1295,11 +1296,24 @@
             if (isBundle(state.cart)) return [["bundle", 1]];
             return Object.entries(state.cart).filter(([, q]) => q > 0);
         }
+        /* Shopify's buyerIdentity.phone expects E.164 (+13035550148), but the
+           form collects US-style formatting like "(303) 555-0148". Strips to
+           digits and prefixes +1; returns {} (omit the field entirely) if
+           what's there isn't a valid 10-digit US number, rather than send
+           Shopify something it'll reject. */
+        function phoneE164() {
+            const digits = getVal('fPhone', '').replace(/\D/g, '');
+            return digits.length === 10 ? { phone: '+1' + digits } : {};
+        }
+
         function cartInput() {
             const u = unlocked(state.cart), pct = creditPct(u), save = Math.round(PREMIUM * pct / 100);
             return {
                 note: `Insurance bolt-on — quote ${state.quoteRef}`,
-                buyerIdentity: { email: getVal('fEmail', state.email) },
+                buyerIdentity: {
+                    email: getVal('fEmail', state.email),
+                    ...phoneE164(),
+                },
                 attributes: [
                     { key: "quote_ref", value: state.quoteRef },
                     { key: "premium_credit_pct", value: String(pct) },
